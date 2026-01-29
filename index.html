@@ -434,7 +434,7 @@
 </div>
 </div>
 <div style="flex:1; min-width:260px;">
-<h1>貴金屬回收／換貨自動計算工具 <span class="chip">最終結果固定取整</span></h1>
+<h1>貴金屬回收／換貨自動計算工具 <span class="chip">最終結果只供參考</span></h1>
 <div class="sub">
 
         已整合：佣金 2%、火耗（6/10）、指定品牌 Au999.9 特例（換貨0；買入有焊8/無焊4）、
@@ -490,7 +490,7 @@
 <label>指定品牌（只限 Au999.9 黃金首飾）</label>
 <div class="tileGroup" id="tgBrand">
 <button class="tile" data-field="specialBrand" data-value="none">否</button>
-<button class="tile" data-field="specialBrand" data-value="listed">是（周大福／周生生／英皇／謝瑞麟）</button>
+<button class="tile" data-field="specialBrand" data-value="listed">是（誠信字號）</button>
 </div>
 <div class="inlineHelp">指定品牌 Au999.9：換貨 0%；買入 有焊8%／無焊4%（按審批）。</div>
 </div>
@@ -1009,7 +1009,7 @@
 
     rows.push({ name:"四捨五入調整", amount: roundingDelta, rate:"取整" });
 
-    rows.push({ name:"最終應付金額（取整）", amount: netRounded, rate:"—" });
+    rows.push({ name:"計算結果", amount: netRounded, rate:"—" });
 
     return { currency, unit, base, net, netRounded, summary, formula, notes, rows };
 
@@ -1116,7 +1116,7 @@
 
     const lines = [
 
-      "六福｜貴金屬回收／換貨計算結果（最終取整）",
+      "六福｜貴金屬回收／換貨計算結果（只作參考）",
 
       `- 貨品類別：${state.category}`,
 
@@ -1130,7 +1130,7 @@
 
       `- 扣項：${res.summary}`,
 
-      `- 最終應付（取整）：${fmtMoneyInt(res.netRounded, currency)}`
+      `- 計算結果（取整）：${fmtMoneyInt(res.netRounded, currency)}`
 
     ].join("\n");
 
@@ -1138,7 +1138,7 @@
 
       await navigator.clipboard.writeText(lines);
 
-      $("noteBox").innerHTML = "✅ 已複製結果，可直接貼到 WhatsApp / OA。";
+      $("noteBox").innerHTML = "✅ 已複製結果。";
 
     }catch(e){
 
@@ -1208,7 +1208,7 @@
 
     $("breakdownWrap").style.display="none";
 
-    $("noteBox").innerHTML = "提示：點選磚選項後輸入重量/單價，即可輸出原價與各扣項明細。最終金額會自動四捨五入為整數。";
+    $("noteBox").innerHTML = "提示：點選上方選項後輸入重量/單價，即可輸出原價與各扣項明細。最終金額只作參考。";
 
     syncUI();
 
@@ -1230,4 +1230,5 @@
 </script>
 </body>
 </html>
+
  

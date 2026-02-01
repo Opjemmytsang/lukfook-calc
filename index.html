@@ -1,1234 +1,1006 @@
 <!doctype html>
 <html lang="zh-HK">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>六福珠寶｜貴金屬回收／換貨自動計算工具</title>
-<style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>六福珠寶｜貴金屬回收／換貨計算工具（內部＋客人展示）</title>
 
+  <style>
     :root{
-
       --wine:#8B2A2E;
-
       --wine2:#6F1E22;
-
       --gold:#C8A55A;
-
       --paper:#FBF7F0;
-
       --card:rgba(255,255,255,.92);
-
       --text:#1B1B1B;
-
       --muted:#6A6156;
-
       --border:rgba(200,165,90,.38);
-
       --shadow:0 18px 50px rgba(20,10,5,.12);
-
       --r:22px;
-
     }
 
     body{
-
       margin:0;
-
       padding:18px;
-
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","Microsoft JhengHei",sans-serif;
-
       color:var(--text);
-
       background:
-
         radial-gradient(1200px 520px at 15% -10%, rgba(200,165,90,.20), transparent 60%),
-
         radial-gradient(900px 420px at 90% 0%, rgba(139,42,46,.12), transparent 55%),
-
         linear-gradient(180deg,#FFFDF9,var(--paper) 40%,#FFFDF9);
-
     }
 
-    .wrap{max-width:1020px;margin:0 auto}
-
+    .wrap{max-width:1100px;margin:0 auto}
     .header{
-
       background:linear-gradient(135deg, rgba(255,255,255,.96), rgba(200,165,90,.10));
-
       border:1px solid var(--border);
-
       border-radius:calc(var(--r) + 6px);
-
       box-shadow:var(--shadow);
-
       padding:16px;
-
       display:flex;
-
       gap:16px;
-
       align-items:center;
-
       flex-wrap:wrap;
-
+      justify-content:space-between;
     }
 
     .logo{
-
-      width:240px;
-
+      width:220px;
       max-width:82vw;
-
       background:#fff;
-
       border:1px solid rgba(0,0,0,.06);
-
       border-radius:18px;
-
       padding:10px 14px;
-
       box-sizing:border-box;
-
     }
 
+    .titleBlock{flex:1; min-width:260px;}
     h1{
-
       margin:0 0 8px 0;
-
       font-size:20px;
-
       letter-spacing:.4px;
-
       color:var(--wine2);
-
     }
-
     .sub{
-
       font-size:12px;
-
       color:var(--muted);
-
       line-height:1.65;
-
-      max-width:720px;
-
+      max-width:820px;
     }
 
     .chip{
-
       display:inline-block;
-
       margin-left:8px;
-
       padding:4px 10px;
-
       border-radius:999px;
-
       border:1px solid rgba(200,165,90,.55);
-
       background:rgba(200,165,90,.12);
-
       color:var(--wine2);
-
       font-size:11px;
-
       font-weight:800;
-
       vertical-align:middle;
+    }
 
+    .tabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .tabBtn{
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:13px;
+      box-shadow:0 10px 22px rgba(20,10,5,.06);
+      user-select:none;
+    }
+    .tabBtn.active{
+      border-color:rgba(139,42,46,.35);
+      background:linear-gradient(135deg, rgba(139,42,46,.10), rgba(200,165,90,.10));
+      color:var(--wine2);
+      font-weight:900;
+      box-shadow:0 14px 30px rgba(139,42,46,.12);
     }
 
     .card{
-
       margin-top:14px;
-
       background:var(--card);
-
       border:1px solid var(--border);
-
       border-radius:calc(var(--r) + 6px);
-
       box-shadow:var(--shadow);
-
       padding:16px;
-
     }
 
     .grid{
-
       display:grid;
-
       grid-template-columns:repeat(2,minmax(0,1fr));
-
       gap:12px;
-
     }
-
-    @media(max-width:760px){ .grid{grid-template-columns:1fr} }
+    @media(max-width:780px){ .grid{grid-template-columns:1fr} }
 
     label{
-
       display:block;
-
       font-size:12px;
-
       color:var(--muted);
-
       margin:0 0 6px 2px;
-
     }
 
     select,input{
-
       width:100%;
-
       padding:11px 12px;
-
       border-radius:16px;
-
       border:1px solid rgba(0,0,0,.12);
-
       background:#fff;
-
       font-size:14px;
-
       outline:none;
-
       box-sizing:border-box;
-
     }
-
     select:focus,input:focus{
-
       border-color:rgba(200,165,90,.8);
-
       box-shadow:0 0 0 3px rgba(200,165,90,.18);
-
     }
 
     /* ---------- Tiles ---------- */
-
     .tileGroup{
-
       display:flex;
-
       gap:10px;
-
       flex-wrap:wrap;
-
     }
-
     .tile{
-
       appearance:none;
-
       border:1px solid rgba(0,0,0,.10);
-
       background:#fff;
-
       color:var(--text);
-
       padding:10px 12px;
-
       border-radius:16px;
-
       cursor:pointer;
-
       font-size:14px;
-
       transition:all .12s ease;
-
       box-shadow:0 10px 22px rgba(20,10,5,.06);
-
       user-select:none;
-
     }
-
     .tile:hover{ transform:translateY(-1px); }
-
     .tile[aria-pressed="true"]{
-
       border-color:rgba(139,42,46,.40);
-
       background:linear-gradient(135deg, rgba(139,42,46,.10), rgba(200,165,90,.10));
-
       box-shadow:0 14px 30px rgba(139,42,46,.12);
-
       color:var(--wine2);
-
-      font-weight:800;
-
+      font-weight:900;
     }
-
     .tile.small{ font-size:13px; padding:9px 10px; border-radius:14px; }
-
     .tile.wide{ min-width:160px; }
 
+    .inlineHelp{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:6px;
+      line-height:1.5;
+    }
+
     .btns{
-
       margin-top:14px;
-
       display:flex;
-
       gap:10px;
-
       flex-wrap:wrap;
-
     }
-
     button.action{
-
       padding:12px 16px;
-
       border-radius:18px;
-
       border:1px solid rgba(0,0,0,.08);
-
       background:linear-gradient(135deg,var(--wine),var(--wine2));
-
       color:#fff;
-
       font-size:14px;
-
       cursor:pointer;
-
       box-shadow:0 12px 28px rgba(139,42,46,.18);
-
     }
-
     button.secondary{
-
       padding:12px 16px;
-
       border-radius:18px;
-
       background:#fff;
-
       color:var(--text);
-
       border:1px solid rgba(200,165,90,.55);
-
       cursor:pointer;
-
     }
-
-    .result{
-
-      margin-top:14px;
-
-      display:grid;
-
-      grid-template-columns:repeat(3,minmax(0,1fr));
-
-      gap:12px;
-
-    }
-
-    @media(max-width:760px){ .result{grid-template-columns:1fr} }
-
-    .pill{
-
-      background:#fff;
-
-      border:1px solid rgba(0,0,0,.08);
-
-      border-radius:20px;
-
-      padding:14px;
-
-    }
-
-    .k{font-size:12px;color:var(--muted);margin-bottom:6px}
-
-    .v{font-size:20px;font-weight:900;color:var(--wine2)}
-
-    .tiny{font-size:11px;color:var(--muted);line-height:1.6}
-
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;}
-
-    .breakdown{
-
-      margin-top:12px;
-
-      border:1px solid rgba(0,0,0,.08);
-
-      border-radius:20px;
-
-      overflow:hidden;
-
-      background:#fff;
-
-    }
-
-    table{ width:100%; border-collapse:collapse; font-size:13px; }
-
-    th,td{ padding:10px 12px; border-bottom:1px solid rgba(0,0,0,.06); text-align:left; }
-
-    th{ background:rgba(200,165,90,.10); color:var(--wine2); font-weight:800; font-size:12px; letter-spacing:.2px; }
-
-    tr:last-child td{border-bottom:none}
-
-    .right{text-align:right}
-
-    .muted{color:var(--muted)}
-
-    .warn{color:var(--wine);font-weight:900}
 
     .softNote{
-
       margin-top:10px;
-
       padding:10px 12px;
-
       border-radius:16px;
-
       border:1px dashed rgba(200,165,90,.55);
-
       background:rgba(200,165,90,.10);
-
       font-size:12px;
-
       color:var(--muted);
-
       line-height:1.7;
+    }
+    .warn{color:var(--wine);font-weight:900}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;}
 
+    /* ---------- Customer Display ---------- */
+    .customerWrap{
+      max-width:940px;
+      margin:0 auto;
     }
 
-    .inlineHelp{
-
-      font-size:11px;
-
-      color:var(--muted);
-
-      margin-top:6px;
-
-      line-height:1.5;
-
+    .customerHero{
+      background:#fff;
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:18px 18px 16px;
     }
 
-    .row2{
-
-      display:grid;
-
-      grid-template-columns:1fr 1fr;
-
+    .customerTitleRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
       gap:12px;
-
+      flex-wrap:wrap;
+      margin-bottom:14px;
     }
 
-    @media(max-width:760px){ .row2{grid-template-columns:1fr} }
-</style>
+    .customerTitle{
+      font-size:18px;
+      font-weight:900;
+      color:var(--wine2);
+      letter-spacing:.3px;
+    }
+    .customerHint{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .bigGrid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+    @media(max-width:760px){ .bigGrid{grid-template-columns:1fr} }
+
+    .bigCard{
+      background:linear-gradient(135deg, rgba(200,165,90,.08), rgba(139,42,46,.06));
+      border:1px solid rgba(200,165,90,.35);
+      border-radius:24px;
+      padding:16px;
+    }
+    .bigLabel{
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:8px;
+      letter-spacing:.2px;
+    }
+    .bigValue{
+      font-size:40px;
+      font-weight:950;
+      color:var(--wine2);
+      line-height:1.05;
+      word-break:break-word;
+    }
+    .bigSub{
+      font-size:14px;
+      color:var(--muted);
+      margin-top:10px;
+      line-height:1.55;
+    }
+
+    .bigAmount{
+      background:linear-gradient(135deg, rgba(139,42,46,.10), rgba(200,165,90,.10));
+      border:1px solid rgba(139,42,46,.25);
+    }
+    .amountValue{
+      font-size:54px;
+      font-weight:980;
+    }
+
+    .customerFooter{
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    /* Clean mode: hide extra lines */
+    .cleanMode .customerTitleRow,
+    .cleanMode .customerFooter,
+    .cleanMode #custTypeLine,
+    .cleanMode #custTopHint {
+      display:none !important;
+    }
+    .cleanMode .customerHero{
+      padding-top:16px;
+    }
+
+    /* Fullscreen adjustments */
+    .fsHint{
+      display:none;
+    }
+    :fullscreen .fsHint{
+      display:block;
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    :fullscreen body{
+      padding:0;
+    }
+
+    /* hide/show */
+    .hidden{display:none !important;}
+  </style>
 </head>
+
 <body>
 <div class="wrap">
-<div class="header">
-<img class="logo" src="logo.png" alt="六福珠寶 LUKFOOK JEWELLERY"
 
+  <div class="header">
+    <img class="logo" src="logo.png" alt="六福珠寶 LUKFOOK JEWELLERY"
          onerror="this.style.display='none'; document.getElementById('logoError').style.display='block';" />
-<div id="logoError" style="display:none; width:240px; max-width:82vw;">
-<div class="pill">
-<div class="k warn">⚠ Logo 未載入</div>
-<div class="tiny">請確保 <span class="mono">logo.png</span> 同 <span class="mono">index.html</span> 放喺同一個資料夾。</div>
-</div>
-</div>
-<div style="flex:1; min-width:260px;">
-<h1>貴金屬回收／換貨自動計算工具 <span class="chip">最終結果只供參考</span></h1>
-<div class="sub">
+    <div id="logoError" style="display:none; width:240px; max-width:82vw;">
+      <div class="card">
+        <div class="warn">⚠ Logo 未載入</div>
+        <div class="sub">請確保 <span class="mono">logo.png</span> 同 <span class="mono">index.html</span> 放喺同一個資料夾。</div>
+      </div>
+    </div>
 
-        已整合：佣金 2%、火耗（6/10）、指定品牌 Au999.9 特例（換貨0；買入有焊8/無焊4）、
+    <div class="titleBlock">
+      <h1>貴金屬回收／換貨計算工具 <span class="chip">內部＋客人展示</span></h1>
+      <div class="sub">
+        內部版面設定扣項；客人版面只展示重點（重量／單價／應付金額）。最終金額一律四捨五入取整數。
+      </div>
+    </div>
 
-        外號 Au999.9 金章／金粒「誠信/一般字號（2–6%）」、外號鉑金不回收。<br>
-<b>最終結果：一律四捨五入取整數。</b>
+    <div class="tabs">
+      <button class="tabBtn active" id="tabInternal">內部使用版面</button>
+      <button class="tabBtn" id="tabCustomer">對客人展示版面</button>
+    </div>
+  </div>
+
+  <!-- =========================
+       INTERNAL VIEW
+  ========================== -->
+  <div class="card" id="internalView">
+
+    <div class="grid">
+      <div>
+        <label>貨品類別</label>
+        <div class="tileGroup" id="tgCategory">
+          <button class="tile wide" data-field="category" data-value="gold_jewelry">黃金首飾（飾金）</button>
+          <button class="tile wide" data-field="category" data-value="fortune_bar">添富金／金章金條</button>
+          <button class="tile wide" data-field="category" data-value="gold_grain">金粒</button>
+          <button class="tile wide" data-field="category" data-value="platinum">鉑金（Pt）</button>
+        </div>
+      </div>
+
+      <div>
+        <label>用途 / 本號</label>
+        <div class="tileGroup" id="tgPurpose">
+          <button class="tile" data-field="purpose" data-value="buy">買入（回收）</button>
+          <button class="tile" data-field="purpose" data-value="exchange">換貨</button>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="tileGroup" id="tgOwn">
+          <button class="tile" data-field="isOwn" data-value="yes">本號</button>
+          <button class="tile" data-field="isOwn" data-value="no">外號</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:14px"></div>
+
+    <!-- Gold-related settings -->
+    <div id="goldBlock">
+      <label>成色（黃金／金章／金粒）</label>
+      <div class="tileGroup" id="tgGoldPurity">
+        <button class="tile" data-field="goldPurity" data-value="au9999">Au999.9</button>
+        <button class="tile" data-field="goldPurity" data-value="non_au9999">非 Au999.9（需評定成色）</button>
+      </div>
+      <div class="inlineHelp">外號非 Au999.9／無成色字印等：可輸入「成色扣除%」。</div>
+
+      <div style="height:12px"></div>
+
+      <div id="jewelryOnly">
+        <label>焊口（黃金首飾）</label>
+        <div class="tileGroup" id="tgSolder">
+          <button class="tile" data-field="hasSolder" data-value="no">無焊口</button>
+          <button class="tile" data-field="hasSolder" data-value="yes">有焊口</button>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <label>指定品牌（只限 Au999.9 黃金首飾）</label>
+        <div class="tileGroup" id="tgBrand">
+          <button class="tile" data-field="specialBrand" data-value="none">否</button>
+          <button class="tile" data-field="specialBrand" data-value="listed">是（周大福／周生生／英皇／謝瑞麟）</button>
+        </div>
+        <div class="inlineHelp">指定品牌 Au999.9：換貨 0%；買入 有焊8%／無焊4%（按審批）。</div>
+      </div>
+
+      <div id="dealerOnly" style="display:none; margin-top:12px;">
+        <label>字號（外號 Au999.9：金章／金粒）</label>
+        <div class="tileGroup" id="tgDealer">
+          <button class="tile" data-field="dealerType" data-value="integrity">誠信字號（0%）</button>
+          <button class="tile" data-field="dealerType" data-value="general">一般字號（2–6%）</button>
+        </div>
+
+        <div id="firePickOnly" style="display:none; margin-top:12px;">
+          <label>一般字號火耗（%）</label>
+          <div class="tileGroup" id="tgFirePick">
+            <button class="tile small" data-field="firePick" data-value="2">2%</button>
+            <button class="tile small" data-field="firePick" data-value="3">3%</button>
+            <button class="tile small" data-field="firePick" data-value="4">4%</button>
+            <button class="tile small" data-field="firePick" data-value="5">5%</button>
+            <button class="tile small" data-field="firePick" data-value="6">6%</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Platinum settings -->
+    <div id="ptBlock" style="display:none;">
+      <label>成色（鉑金）</label>
+      <div class="tileGroup" id="tgPtPurity">
+        <button class="tile" data-field="ptPurity" data-value="pt9995">Pt999.5</button>
+        <button class="tile" data-field="ptPurity" data-value="pt950">Pt950</button>
+        <button class="tile" data-field="ptPurity" data-value="pt900">Pt900</button>
+      </div>
+      <div class="inlineHelp">外號鉑金：按指引不作回收/換貨。</div>
+    </div>
+
+    <div style="height:14px"></div>
+
+    <!-- Inputs -->
+    <div class="grid">
+      <div>
+        <label>重量</label>
+        <input id="weight" type="number" step="0.001" inputmode="decimal" placeholder="例如：1.234" />
+      </div>
+
+      <div>
+        <label>今日買入價／換貨價（每両/每克）</label>
+        <input id="price" type="number" step="0.01" inputmode="decimal" placeholder="例如：23500" />
+      </div>
+
+      <div id="colorDeductWrap">
+        <label>成色扣除（%）（外號非 Au999.9／無成色字印等）</label>
+        <input id="colorDeduct" type="number" step="0.01" inputmode="decimal" placeholder="例如：3（代表再扣 3%）" />
+      </div>
+
+      <div>
+        <label>單位 / 貨幣（只作顯示）</label>
+        <div style="display:flex; gap:10px;">
+          <select id="unit">
+            <option value="両">両</option>
+            <option value="克">克</option>
+          </select>
+          <select id="currency">
+            <option value="HK$">HK$</option>
+            <option value="MOP$">MOP$</option>
+            <option value="RM">RM</option>
+            <option value="$">$</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="btns">
+      <button class="action" id="calcBtn">計算（同步到客人版面）</button>
+      <button class="secondary" id="resetBtn">清除重填</button>
+      <button class="secondary" id="copyBtn">複製結果（內部）</button>
+      <button class="secondary" id="goCustomerBtn">切換到客人展示</button>
+    </div>
+
+    <div class="softNote" id="noteBox">
+      提示：設定完扣項同輸入重量/單價後，按「計算」同步到客人版面。客人版面可開全螢幕＋乾淨模式。
+    </div>
+  </div>
+
+  <!-- =========================
+       CUSTOMER VIEW
+  ========================== -->
+  <div class="card hidden" id="customerView">
+    <div class="customerWrap" id="customerContainer">
+      <div class="customerHero" id="customerHero">
+        <div class="customerTitleRow" id="customerTopRow">
+          <div>
+            <div class="customerTitle">即時金價計算結果</div>
+            <div class="customerHint" id="custTopHint">（展示重點：重量／單價／應付金額）</div>
+          </div>
+          <div class="tabs">
+            <button class="tabBtn active" id="custLiveBadge">展示中</button>
+            <button class="tabBtn" id="btnFullscreen">全螢幕</button>
+            <button class="tabBtn" id="btnClean">乾淨模式：關</button>
+            <button class="tabBtn" id="backInternalBtn">返回內部</button>
+          </div>
+        </div>
+
+        <div class="bigGrid">
+          <div class="bigCard">
+            <div class="bigLabel">重量</div>
+            <div class="bigValue" id="custWeight">—</div>
+            <div class="bigSub" id="custUnit">—</div>
+          </div>
+
+          <div class="bigCard">
+            <div class="bigLabel">單價</div>
+            <div class="bigValue" id="custPrice">—</div>
+            <div class="bigSub">（按當日買入／換貨價計算）</div>
+          </div>
+
+          <div class="bigCard bigAmount" style="grid-column:1 / -1;">
+            <div class="bigLabel">應付金額（四捨五入取整數）</div>
+            <div class="bigValue amountValue" id="custAmount">—</div>
+            <div class="bigSub" id="custTypeLine">—</div>
+            <div class="fsHint">提示：按 ESC 或再按「全螢幕」可退出。</div>
+          </div>
+        </div>
+
+        <div class="customerFooter" id="custFooter">
+          ※ 本頁為對客人展示用途，只顯示重點資訊。實際處理以公司制度及當天價格為準。
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
-</div>
-</div>
-<div class="card">
-<!-- Tiles: Category / Purpose / Own -->
-<div class="row2">
-<div>
-<label>貨品類別</label>
-<div class="tileGroup" id="tgCategory">
-<button class="tile wide" data-field="category" data-value="gold_jewelry">黃金首飾（飾金）</button>
-<button class="tile wide" data-field="category" data-value="fortune_bar">添富金／金章金條</button>
-<button class="tile wide" data-field="category" data-value="gold_grain">金粒</button>
-<button class="tile wide" data-field="category" data-value="platinum">鉑金（Pt）</button>
-</div>
-</div>
-<div>
-<label>用途</label>
-<div class="tileGroup" id="tgPurpose">
-<button class="tile" data-field="purpose" data-value="buy">買入（回收）</button>
-<button class="tile" data-field="purpose" data-value="exchange">換貨</button>
-</div>
-<div style="height:10px"></div>
-<label>是否本號</label>
-<div class="tileGroup" id="tgOwn">
-<button class="tile" data-field="isOwn" data-value="yes">本號</button>
-<button class="tile" data-field="isOwn" data-value="no">外號</button>
-</div>
-</div>
-</div>
-<div style="height:12px"></div>
-<!-- Gold block -->
-<div id="goldBlock">
-<label>成色（黃金／金章／金粒）</label>
-<div class="tileGroup" id="tgGoldPurity">
-<button class="tile" data-field="goldPurity" data-value="au9999">Au999.9</button>
-<button class="tile" data-field="goldPurity" data-value="non_au9999">非 Au999.9（需評定成色）</button>
-</div>
-<div class="inlineHelp">外號非 Au999.9／無成色字印等：可輸入「成色扣除%」。</div>
-<div style="height:12px"></div>
-<div id="jewelryOnly">
-<label>焊口（黃金首飾）</label>
-<div class="tileGroup" id="tgSolder">
-<button class="tile" data-field="hasSolder" data-value="no">無</button>
-<button class="tile" data-field="hasSolder" data-value="yes">有</button>
-</div>
-<div style="height:12px"></div>
-<label>指定品牌（只限 Au999.9 黃金首飾）</label>
-<div class="tileGroup" id="tgBrand">
-<button class="tile" data-field="specialBrand" data-value="none">否</button>
-<button class="tile" data-field="specialBrand" data-value="listed">是（誠信字號）</button>
-</div>
-<div class="inlineHelp">指定品牌 Au999.9：換貨 0%；買入 有焊8%／無焊4%（按審批）。</div>
-</div>
-<div id="dealerOnly" style="display:none; margin-top:12px;">
-<label>字號（外號 Au999.9：金章／金粒）</label>
-<div class="tileGroup" id="tgDealer">
-<button class="tile" data-field="dealerType" data-value="integrity">誠信字號（0%）</button>
-<button class="tile" data-field="dealerType" data-value="general">一般字號（2–6%）</button>
-</div>
-<div id="firePickOnly" style="display:none; margin-top:12px;">
-<label>一般字號火耗（%）</label>
-<div class="tileGroup" id="tgFirePick">
-<button class="tile small" data-field="firePick" data-value="2">2%</button>
-<button class="tile small" data-field="firePick" data-value="3">3%</button>
-<button class="tile small" data-field="firePick" data-value="4">4%</button>
-<button class="tile small" data-field="firePick" data-value="5">5%</button>
-<button class="tile small" data-field="firePick" data-value="6">6%</button>
-</div>
-</div>
-</div>
-</div>
-<!-- Platinum block -->
-<div id="ptBlock" style="display:none;">
-<label>成色（鉑金）</label>
-<div class="tileGroup" id="tgPtPurity">
-<button class="tile" data-field="ptPurity" data-value="pt9995">Pt999.5</button>
-<button class="tile" data-field="ptPurity" data-value="pt950">Pt950</button>
-<button class="tile" data-field="ptPurity" data-value="pt900">Pt900</button>
-</div>
-<div class="inlineHelp">外號鉑金：按指引不作回收/換貨。</div>
-</div>
-<div style="height:14px"></div>
-<!-- Inputs -->
-<div class="grid">
-<div>
-<label>重量</label>
-<input id="weight" type="number" step="0.001" inputmode="decimal" placeholder="例如：1.234" />
-</div>
-<div>
-<label>今日買入價／換貨價（每両/每克）</label>
-<input id="price" type="number" step="0.01" inputmode="decimal" placeholder="例如：23500" />
-</div>
-<div id="colorDeductWrap">
-<label>成色扣除（%）（外號非 Au999.9／無成色字印等）</label>
-<input id="colorDeduct" type="number" step="0.01" inputmode="decimal" placeholder="例如：3（代表再扣 3%）" />
-</div>
-<div>
-<label>單位 / 貨幣</label>
-<div style="display:flex; gap:10px;">
-<select id="unit">
-<option value="両">両</option>
-<option value="克">克</option>
-</select>
-<select id="currency">
-<option value="HK$">HK$</option>
-<option value="MOP$">MOP$</option>
-<option value="$">RM</option>
-</select>
-</div>
-</div>
-</div>
-<div class="btns">
-<button class="action" id="calcBtn">立即計算</button>
-<button class="secondary" id="resetBtn">清除重填</button>
-<button class="secondary" id="copyBtn">複製結果</button>
-</div>
-<div class="result">
-<div class="pill">
-<div class="k">最終（取整數）</div>
-<div class="v" id="finalAmount">—</div>
-<div class="tiny" id="finalHint"></div>
-</div>
-<div class="pill">
-<div class="k">扣項摘要</div>
-<div class="v" id="summary">—</div>
-<div class="tiny" id="summaryHint"></div>
-</div>
-<div class="pill">
-<div class="k">計算公式</div>
-<div class="tiny mono" id="formula">—</div>
-</div>
-</div>
-<div class="breakdown" id="breakdownWrap" style="display:none;">
-<table>
-<thead>
-<tr>
-<th>項目</th>
-<th class="right">金額</th>
-<th class="right">比例</th>
-</tr>
-</thead>
-<tbody id="breakdownBody"></tbody>
-</table>
-</div>
-<div class="softNote" id="noteBox"></div>
-</div>
-</div>
+
 <script>
-
   const $ = (id)=>document.getElementById(id);
 
-  // State (driven by tiles)
-
+  // --------------------
+  // State
+  // --------------------
   const state = {
-
     category: "gold_jewelry",
-
     purpose: "buy",
-
     isOwn: "yes",
-
     goldPurity: "au9999",
-
     hasSolder: "no",
-
     specialBrand: "none",
-
     dealerType: "integrity",
-
     firePick: "4",
-
-    ptPurity: "pt9995"
-
+    ptPurity: "pt9995",
+    cleanMode: false
   };
 
   function isNum(x){ return Number.isFinite(x) && !Number.isNaN(x); }
-
-  // ✅ 最終固定四捨五入取整數
-
-  function roundToInt(n){
-
-    if(!isNum(n)) return n;
-
-    return Math.round(n);
-
-  }
+  function roundToInt(n){ return isNum(n) ? Math.round(n) : n; }
 
   function fmtMoneyInt(n, currency){
-
     if(!isNum(n)) return "—";
-
     return currency + " " + n.toLocaleString("zh-HK",{maximumFractionDigits:0});
-
   }
-
   function fmtMoney2(n, currency){
-
     if(!isNum(n)) return "—";
-
     return currency + " " + n.toLocaleString("zh-HK",{minimumFractionDigits:2, maximumFractionDigits:2});
-
   }
-
-  function pct(x){ return (x*100).toFixed(2) + "%"; }
 
   function setTilePressed(groupEl, field, value){
-
     const btns = groupEl.querySelectorAll("button.tile");
-
     btns.forEach(b=>{
-
       const pressed = (b.dataset.field===field && b.dataset.value===String(value));
-
       b.setAttribute("aria-pressed", pressed ? "true" : "false");
-
     });
-
   }
 
   function initTileGroups(){
-
     document.querySelectorAll("button.tile").forEach(btn=>{
-
       btn.addEventListener("click", ()=>{
-
         const field = btn.dataset.field;
-
         const value = btn.dataset.value;
-
         state[field] = value;
 
         const group = btn.parentElement;
-
         setTilePressed(group, field, value);
 
         syncUI();
-
+        saveStateToLocal();
       });
-
     });
 
     document.querySelectorAll(".tileGroup").forEach(group=>{
-
       const any = group.querySelector("button.tile");
-
       if(!any) return;
-
       const field = any.dataset.field;
-
       if(!field) return;
-
       setTilePressed(group, field, state[field]);
-
     });
-
   }
 
   function shouldShowDealer(){
-
     return (state.isOwn==="no" && state.goldPurity==="au9999" &&
-
       (state.category==="fortune_bar" || state.category==="gold_grain"));
-
   }
 
   function syncUI(){
-
     $("goldBlock").style.display = (state.category==="platinum") ? "none" : "";
-
     $("ptBlock").style.display = (state.category==="platinum") ? "" : "none";
-
     $("jewelryOnly").style.display = (state.category==="gold_jewelry") ? "" : "none";
 
     const showDealer = shouldShowDealer();
-
     $("dealerOnly").style.display = showDealer ? "" : "none";
-
     $("firePickOnly").style.display = (showDealer && state.dealerType==="general") ? "" : "none";
 
     $("colorDeductWrap").style.display = (state.isOwn==="no" && state.category!=="platinum") ? "" : "none";
 
     if(state.category==="platinum" && state.isOwn==="no"){
-
       $("noteBox").innerHTML = "<b class='warn'>⚠ 外號鉑金首飾：</b>按指引「不作回收及換貨」。";
-
     } else {
-
-      $("noteBox").innerHTML = "提示：點選磚選項後輸入重量/單價，即可輸出原價與各扣項明細。最終金額會自動四捨五入為整數。";
-
+      $("noteBox").innerHTML = "提示：按「計算」同步到客人版面；客人版面可開全螢幕＋乾淨模式（只顯示重量/單價/金額）。";
     }
 
+    applyCleanModeUI();
   }
 
+  // --------------------
+  // Compute
+  // --------------------
   function compute(){
-
     const unit = $("unit").value;
-
     const currency = $("currency").value;
 
     const weight = Number($("weight").value);
-
     const price  = Number($("price").value);
 
     if(!isNum(weight) || weight<=0 || !isNum(price) || price<=0){
-
-      return { error: "請先輸入有效的「重量」及「今日買入價／換貨價」。" };
-
+      return { error: "請先由內部版面輸入有效的重量及單價。" };
     }
 
     const base = weight * price;
 
     let commission = 0;
-
     let fireLoss = 0;
-
     let colorDeduct = 0;
 
-    const notes = [];
-
     const colorInput = Number($("colorDeduct").value);
-
     if(isNum(colorInput) && colorInput>0) colorDeduct = colorInput/100;
 
     if(state.category==="platinum" && state.isOwn==="no"){
-
       return { blocked: true, message: "外號鉑金首飾：按指引不作回收及換貨。" };
-
     }
 
     if(state.category==="gold_jewelry"){
-
       commission = 0.02;
 
       if(state.isOwn==="yes"){
-
         fireLoss = 0;
-
         colorDeduct = 0;
-
-        notes.push("本號黃金首飾：扣佣金 2%，不扣火耗及成色。");
-
       } else {
-
         if(state.goldPurity==="au9999"){
-
           if(state.purpose==="exchange" && state.specialBrand==="listed"){
-
             fireLoss = 0;
-
-            notes.push("指定品牌 Au999.9：換貨不扣火耗。");
-
           } else if(state.purpose==="buy" && state.specialBrand==="listed"){
-
             fireLoss = (state.hasSolder==="yes") ? 0.08 : 0.04;
-
-            notes.push("指定品牌 Au999.9：買入火耗按有焊 8%／無焊 4%（按審批）。");
-
           } else {
-
             fireLoss = (state.hasSolder==="yes") ? 0.10 : 0.06;
-
           }
-
           colorDeduct = 0;
-
         } else {
-
           fireLoss = (state.hasSolder==="yes") ? 0.10 : 0.06;
-
-          if(!(isNum(colorInput) && colorInput>0)){
-
-            notes.push("外號非 Au999.9：需按評定成色再扣除（請輸入成色扣除%）。");
-
-          }
-
         }
-
       }
-
     }
 
     if(state.category==="fortune_bar"){
-
       commission = 0;
 
       if(state.isOwn==="yes"){
-
         fireLoss = 0;
-
         colorDeduct = 0;
-
-        notes.push("本號 Au999.9 添富金／金章金條：不扣火耗及成色。");
-
       } else {
-
         if(state.goldPurity==="au9999"){
-
           if(shouldShowDealer()){
-
-            if(state.dealerType==="integrity"){
-
-              fireLoss = 0;
-
-              notes.push("外號 Au999.9（金章金條｜誠信字號）：不扣火耗。");
-
-            } else {
-
-              fireLoss = Number(state.firePick)/100;
-
-              notes.push(`外號 Au999.9（金章金條｜一般字號）：火耗 ${Math.round(fireLoss*100)}%（2%–6%）。`);
-
-            }
-
+            fireLoss = (state.dealerType==="integrity") ? 0 : Number(state.firePick)/100;
           } else {
-
             fireLoss = 0;
-
-            notes.push("外號 Au999.9：請選擇字號以套用火耗。");
-
           }
-
           colorDeduct = 0;
-
         } else {
-
           fireLoss = 0.10;
-
-          if(!(isNum(colorInput) && colorInput>0)){
-
-            notes.push("外號非 Au999.9（金章金條）：需按評定成色再扣除（請輸入成色扣除%）。");
-
-          }
-
         }
-
       }
-
     }
 
     if(state.category==="gold_grain"){
-
       commission = 0.02;
 
       if(state.isOwn==="yes"){
-
         commission = 0;
-
         fireLoss = 0;
-
         colorDeduct = 0;
-
-        notes.push("本號 Au999.9 金粒：不扣火耗（按買入價／換貨價）。");
-
       } else {
-
         if(state.goldPurity==="au9999"){
-
           if(shouldShowDealer()){
-
-            if(state.dealerType==="integrity"){
-
-              fireLoss = 0;
-
-              notes.push("外號 Au999.9（金粒｜誠信字號）：扣佣金 2%。");
-
-            } else {
-
-              fireLoss = Number(state.firePick)/100;
-
-              notes.push(`外號 Au999.9（金粒｜一般字號）：扣佣金 2% + 火耗 ${Math.round(fireLoss*100)}%（2%–6%）。`);
-
-            }
-
+            fireLoss = (state.dealerType==="integrity") ? 0 : Number(state.firePick)/100;
           } else {
-
             fireLoss = 0;
-
-            notes.push("外號 Au999.9（金粒）：請選擇字號以套用火耗。");
-
           }
-
           colorDeduct = 0;
-
         } else {
-
           if(isNum(colorInput) && colorInput>0){
-
             fireLoss = Number(state.firePick)/100;
-
-            notes.push(`外號非 Au999.9（金粒｜無成色字印/需評定）：火耗 ${Math.round(fireLoss*100)}%（2%–6%）+ 成色扣除。`);
-
           } else {
-
             fireLoss = 0.10;
-
-            notes.push("外號非 Au999.9（金粒）：如屬 99 金粒按 10%（火耗及成色）；如屬無成色字印，請輸入成色扣除%（並選火耗2–6）。");
-
           }
-
         }
-
       }
-
     }
 
     if(state.category==="platinum"){
-
       commission = 0.02;
-
       if(state.ptPurity==="pt9995") fireLoss = 0;
-
       if(state.ptPurity==="pt950")  fireLoss = 0.05;
-
       if(state.ptPurity==="pt900")  fireLoss = 0.10;
-
       colorDeduct = 0;
-
-      notes.push("本號鉑金：Pt999.5 扣佣金2%；Pt950 另扣火耗及成色5%；Pt900 另扣火耗及成色10%。");
-
     }
 
     const commAmt = base * commission;
-
     const afterComm = base - commAmt;
 
     const fireAmt = afterComm * fireLoss;
-
     const afterFire = afterComm - fireAmt;
 
     const colorAmt = afterFire * colorDeduct;
-
     const net = afterFire - colorAmt;
-
-    // ✅ 固定取整
 
     const netRounded = roundToInt(net);
 
-    const roundingDelta = netRounded - net;
+    const catText = ({
+      gold_jewelry:"黃金首飾",
+      fortune_bar:"添富金/金章金條",
+      gold_grain:"金粒",
+      platinum:"鉑金"
+    })[state.category] || "—";
 
-    const formula =
+    const purposeText = state.purpose==="buy" ? "買入（回收）" : "換貨";
+    const ownText = state.isOwn==="yes" ? "本號" : "外號";
 
-      `原價=重量×單價=${weight}×${price}；淨額=原價×(1-佣金)×(1-火耗)×(1-成色扣除)；最終=四捨五入取整`;
-
-    const parts = [];
-
-    if(commission>0) parts.push(`佣金 ${(commission*100).toFixed(0)}%`);
-
-    if(fireLoss>0) parts.push(`火耗 ${(fireLoss*100).toFixed(0)}%`);
-
-    if(colorDeduct>0) parts.push(`成色 ${(colorDeduct*100).toFixed(2)}%`);
-
-    const summary = parts.length ? parts.join(" + ") : "無";
-
-    const rows = [];
-
-    rows.push({ name:`原價（${unit}）`, amount: base, rate:"—" });
-
-    if(commission>0) rows.push({ name:"扣佣金", amount:-commAmt, rate:pct(commission) });
-
-    if(fireLoss>0) rows.push({ name:"扣火耗", amount:-fireAmt, rate:pct(fireLoss) });
-
-    if(colorDeduct>0) rows.push({ name:"扣成色", amount:-colorAmt, rate:pct(colorDeduct) });
-
-    rows.push({ name:"小計（未取整）", amount: net, rate:"—" });
-
-    rows.push({ name:"四捨五入調整", amount: roundingDelta, rate:"取整" });
-
-    rows.push({ name:"計算結果", amount: netRounded, rate:"—" });
-
-    return { currency, unit, base, net, netRounded, summary, formula, notes, rows };
-
+    return { unit, currency, weight, price, netRounded, catText, purposeText, ownText };
   }
 
-  function render(res){
-
-    const currency = $("currency").value;
-
+  // --------------------
+  // Customer render
+  // --------------------
+  function renderCustomer(res){
     if(res.error){
-
-      $("finalAmount").textContent = "—";
-
-      $("summary").textContent = "—";
-
-      $("formula").textContent = "—";
-
-      $("finalHint").textContent = "";
-
-      $("summaryHint").textContent = "";
-
-      $("breakdownWrap").style.display = "none";
-
-      $("noteBox").innerHTML = `<span class="warn">⚠ ${res.error}</span>`;
-
+      $("custWeight").textContent = "—";
+      $("custUnit").textContent = "請先由內部版面輸入重量及單價";
+      $("custPrice").textContent = "—";
+      $("custAmount").textContent = "—";
+      $("custTypeLine").textContent = "—";
       return;
-
     }
-
     if(res.blocked){
-
-      $("finalAmount").textContent = "不適用";
-
-      $("summary").textContent = "—";
-
-      $("formula").textContent = res.message;
-
-      $("finalHint").textContent = "";
-
-      $("summaryHint").textContent = "";
-
-      $("breakdownWrap").style.display = "none";
-
-      $("noteBox").innerHTML = `<span class="warn">⚠ ${res.message}</span>`;
-
+      $("custWeight").textContent = "—";
+      $("custUnit").textContent = "—";
+      $("custPrice").textContent = "—";
+      $("custAmount").textContent = "不適用";
+      $("custTypeLine").textContent = "外號鉑金不作回收/換貨";
       return;
-
     }
 
-    $("finalAmount").textContent = fmtMoneyInt(res.netRounded, currency);
-
-    $("finalHint").textContent = `（重量單位：${res.unit}）`;
-
-    $("summary").textContent = res.summary;
-
-    $("summaryHint").textContent = "已按指引套用扣項（詳見下方明細）";
-
-    $("formula").textContent = res.formula;
-
-    const body = $("breakdownBody");
-
-    body.innerHTML = "";
-
-    res.rows.forEach(r=>{
-
-      const tr=document.createElement("tr");
-
-      const money = (r.name.includes("取整") || r.name.includes("四捨五入"))
-
-        ? fmtMoney2(r.amount, currency)
-
-        : fmtMoney2(r.amount, currency);
-
-      tr.innerHTML = `
-<td>${r.name}</td>
-<td class="right">${money}</td>
-<td class="right muted">${r.rate}</td>
-
-      `;
-
-      body.appendChild(tr);
-
-    });
-
-    $("breakdownWrap").style.display = "";
-
-    $("noteBox").innerHTML = res.notes.length
-
-      ? ("<b>備註：</b><br>• " + res.notes.join("<br>• "))
-
-      : "提示：如遇特殊個案，請按主管審批或最新通告處理。";
-
+    $("custWeight").textContent = String(res.weight);
+    $("custUnit").textContent = `單位：${res.unit}`;
+    $("custPrice").textContent = fmtMoney2(res.price, res.currency).replace(res.currency+" ","");
+    $("custAmount").textContent = fmtMoneyInt(res.netRounded, res.currency);
+    $("custTypeLine").textContent = `${res.catText}｜${res.purposeText}｜${res.ownText}`;
   }
 
-  async function copyResult(){
+  // --------------------
+  // Clean mode
+  // --------------------
+  function applyCleanModeUI(){
+    const hero = $("customerHero");
+    if(state.cleanMode){
+      hero.classList.add("cleanMode");
+      $("btnClean").textContent = "乾淨模式：開";
+      $("btnClean").classList.add("active");
+    }else{
+      hero.classList.remove("cleanMode");
+      $("btnClean").textContent = "乾淨模式：關";
+      $("btnClean").classList.remove("active");
+    }
+  }
 
-    const res = compute();
-
-    if(res.error) return alert(res.error);
-
-    if(res.blocked) return alert(res.message);
-
-    const currency = $("currency").value;
-
-    const lines = [
-
-      "六福｜貴金屬回收／換貨計算結果（只作參考）",
-
-      `- 貨品類別：${state.category}`,
-
-      `- 用途：${state.purpose}`,
-
-      `- 本號/外號：${state.isOwn}`,
-
-      `- 重量：${$("weight").value} ${$("unit").value}`,
-
-      `- 單價：${currency} ${Number($("price").value).toLocaleString("zh-HK")}`,
-
-      `- 扣項：${res.summary}`,
-
-      `- 計算結果（取整）：${fmtMoneyInt(res.netRounded, currency)}`
-
-    ].join("\n");
-
+  // --------------------
+  // Fullscreen
+  // --------------------
+  async function toggleFullscreen(){
+    const el = $("customerContainer");
+    const isFs = document.fullscreenElement;
     try{
-
-      await navigator.clipboard.writeText(lines);
-
-      $("noteBox").innerHTML = "✅ 已複製結果。";
-
+      if(!isFs){
+        await el.requestFullscreen();
+        $("btnFullscreen").textContent = "退出全螢幕";
+      }else{
+        await document.exitFullscreen();
+        $("btnFullscreen").textContent = "全螢幕";
+      }
     }catch(e){
-
-      $("noteBox").innerHTML = "<span class='warn'>⚠ 無法自動複製</span>：請長按選取文字自行複製。";
-
+      // iOS Safari 可能唔支援 requestFullscreen
+      alert("此瀏覽器未支援全螢幕功能（iOS Safari 常見）。你可用「加入主畫面」或橫置放大使用。");
     }
-
   }
 
-  function resetAll(){
+  document.addEventListener("fullscreenchange", ()=>{
+    $("btnFullscreen").textContent = document.fullscreenElement ? "退出全螢幕" : "全螢幕";
+  });
 
-    $("weight").value="";
+  // --------------------
+  // LocalStorage persistence
+  // --------------------
+  const LS_KEY = "lukfook_calc_state_v3";
 
-    $("price").value="";
+  function saveStateToLocal(){
+    const payload = {
+      state,
+      inputs:{
+        weight:$("weight").value,
+        price:$("price").value,
+        colorDeduct:$("colorDeduct").value,
+        unit:$("unit").value,
+        currency:$("currency").value
+      }
+    };
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(payload)); }catch(e){}
+  }
 
-    $("colorDeduct").value="";
+  function loadStateFromLocal(){
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw) return;
+      const payload = JSON.parse(raw);
 
-    $("unit").value="両";
+      if(payload?.state){
+        Object.assign(state, payload.state);
+      }
+      if(payload?.inputs){
+        $("weight").value = payload.inputs.weight ?? "";
+        $("price").value = payload.inputs.price ?? "";
+        $("colorDeduct").value = payload.inputs.colorDeduct ?? "";
+        $("unit").value = payload.inputs.unit ?? "両";
+        $("currency").value = payload.inputs.currency ?? "HK$";
+      }
+    }catch(e){}
+  }
 
-    $("currency").value="HK$";
+  // --------------------
+  // Tabs
+  // --------------------
+  function showInternal(){
+    $("internalView").classList.remove("hidden");
+    $("customerView").classList.add("hidden");
+    $("tabInternal").classList.add("active");
+    $("tabCustomer").classList.remove("active");
+  }
+  function showCustomer(){
+    $("internalView").classList.add("hidden");
+    $("customerView").classList.remove("hidden");
+    $("tabInternal").classList.remove("active");
+    $("tabCustomer").classList.add("active");
+  }
 
-    Object.assign(state, {
-
-      category:"gold_jewelry",
-
-      purpose:"buy",
-
-      isOwn:"yes",
-
-      goldPurity:"au9999",
-
-      hasSolder:"no",
-
-      specialBrand:"none",
-
-      dealerType:"integrity",
-
-      firePick:"4",
-
-      ptPurity:"pt9995"
-
-    });
-
+  // --------------------
+  // Init tile pressed states
+  // --------------------
+  function applyPressedAll(){
     document.querySelectorAll(".tileGroup").forEach(group=>{
-
       const any = group.querySelector("button.tile");
-
       if(!any) return;
-
       const field = any.dataset.field;
-
       if(!field) return;
-
       setTilePressed(group, field, state[field]);
-
     });
-
-    $("finalAmount").textContent="—";
-
-    $("summary").textContent="—";
-
-    $("formula").textContent="—";
-
-    $("finalHint").textContent="";
-
-    $("summaryHint").textContent="";
-
-    $("breakdownWrap").style.display="none";
-
-    $("noteBox").innerHTML = "提示：點選上方選項後輸入重量/單價，即可輸出原價與各扣項明細。最終金額只作參考。";
-
-    syncUI();
-
   }
 
-  // wire action buttons
+  // --------------------
+  // Boot
+  // --------------------
+  function initAll(){
+    initTileGroups();
 
-  $("calcBtn").addEventListener("click", ()=>render(compute()));
+    $("calcBtn").addEventListener("click", ()=>{
+      saveStateToLocal();
+      const res = compute();
+      renderCustomer(res);
+      $("noteBox").innerHTML = "✅ 已計算並同步到客人版面。你可按「切換到客人展示」，再開「全螢幕／乾淨模式」。";
+    });
 
-  $("resetBtn").addEventListener("click", resetAll);
+    $("resetBtn").addEventListener("click", ()=>{
+      Object.assign(state, {
+        category:"gold_jewelry",
+        purpose:"buy",
+        isOwn:"yes",
+        goldPurity:"au9999",
+        hasSolder:"no",
+        specialBrand:"none",
+        dealerType:"integrity",
+        firePick:"4",
+        ptPurity:"pt9995",
+        cleanMode:false
+      });
 
-  $("copyBtn").addEventListener("click", copyResult);
+      $("weight").value="";
+      $("price").value="";
+      $("colorDeduct").value="";
+      $("unit").value="両";
+      $("currency").value="HK$";
 
-  // init
+      applyPressedAll();
+      syncUI();
+      saveStateToLocal();
+      renderCustomer({error:true});
+      $("noteBox").innerHTML = "已清除。";
+    });
 
-  initTileGroups();
+    $("copyBtn").addEventListener("click", async ()=>{
+      const res = compute();
+      if(res.error || res.blocked){
+        $("noteBox").innerHTML = `<span class="warn">⚠ 未能複製：</span>${res.error || res.message}`;
+        return;
+      }
+      const lines = [
+        "六福｜計算結果（內部）",
+        `- 類別：${res.catText}`,
+        `- 用途：${res.purposeText}`,
+        `- 本號/外號：${res.ownText}`,
+        `- 重量：${res.weight} ${res.unit}`,
+        `- 單價：${res.currency} ${Number(res.price).toLocaleString("zh-HK")}`,
+        `- 最終應付（取整）：${fmtMoneyInt(res.netRounded, res.currency)}`
+      ].join("\n");
+      try{
+        await navigator.clipboard.writeText(lines);
+        $("noteBox").innerHTML = "✅ 已複製結果，可貼到 WhatsApp / OA。";
+      }catch(e){
+        $("noteBox").innerHTML = "<span class='warn'>⚠ 無法自動複製</span>：請手動選取文字複製。";
+      }
+    });
 
-  resetAll();
+    $("goCustomerBtn").addEventListener("click", ()=>{
+      const res = compute();
+      renderCustomer(res);
+      showCustomer();
+    });
+
+    // top tabs
+    $("tabInternal").addEventListener("click", showInternal);
+    $("tabCustomer").addEventListener("click", ()=>{
+      const res = compute();
+      renderCustomer(res);
+      showCustomer();
+    });
+
+    $("backInternalBtn").addEventListener("click", showInternal);
+
+    // customer controls
+    $("btnClean").addEventListener("click", ()=>{
+      state.cleanMode = !state.cleanMode;
+      applyCleanModeUI();
+      saveStateToLocal();
+    });
+
+    $("btnFullscreen").addEventListener("click", toggleFullscreen);
+
+    // inputs autosave
+    ["weight","price","colorDeduct","unit","currency"].forEach(id=>{
+      $(id).addEventListener("input", saveStateToLocal);
+      $(id).addEventListener("change", saveStateToLocal);
+    });
+  }
+
+  loadStateFromLocal();
+  initAll();
+  applyPressedAll();
+  syncUI();
+
+  // initial render
+  const first = compute();
+  renderCustomer(first.error ? {error:true} : first);
+  showInternal();
 </script>
 </body>
 </html>
-
- 
-

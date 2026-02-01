@@ -323,9 +323,6 @@
       font-size:12px;
       color:var(--muted);
     }
-    :fullscreen body{
-      padding:0;
-    }
 
     /* hide/show */
     .hidden{display:none !important;}
@@ -348,7 +345,7 @@
     <div class="titleBlock">
       <h1>貴金屬回收／換貨計算工具 <span class="chip">內部＋客人展示</span></h1>
       <div class="sub">
-        內部版面設定扣項；客人版面只展示重點（重量／單價／應付金額）。最終金額一律四捨五入取整數。
+        內部版面設定扣項；客人版面只展示重點（重量／單價／買入金金額或換貨金額）。最終金額一律四捨五入取整數。
       </div>
     </div>
 
@@ -508,7 +505,7 @@
         <div class="customerTitleRow" id="customerTopRow">
           <div>
             <div class="customerTitle">即時金價計算結果</div>
-            <div class="customerHint" id="custTopHint">（展示重點：重量／單價／應付金額）</div>
+            <div class="customerHint" id="custTopHint">（展示重點：重量／單價／買入金金額或換貨金額）</div>
           </div>
           <div class="tabs">
             <button class="tabBtn active" id="custLiveBadge">展示中</button>
@@ -532,7 +529,7 @@
           </div>
 
           <div class="bigCard bigAmount" style="grid-column:1 / -1;">
-            <div class="bigLabel">應付金額（四捨五入取整數）</div>
+            <div class="bigLabel" id="custAmountLabel">買入金金額（四捨五入取整數）</div>
             <div class="bigValue amountValue" id="custAmount">—</div>
             <div class="bigSub" id="custTypeLine">—</div>
             <div class="fsHint">提示：按 ESC 或再按「全螢幕」可退出。</div>
@@ -577,6 +574,13 @@
   function fmtMoney2(n, currency){
     if(!isNum(n)) return "—";
     return currency + " " + n.toLocaleString("zh-HK",{minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function getAmountLabelShort(){
+    return state.purpose === "buy" ? "買入金金額" : "換貨金額";
+  }
+  function getAmountLabelFull(){
+    return `${getAmountLabelShort()}（四捨五入取整數）`;
   }
 
   function setTilePressed(groupEl, field, value){
@@ -627,10 +631,13 @@
 
     $("colorDeductWrap").style.display = (state.isOwn==="no" && state.category!=="platinum") ? "" : "none";
 
+    // Update customer label even while in internal view (keeps it consistent)
+    $("custAmountLabel").textContent = getAmountLabelFull();
+
     if(state.category==="platinum" && state.isOwn==="no"){
       $("noteBox").innerHTML = "<b class='warn'>⚠ 外號鉑金首飾：</b>按指引「不作回收及換貨」。";
     } else {
-      $("noteBox").innerHTML = "提示：按「計算」同步到客人版面；客人版面可開全螢幕＋乾淨模式（只顯示重量/單價/金額）。";
+      $("noteBox").innerHTML = `提示：按「計算」同步到客人版面；客人版面可開全螢幕＋乾淨模式（只顯示重量/單價/${getAmountLabelShort()}）。`;
     }
 
     applyCleanModeUI();
@@ -759,13 +766,21 @@
     const purposeText = state.purpose==="buy" ? "買入（回收）" : "換貨";
     const ownText = state.isOwn==="yes" ? "本號" : "外號";
 
-    return { unit, currency, weight, price, netRounded, catText, purposeText, ownText };
+    return {
+      unit, currency, weight, price, netRounded,
+      catText, purposeText, ownText,
+      amountLabelShort: getAmountLabelShort(),
+      amountLabelFull: getAmountLabelFull()
+    };
   }
 
   // --------------------
   // Customer render
   // --------------------
   function renderCustomer(res){
+    // Always sync label
+    $("custAmountLabel").textContent = getAmountLabelFull();
+
     if(res.error){
       $("custWeight").textContent = "—";
       $("custUnit").textContent = "請先由內部版面輸入重量及單價";
@@ -782,6 +797,8 @@
       $("custTypeLine").textContent = "外號鉑金不作回收/換貨";
       return;
     }
+
+    $("custAmountLabel").textContent = res.amountLabelFull;
 
     $("custWeight").textContent = String(res.weight);
     $("custUnit").textContent = `單位：${res.unit}`;
@@ -821,7 +838,6 @@
         $("btnFullscreen").textContent = "全螢幕";
       }
     }catch(e){
-      // iOS Safari 可能唔支援 requestFullscreen
       alert("此瀏覽器未支援全螢幕功能（iOS Safari 常見）。你可用「加入主畫面」或橫置放大使用。");
     }
   }
@@ -833,7 +849,7 @@
   // --------------------
   // LocalStorage persistence
   // --------------------
-  const LS_KEY = "lukfook_calc_state_v3";
+  const LS_KEY = "lukfook_calc_state_v4";
 
   function saveStateToLocal(){
     const payload = {
@@ -907,7 +923,7 @@
       saveStateToLocal();
       const res = compute();
       renderCustomer(res);
-      $("noteBox").innerHTML = "✅ 已計算並同步到客人版面。你可按「切換到客人展示」，再開「全螢幕／乾淨模式」。";
+      $("noteBox").innerHTML = `✅ 已計算並同步到客人版面（${getAmountLabelShort()}）。你可按「切換到客人展示」，再開「全螢幕／乾淨模式」。`;
     });
 
     $("resetBtn").addEventListener("click", ()=>{
@@ -950,7 +966,7 @@
         `- 本號/外號：${res.ownText}`,
         `- 重量：${res.weight} ${res.unit}`,
         `- 單價：${res.currency} ${Number(res.price).toLocaleString("zh-HK")}`,
-        `- 最終應付（取整）：${fmtMoneyInt(res.netRounded, res.currency)}`
+        `- ${res.amountLabelShort}（取整）：${fmtMoneyInt(res.netRounded, res.currency)}`
       ].join("\n");
       try{
         await navigator.clipboard.writeText(lines);

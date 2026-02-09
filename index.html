@@ -84,32 +84,6 @@
       vertical-align:middle;
     }
 
-    .priceBadges{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin-top:6px;
-    }
-    .badge{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(0,0,0,.10);
-      background:#fff;
-      box-shadow:0 10px 22px rgba(20,10,5,.06);
-      font-size:11px;
-      color:var(--muted);
-      white-space:nowrap;
-    }
-    .badge .k{font-weight:950;color:var(--wine2);letter-spacing:.2px;}
-    .badgeCol{display:flex;flex-direction:column;gap:2px;line-height:1.25;}
-    .badgeRow{display:flex;gap:8px;align-items:baseline;}
-    .badgeRow .lab{color:var(--muted);}
-    .badgeRow .num{font-weight:950;color:var(--text);}
-
     .tabs{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
     .tabBtn{
       border:1px solid rgba(0,0,0,.10);
@@ -266,10 +240,7 @@
     .bigAmount{background:linear-gradient(135deg, rgba(139,42,46,.10), rgba(200,165,90,.10));border:1px solid rgba(139,42,46,.25);}
     .amountValue{font-size:54px;font-weight:980;}
 
-    .customerFooter{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.7;}
-
     .cleanMode .customerTitleRow,
-    .cleanMode .customerFooter,
     .cleanMode #custTypeLine,
     .cleanMode #custTopHint { display:none !important; }
     .cleanMode .customerHero{ padding-top:16px; }
@@ -284,35 +255,20 @@
 
   <div class="header">
     <img class="logo" src="logo.png" alt="六福珠寶 LUKFOOK JEWELLERY"
-         onerror="this.style.display='none'; document.getElementById('logoError').style.display='block';" />
-    <div id="logoError" style="display:none; width:240px; max-width:82vw;">
-      <div class="card">
-        <div class="warn">⚠ Logo 未載入</div>
-        <div class="sub">請確保 <span class="mono">logo.png</span> 同 <span class="mono">index.html</span> 放喺同一個資料夾。</div>
-      </div>
-    </div>
+         onerror="this.style.display='none';" />
 
     <div class="titleBlock">
       <h1>
         貴金屬回收／換貨計算工具
         <span class="chip">內部＋客人展示</span>
         <span class="chip" id="hdrTodayUnit">今日金價（—）</span>
+        <span class="chip" id="hdrUpdatedAt">未更新</span>
       </h1>
-
-      <div class="priceBadges" id="hdrBadges">
-        <span class="badge" id="hdrOneBadge">
-          <span class="k" id="hdrOneKey">—</span>
-          <span class="badgeCol" id="hdrOneCol">
-            <span class="badgeRow"><span class="lab">買入</span><span class="num" id="hdrOneBuy">—</span></span>
-            <span class="badgeRow"><span class="lab">換貨</span><span class="num" id="hdrOneTrade">—</span></span>
-          </span>
-        </span>
-      </div>
 
       <div class="sub">
         內部版面設定扣項；客人版面只展示重點（重量／單價／買入金金額或換貨金額）。最終金額一律四捨五入取整數。
         <br/>
-        <span class="mono">提示：</span>本頁會每 5 分鐘自動刷新「買入/換貨價」顯示；如要帶入到單價，請按「套用」。
+        <span class="mono">提示：</span>金價每 5 分鐘自動更新；如要帶入到單價，請按「套用」。
       </div>
     </div>
 
@@ -430,7 +386,7 @@
         <div class="pricePanel">
           <div class="ppTop">
             <div>
-              <div class="ppTitle">六福網站金價（HK$｜只顯示 買入 / 換貨）</div>
+              <div class="ppTitle">六福網站金價（只顯示 買入 / 換貨）</div>
               <div class="ppTime" id="gpTime">未更新</div>
             </div>
             <div class="tabs">
@@ -438,23 +394,9 @@
             </div>
           </div>
 
-          <!-- ✅ 新增：一鍵切換 両 / 克 -->
           <div class="tabs" style="margin-bottom:10px;">
             <button class="tabBtn" id="btnToggleUnit" type="button">切換單位：両 ↔ 克</button>
-          </div>
-
-          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:10px;">
-            <div style="min-width:240px;">
-              <label style="margin:0 0 6px 2px;">金價顯示模式</label>
-              <select id="gpDisplayMode">
-                <option value="follow">跟隨輸入單位（只顯示一行）</option>
-                <option value="both">同時顯示（両 + 克）兩行</option>
-              </select>
-            </div>
-
-            <div class="inlineHelp" id="unitHint" style="margin-top:22px;">
-              目前單位：<b id="unitNow">両</b>
-            </div>
+            <span class="inlineHelp" style="margin:10px 0 0 2px;">目前單位：<b id="unitNow">両</b></span>
           </div>
 
           <div class="ppGrid">
@@ -471,9 +413,9 @@
           </div>
 
           <div class="ppBtns">
-            <button class="ppMini" id="btnUseBuy" type="button">套用建議買入價</button>
-            <button class="ppMini" id="btnUseTrade" type="button">套用建議換貨價</button>
-            <button class="ppMini" id="btnClearPrice" type="button">清除單價（手動輸入）</button>
+            <button class="ppMini" id="btnUseBuy" type="button">套用買入價</button>
+            <button class="ppMini" id="btnUseTrade" type="button">套用換貨價</button>
+            <button class="ppMini" id="btnClearPrice" type="button">清除單價</button>
           </div>
 
           <div class="inlineHelp" id="goldFetchHint" style="margin-top:8px;">
@@ -512,7 +454,7 @@
     </div>
 
     <div class="softNote" id="noteBox">
-      提示：金價會自動顯示並每 5 分鐘刷新；如要帶入單價，按「套用建議買入／換貨價」。否則可自行手動輸入。
+      提示：金價會自動顯示並每 5 分鐘刷新；如要帶入單價，按「套用買入／換貨價」。否則可自行手動輸入。
     </div>
   </div>
 
@@ -523,10 +465,9 @@
         <div class="customerTitleRow" id="customerTopRow">
           <div>
             <div class="customerTitle">即時金價計算結果</div>
-            <div class="customerHint" id="custTopHint">（展示重點：重量／單價／買入金金額或換貨金額）</div>
+            <div class="customerHint" id="custTopHint">（只展示：重量／單價／買入金金額或換貨金額）</div>
           </div>
           <div class="tabs">
-            <button class="tabBtn active" id="custLiveBadge">展示中</button>
             <button class="tabBtn" id="btnFullscreen">全螢幕</button>
             <button class="tabBtn" id="btnClean">乾淨模式：關</button>
             <button class="tabBtn" id="backInternalBtn">返回內部</button>
@@ -554,9 +495,6 @@
           </div>
         </div>
 
-        <div class="customerFooter" id="custFooter">
-          ※ 本頁為對客人展示用途，只顯示重點資訊。實際處理以公司制度及當天價格為準。
-        </div>
       </div>
     </div>
   </div>
@@ -586,9 +524,7 @@
   };
 
   function isNum(x){ return Number.isFinite(x) && !Number.isNaN(x); }
-  function roundToInt(n){ return isNum(n) ? Math.round(n) : n; }
   function fmtNum(n){ return isNum(n) ? n.toLocaleString("zh-HK") : "—"; }
-
   function fmtMoneyInt(n, currency){
     if(!isNum(n)) return "—";
     return currency + " " + n.toLocaleString("zh-HK",{maximumFractionDigits:0});
@@ -627,7 +563,6 @@
         saveStateToLocal();
 
         refreshSuggestedGoldPriceDisplay();
-        refreshHeaderBadgeOne();
       });
     });
 
@@ -654,7 +589,6 @@
     const res = await fetch(url, { method:"GET", cache:"no-store", mode:"cors" });
     if(!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
-    // 你個 worker 有機會係 array 或 object，兩種都 support
     const row = Array.isArray(data) ? data[0] : data;
     if(!row) throw new Error("Invalid gold price JSON");
     return row;
@@ -666,49 +600,20 @@
   }
 
   function mapGoldPriceFromJSON(row){
-    // 你定義：
-    // 飾金：黃金購入/黃金兌換（両） + 克黃金購入/克黃金兌換（克）
-    // 鉑金：白金購入/白金兌換（両） + 克白金購入/克白金兌換（克）
-    // 添富金：投資金購入/投資金兌換（両） + 克投資金購入/克投資金兌換（克）
-    // 金粒/金條：黃條購入/黃條兌換（両） + 克黃條購入/克黃條兌換（克）
     return {
       updatedAt: row["record_date"] || row["更新時間"] || row["更新日期"] || null,
       hkd: {
-        gold_tael: {
-          buy: toNum(row["黃金購入"] ?? row["黃金購入（両）"]),
-          trade: toNum(row["黃金兌換"] ?? row["黃金兌換（両）"])
-        },
-        gold_gram: {
-          buy: toNum(row["克黃金購入"] ?? row["黃金購入（克）"]),
-          trade: toNum(row["克黃金兌換"] ?? row["黃金兌換（克）"])
-        },
+        gold_tael: { buy: toNum(row["黃金購入"] ?? row["黃金購入（両）"]), trade: toNum(row["黃金兌換"] ?? row["黃金兌換（両）"]) },
+        gold_gram: { buy: toNum(row["克黃金購入"] ?? row["黃金購入（克）"]), trade: toNum(row["克黃金兌換"] ?? row["黃金兌換（克）"]) },
 
-        platinum_tael: {
-          buy: toNum(row["白金購入"] ?? row["白金購入（両）"]),
-          trade: toNum(row["白金兌換"] ?? row["白金兌換（両）"])
-        },
-        platinum_gram: {
-          buy: toNum(row["克白金購入"] ?? row["白金購入（克）"]),
-          trade: toNum(row["克白金兌換"] ?? row["白金兌換（克）"])
-        },
+        platinum_tael: { buy: toNum(row["白金購入"] ?? row["白金購入（両）"]), trade: toNum(row["白金兌換"] ?? row["白金兌換（両）"]) },
+        platinum_gram: { buy: toNum(row["克白金購入"] ?? row["白金購入（克）"]), trade: toNum(row["克白金兌換"] ?? row["白金兌換（克）"]) },
 
-        fortune_gold_tael: {
-          buy: toNum(row["投資金購入"] ?? row["投資金購入（両）"]),
-          trade: toNum(row["投資金兌換"] ?? row["投資金兌換（両）"])
-        },
-        fortune_gold_gram: {
-          buy: toNum(row["克投資金購入"] ?? row["投資金購入（克）"]),
-          trade: toNum(row["克投資金兌換"] ?? row["投資金兌換（克）"])
-        },
+        fortune_gold_tael: { buy: toNum(row["投資金購入"] ?? row["投資金購入（両）"]), trade: toNum(row["投資金兌換"] ?? row["投資金兌換（両）"]) },
+        fortune_gold_gram: { buy: toNum(row["克投資金購入"] ?? row["投資金購入（克）"]), trade: toNum(row["克投資金兌換"] ?? row["投資金兌換（克）"]) },
 
-        gold_piece_tael: {
-          buy: toNum(row["黃條購入"] ?? row["黃條購入（両）"]),
-          trade: toNum(row["黃條兌換"] ?? row["黃條兌換（両）"])
-        },
-        gold_piece_gram: {
-          buy: toNum(row["克黃條購入"] ?? row["黃條購入（克）"]),
-          trade: toNum(row["克黃條兌換"] ?? row["黃條兌換（克）"])
-        }
+        gold_piece_tael: { buy: toNum(row["黃條購入"] ?? row["黃條購入（両）"]), trade: toNum(row["黃條兌換"] ?? row["黃條兌換（両）"]) },
+        gold_piece_gram: { buy: toNum(row["克黃條購入"] ?? row["黃條購入（克）"]), trade: toNum(row["克黃條兌換"] ?? row["黃條兌換（克）"]) }
       }
     };
   }
@@ -738,88 +643,39 @@
     return null;
   }
 
-  function getCategoryLabel(){
-    return ({
-      gold_jewelry:"飾金",
-      fortune_bar:"添富金",
-      gold_grain:"金粒／金條",
-      platinum:"鉑金"
-    })[state.category] || "—";
-  }
-
   function refreshPurposeHighlight(){
     $("ppBuy").classList.toggle("hi", state.purpose==="buy");
     $("ppTrade").classList.toggle("hi", state.purpose==="exchange");
   }
 
   function refreshSuggestedGoldPriceDisplay(){
-    const mode = $("gpDisplayMode")?.value || "follow";
-
-    const rowFollow = getRowByCategory(state.category, getUnitKey());
-    const buyFollow = rowFollow && isNum(rowFollow.buy) ? fmtNum(rowFollow.buy) : "—";
-    const tradeFollow = rowFollow && isNum(rowFollow.trade) ? fmtNum(rowFollow.trade) : "—";
-
-    if(mode === "follow"){
-      $("gpBuy").textContent = buyFollow;
-      $("gpTrade").textContent = tradeFollow;
-      $("gpBuySub").textContent = `（跟隨輸入單位：${$("unit").value}）`;
-      $("gpTradeSub").textContent = `（跟隨輸入單位：${$("unit").value}）`;
-    } else {
-      const rowTael = getRowByCategory(state.category, "tael");
-      const rowGram = getRowByCategory(state.category, "gram");
-
-      const buyTael = rowTael && isNum(rowTael.buy) ? fmtNum(rowTael.buy) : "—";
-      const tradeTael = rowTael && isNum(rowTael.trade) ? fmtNum(rowTael.trade) : "—";
-      const buyGram = rowGram && isNum(rowGram.buy) ? fmtNum(rowGram.buy) : "—";
-      const tradeGram = rowGram && isNum(rowGram.trade) ? fmtNum(rowGram.trade) : "—";
-
-      $("gpBuy").textContent = buyFollow;
-      $("gpTrade").textContent = tradeFollow;
-
-      $("gpBuySub").textContent = `両：${buyTael}　｜　克：${buyGram}`;
-      $("gpTradeSub").textContent = `両：${tradeTael}　｜　克：${tradeGram}`;
-    }
+    const row = getRowByCategory(state.category, getUnitKey());
+    $("gpBuy").textContent = row && isNum(row.buy) ? fmtNum(row.buy) : "—";
+    $("gpTrade").textContent = row && isNum(row.trade) ? fmtNum(row.trade) : "—";
+    $("gpBuySub").textContent = `（單位：${$("unit").value}）`;
+    $("gpTradeSub").textContent = `（單位：${$("unit").value}）`;
 
     refreshPurposeHighlight();
     $("unitNow").textContent = $("unit").value;
-  }
 
-  function refreshHeaderBadgeOne(){
-    const mode = $("gpDisplayMode")?.value || "follow";
-    $("hdrOneKey").textContent = getCategoryLabel();
-
-    if(mode === "follow"){
-      $("hdrTodayUnit").textContent = `今日金價（${$("unit").value}）`;
-      const row = getRowByCategory(state.category, getUnitKey());
-      $("hdrOneBuy").textContent = row && isNum(row.buy) ? fmtNum(row.buy) : "—";
-      $("hdrOneTrade").textContent = row && isNum(row.trade) ? fmtNum(row.trade) : "—";
-    } else {
-      $("hdrTodayUnit").textContent = `今日金價（両 + 克）`;
-
-      const rowTael = getRowByCategory(state.category, "tael");
-      const rowGram = getRowByCategory(state.category, "gram");
-
-      const buyTael = rowTael && isNum(rowTael.buy) ? fmtNum(rowTael.buy) : "—";
-      const tradeTael = rowTael && isNum(rowTael.trade) ? fmtNum(rowTael.trade) : "—";
-      const buyGram = rowGram && isNum(rowGram.buy) ? fmtNum(rowGram.buy) : "—";
-      const tradeGram = rowGram && isNum(rowGram.trade) ? fmtNum(rowGram.trade) : "—";
-
-      $("hdrOneBuy").textContent = `両 ${buyTael}｜克 ${buyGram}`;
-      $("hdrOneTrade").textContent = `両 ${tradeTael}｜克 ${tradeGram}`;
-    }
+    $("hdrTodayUnit").textContent = `今日金價（${$("unit").value}）`;
   }
 
   function renderGoldTime(){
     if(gpParsed?.updatedAt){
       $("gpTime").textContent = `更新時間：${gpParsed.updatedAt}`;
+      $("hdrUpdatedAt").textContent = `更新：${gpParsed.updatedAt}`;
       return;
     }
     if(gpLastOkAt){
       const d = new Date(gpLastOkAt);
-      $("gpTime").textContent = `已更新（本地時間：${d.toLocaleString("zh-HK") }）`;
+      const t = d.toLocaleString("zh-HK");
+      $("gpTime").textContent = `已更新（本地時間：${t}）`;
+      $("hdrUpdatedAt").textContent = `更新：${t}`;
       return;
     }
     $("gpTime").textContent = "未更新";
+    $("hdrUpdatedAt").textContent = "未更新";
   }
 
   async function updateGoldPricesUI(auto=false){
@@ -835,7 +691,6 @@
       gpParsed = mapGoldPriceFromJSON(row);
       gpLastOkAt = Date.now();
 
-      // 驗證：最少要有其中一個類別（両或克）
       const anyOk =
         gpParsed?.hkd?.gold_tael || gpParsed?.hkd?.gold_gram ||
         gpParsed?.hkd?.platinum_tael || gpParsed?.hkd?.platinum_gram ||
@@ -846,11 +701,10 @@
 
       renderGoldTime();
       refreshSuggestedGoldPriceDisplay();
-      refreshHeaderBadgeOne();
 
       hint.textContent = auto
-        ? "✅ 已自動刷新金價（JSON｜買入/兌換）。"
-        : "✅ 已更新金價（JSON｜買入/兌換）。你可手動輸入單價，或按「套用」。";
+        ? "✅ 已自動刷新金價。"
+        : "✅ 已更新金價。你可手動輸入單價，或按「套用」。";
     }catch(e){
       console.error(e);
       renderGoldTime();
@@ -858,8 +712,7 @@
       $("gpTrade").textContent = "—";
       $("gpBuySub").textContent = "—";
       $("gpTradeSub").textContent = "—";
-      refreshHeaderBadgeOne();
-      hint.innerHTML = `<span class="warn">⚠ 讀取失敗</span>：請檢查 Worker 是否正常（${GOLDPRICE_PROXY}）或 JSON key 是否同你上面列出一致。`;
+      hint.innerHTML = `<span class="warn">⚠ 讀取失敗</span>：請檢查 Worker 是否正常（${GOLDPRICE_PROXY}）或 JSON key 是否一致。`;
     }finally{
       btn.disabled = false;
       btn.textContent = "更新金價";
@@ -871,22 +724,15 @@
     setInterval(()=>updateGoldPricesUI(true), AUTO_REFRESH_MS);
   }
 
-  // --------------------
   // Unit toggle button
-  // --------------------
   function toggleUnit(){
     const cur = $("unit").value;
     $("unit").value = (cur === "両") ? "克" : "両";
     saveStateToLocal();
     refreshSuggestedGoldPriceDisplay();
-    refreshHeaderBadgeOne();
-    // 如果你想「切換單位」同時清空單價，避免混淆可開：
-    // $("price").value = "";
   }
 
-  // --------------------
   // UI sync
-  // --------------------
   function applyCleanModeUI(){
     const hero = $("customerHero");
     if(state.cleanMode){
@@ -915,20 +761,17 @@
     $("unitNow").textContent = $("unit").value;
 
     refreshSuggestedGoldPriceDisplay();
-    refreshHeaderBadgeOne();
 
     if(state.category==="platinum" && state.isOwn==="no"){
       $("noteBox").innerHTML = "<b class='warn'>⚠ 外號鉑金首飾：</b>按指引「不作回收及換貨」。";
     } else {
-      $("noteBox").innerHTML = `提示：金價會自動顯示並每 5 分鐘刷新（買入/兌換）；如要帶入單價，按「套用」。`;
+      $("noteBox").innerHTML = `提示：金價每 5 分鐘刷新；如要帶入單價，按「套用買入／換貨價」。`;
     }
 
     applyCleanModeUI();
   }
 
-  // --------------------
   // Compute (保持你原本邏輯)
-  // --------------------
   function compute(){
     const unit = $("unit").value;
     const currency = $("currency").value;
@@ -1099,7 +942,7 @@
   });
 
   // LocalStorage
-  const LS_KEY = "lukfook_calc_state_v11_json_keys_and_toggle_unit";
+  const LS_KEY = "lukfook_calc_state_v12_slim";
 
   function saveStateToLocal(){
     const payload = {
@@ -1109,8 +952,7 @@
         price:$("price").value,
         colorDeduct:$("colorDeduct").value,
         unit:$("unit").value,
-        currency:$("currency").value,
-        gpDisplayMode:$("gpDisplayMode")?.value || "follow"
+        currency:$("currency").value
       }
     };
     try{ localStorage.setItem(LS_KEY, JSON.stringify(payload)); }catch(e){}
@@ -1130,7 +972,6 @@
         $("colorDeduct").value = payload.inputs.colorDeduct ?? "";
         $("unit").value = payload.inputs.unit ?? "両";
         $("currency").value = payload.inputs.currency ?? "HK$";
-        $("gpDisplayMode").value = payload.inputs.gpDisplayMode ?? "follow";
       }
     }catch(e){}
   }
@@ -1189,7 +1030,6 @@
       $("colorDeduct").value="";
       $("unit").value="両";
       $("currency").value="HK$";
-      $("gpDisplayMode").value="follow";
 
       applyPressedAll();
       syncUI();
@@ -1249,7 +1089,7 @@
       if(!row || !isNum(row.buy)) return;
       $("price").value = String(row.buy);
       saveStateToLocal();
-      $("noteBox").innerHTML = "✅ 已套用建議買入價到「單價」欄位。";
+      $("noteBox").innerHTML = "✅ 已套用買入價到「單價」欄位。";
     });
 
     $("btnUseTrade").addEventListener("click", ()=>{
@@ -1257,7 +1097,7 @@
       if(!row || !isNum(row.trade)) return;
       $("price").value = String(row.trade);
       saveStateToLocal();
-      $("noteBox").innerHTML = "✅ 已套用建議換貨價到「單價」欄位。";
+      $("noteBox").innerHTML = "✅ 已套用換貨價到「單價」欄位。";
     });
 
     $("btnClearPrice").addEventListener("click", ()=>{
@@ -1266,20 +1106,17 @@
       $("noteBox").innerHTML = "已清除單價，請自行手動輸入。";
     });
 
-    // ✅ 一鍵切換両/克
     $("btnToggleUnit").addEventListener("click", ()=>{
       toggleUnit();
       $("noteBox").innerHTML = `✅ 已切換單位：${$("unit").value}`;
     });
 
-    // inputs autosave + unit changes refresh
-    ["weight","price","colorDeduct","unit","currency","gpDisplayMode"].forEach(id=>{
+    ["weight","price","colorDeduct","unit","currency"].forEach(id=>{
       $(id).addEventListener("input", saveStateToLocal);
       $(id).addEventListener("change", ()=>{
         saveStateToLocal();
-        if(id==="unit" || id==="gpDisplayMode"){
+        if(id==="unit"){
           refreshSuggestedGoldPriceDisplay();
-          refreshHeaderBadgeOne();
         }
       });
     });
@@ -1295,10 +1132,7 @@
   renderCustomer(first.error ? {error:true} : first);
   showInternal();
 
-  // 開頁自動更新金價
   updateGoldPricesUI(true);
-
-  // 每 5 分鐘自動刷新
   startAutoRefresh();
 </script>
 </body>

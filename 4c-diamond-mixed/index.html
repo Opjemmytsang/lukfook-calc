@@ -3,26 +3,22 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>4C Diamond Experience · Refined Edition</title>
+<title>4C Diamond Experience · Real Render Edition</title>
 <style>
 :root{
   --bg:#07090d;
   --panel:#11151d;
-  --panel-2:#171c26;
+  --panel2:#171c26;
   --line:rgba(255,255,255,.09);
   --text:#eef2f7;
   --muted:#98a2b3;
   --gold:#d8b77a;
-  --gold-2:#f2dfbb;
-  --white-card:#f7f8fb;
-  --white-card-2:#eef2f7;
+  --gold2:#f2dfbb;
   --shadow:0 30px 80px rgba(0,0,0,.45);
 }
-
 *{box-sizing:border-box}
 html,body{
-  margin:0;
-  padding:0;
+  margin:0;padding:0;
   background:
     radial-gradient(circle at top right, rgba(216,183,122,.14), transparent 24%),
     radial-gradient(circle at top left, rgba(114,157,219,.12), transparent 22%),
@@ -31,11 +27,9 @@ html,body{
   font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,'PingFang HK','PingFang TC','Microsoft JhengHei',sans-serif;
   scroll-behavior:smooth;
 }
-body::before{
+body:before{
   content:'';
-  position:fixed;
-  inset:0;
-  pointer-events:none;
+  position:fixed;inset:0;pointer-events:none;
   background-image:
     linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
@@ -43,244 +37,120 @@ body::before{
   mask-image:radial-gradient(circle at center, black 34%, transparent 80%);
   opacity:.25;
 }
-a{color:inherit;text-decoration:none}
+a{text-decoration:none;color:inherit}
 
-.app{
-  max-width:1280px;
-  margin:0 auto;
-  padding:18px 16px 80px;
-}
-
-.topbar{
-  position:sticky;
-  top:0;
-  z-index:50;
-  padding-top:10px;
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-}
+.app{max-width:1280px;margin:0 auto;padding:18px 16px 80px}
+.topbar{position:sticky;top:0;z-index:50;padding-top:10px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 .topbar-inner{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  padding:14px 18px;
-  border-radius:999px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 18px;border-radius:999px;
   background:rgba(8,10,16,.76);
   border:1px solid var(--line);
   box-shadow:var(--shadow);
 }
-.brand{
-  display:flex;
-  gap:14px;
-  align-items:center;
-  min-width:0;
-}
+.brand{display:flex;gap:14px;align-items:center;min-width:0}
 .logo{
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  background:
-    radial-gradient(circle at 30% 30%, #ffffff 0 7%, rgba(255,255,255,.95) 8%, rgba(223,232,246,.9) 18%, rgba(186,201,222,.48) 34%, rgba(35,46,64,.95) 70%);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.14),
-    0 0 26px rgba(216,183,122,.18);
+  width:46px;height:46px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #ffffff 0 7%, rgba(255,255,255,.95) 8%, rgba(223,232,246,.9) 18%, rgba(186,201,222,.48) 34%, rgba(35,46,64,.95) 70%);
+  box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 26px rgba(216,183,122,.18);
 }
-.kicker{
-  font-size:11px;
-  letter-spacing:.26em;
-  text-transform:uppercase;
-  color:var(--gold-2);
-  margin-bottom:4px;
-}
-.brand-title{
-  font-size:18px;
-  font-weight:700;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.brand-sub{
-  font-size:12px;
-  color:var(--muted);
-}
-.nav{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
+.kicker{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold2);margin-bottom:4px}
+.brand-title{font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-sub{font-size:12px;color:var(--muted)}
+.nav{display:flex;gap:10px;flex-wrap:wrap}
 .nav a{
-  padding:10px 14px;
-  border-radius:999px;
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--line);
-  font-size:13px;
-  color:#e8edf5;
-  transition:.22s;
+  padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.04);
+  border:1px solid var(--line);font-size:13px;color:#e8edf5;transition:.22s;
 }
-.nav a:hover,
-.nav a.active{
+.nav a:hover,.nav a.active{
   background:linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.04));
   border-color:rgba(216,183,122,.34);
   transform:translateY(-1px);
 }
 
-.hero{
-  padding:32px 4px 8px;
-}
-.hero-card,
-.section-card{
+.hero{padding:32px 4px 8px}
+.hero-card,.section-card{
   border-radius:34px;
   background:linear-gradient(160deg, rgba(16,20,29,.96), rgba(10,13,19,.93));
   border:1px solid rgba(255,255,255,.08);
   box-shadow:var(--shadow);
 }
-.hero-card{
-  padding:34px;
-  overflow:hidden;
-  position:relative;
-}
-.hero-card::before{
+.hero-card{padding:34px;overflow:hidden;position:relative}
+.hero-card:before{
   content:'';
-  position:absolute;
-  right:-6%;
-  top:-16%;
-  width:420px;
-  height:420px;
+  position:absolute;right:-6%;top:-16%;
+  width:420px;height:420px;
   background:radial-gradient(circle, rgba(216,183,122,.18), transparent 56%);
 }
-.hero-grid{
-  display:grid;
-  grid-template-columns:1.05fr .95fr;
-  gap:28px;
-  align-items:center;
-}
-.hero h1{
-  margin:0 0 14px;
-  font-size:clamp(34px,5vw,62px);
-  line-height:1.02;
-  letter-spacing:-.03em;
-}
-.hero p{
-  margin:0;
-  color:#dbe4f2;
-  font-size:16px;
-  line-height:1.8;
-  max-width:700px;
-}
-.actions{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:22px;
-}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:28px;align-items:center}
+.hero h1{margin:0 0 14px;font-size:clamp(34px,5vw,62px);line-height:1.02;letter-spacing:-.03em}
+.hero p{margin:0;color:#dbe4f2;font-size:16px;line-height:1.8;max-width:700px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
 .btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:12px 18px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.05);
-  font-weight:700;
-  letter-spacing:.02em;
-  transition:.22s;
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:12px 18px;border-radius:999px;border:1px solid var(--line);
+  background:rgba(255,255,255,.05);font-weight:700;letter-spacing:.02em;transition:.22s;
 }
-.btn.primary{
-  background:linear-gradient(135deg, rgba(216,183,122,.3), rgba(242,223,187,.1));
-  border-color:rgba(242,223,187,.26);
-}
+.btn.primary{background:linear-gradient(135deg, rgba(216,183,122,.3), rgba(242,223,187,.1));border-color:rgba(242,223,187,.26)}
 .btn:hover{transform:translateY(-1px)}
 
 .hero-stage{
-  min-height:430px;
-  display:grid;
-  place-items:center;
-  border-radius:28px;
+  min-height:430px;display:grid;place-items:center;border-radius:28px;
   background:
     radial-gradient(circle at 50% 38%, rgba(151,186,232,.15), transparent 30%),
     linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
   border:1px solid rgba(255,255,255,.08);
-  position:relative;
-  overflow:hidden;
+  position:relative;overflow:hidden;
 }
-.hero-stage::after{
-  content:'';
-  position:absolute;
-  left:15%;
-  right:15%;
-  bottom:12%;
-  height:26px;
-  border-radius:50%;
+.hero-stage:after{
+  content:'';position:absolute;left:15%;right:15%;bottom:12%;
+  height:26px;border-radius:50%;
   background:radial-gradient(circle, rgba(111,148,198,.3), transparent 68%);
   filter:blur(10px);
 }
-.hero-diamond-wrap{
-  width:min(76vw,420px);
-  aspect-ratio:1/1;
+
+.render-photo{
   position:relative;
+  background-image:var(--img);
+  background-repeat:no-repeat;
+  background-size:200% 300%;
+  background-position:var(--pos-x) var(--pos-y);
+  border-radius:26px;
+  overflow:hidden;
+  box-shadow:
+    0 10px 18px rgba(90,120,160,.16),
+    0 22px 30px rgba(35,52,78,.14),
+    0 38px 42px rgba(0,0,0,.08);
+}
+.render-photo::after{
+  content:'';
+  position:absolute;inset:0;
+  background:var(--overlay, none);
+  pointer-events:none;
+}
+.hero-render{
+  width:min(78vw,430px);
+  aspect-ratio:1/1;
   animation:floaty 6s ease-in-out infinite;
-  filter:drop-shadow(0 28px 50px rgba(0,0,0,.35));
 }
 @keyframes floaty{
   0%,100%{transform:translateY(0)}
   50%{transform:translateY(-8px)}
 }
-.spark{
-  position:absolute;
-  border-radius:50%;
-  background:radial-gradient(circle, rgba(255,255,255,1), rgba(255,255,255,.18) 58%, transparent 72%);
-  animation:twinkle 2.8s linear infinite;
-}
-.spark.s1{width:16px;height:16px;top:14%;left:18%}
-.spark.s2{width:11px;height:11px;top:28%;right:16%;animation-delay:.7s}
-.spark.s3{width:14px;height:14px;bottom:20%;left:24%;animation-delay:1.2s}
-@keyframes twinkle{
-  0%,100%{opacity:.34;transform:scale(.76)}
-  50%{opacity:1;transform:scale(1.12)}
-}
 
 .section{padding:28px 4px 0}
-.section-card{
-  padding:28px;
-  overflow:hidden;
-  position:relative;
-}
+.section-card{padding:28px;overflow:hidden;position:relative}
 .section-head{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:18px;
-  flex-wrap:wrap;
-  margin-bottom:22px;
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:18px;flex-wrap:wrap;margin-bottom:22px;
 }
-.section-title{
-  margin:0 0 10px;
-  font-size:clamp(28px,3vw,42px);
-  letter-spacing:-.02em;
-}
-.section-desc{
-  margin:0;
-  max-width:860px;
-  color:var(--muted);
-  line-height:1.8;
-}
+.section-title{margin:0 0 10px;font-size:clamp(28px,3vw,42px);letter-spacing:-.02em}
+.section-desc{margin:0;max-width:860px;color:var(--muted);line-height:1.8}
 .badge{
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--line);
-  font-size:12px;
-  color:#dbe3ef;
+  padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.04);
+  border:1px solid var(--line);font-size:12px;color:#dbe3ef;
 }
-
-.mix-grid,
-.clarity-grid,
-.cut-grid,
-.carat-grid{
-  display:grid;
-  gap:24px;
-}
+.mix-grid,.clarity-grid,.cut-grid,.carat-grid{display:grid;gap:24px}
 .mix-grid{grid-template-columns:1.05fr .95fr}
 .clarity-grid,.cut-grid,.carat-grid{grid-template-columns:.92fr 1.08fr}
 
@@ -290,7 +160,6 @@ a{color:inherit;text-decoration:none}
   border-radius:28px;
   padding:20px;
 }
-
 .lab-card{
   background:linear-gradient(180deg, #fbfcfe 0%, #f0f3f8 100%);
   border:1px solid rgba(0,0,0,.06);
@@ -300,123 +169,62 @@ a{color:inherit;text-decoration:none}
   overflow:hidden;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
 }
-.lab-card::before{
+.lab-card:before{
   content:'';
-  position:absolute;
-  inset:0;
+  position:absolute;inset:0;
   background:
     radial-gradient(circle at top, rgba(255,255,255,.8), transparent 36%),
     linear-gradient(180deg, rgba(255,255,255,.3), rgba(255,255,255,0));
   pointer-events:none;
 }
 .lab-card-inner{
-  position:absolute;
-  inset:0;
-  display:grid;
-  place-items:center;
-  padding:20px;
+  position:absolute;inset:0;
+  display:grid;place-items:center;padding:20px;
 }
 .viewer{cursor:zoom-in}
 .viewer-note{
-  position:absolute;
-  right:14px;
-  bottom:14px;
-  padding:8px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,.78);
-  border:1px solid rgba(0,0,0,.05);
-  color:#334155;
-  font-size:11px;
-  letter-spacing:.14em;
-  text-transform:uppercase;
+  position:absolute;right:14px;bottom:14px;padding:8px 12px;border-radius:999px;
+  background:rgba(255,255,255,.78);border:1px solid rgba(0,0,0,.05);
+  color:#334155;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
 }
 .viewer-wrap{
   width:min(64vw,320px);
   aspect-ratio:1/1;
   position:relative;
-  filter:drop-shadow(0 16px 24px rgba(43,64,95,.18));
+  filter:
+    drop-shadow(0 10px 18px rgba(90,120,160,.16))
+    drop-shadow(0 22px 30px rgba(35,52,78,.14))
+    drop-shadow(0 38px 42px rgba(0,0,0,.08));
 }
 .viewer-caption{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  align-items:flex-start;
-  flex-wrap:wrap;
-  margin-top:14px;
+  display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-top:14px;
 }
-.viewer-caption strong{
-  font-size:20px;
-  color:#fff;
-}
+.viewer-caption strong{font-size:20px;color:#fff}
 .viewer-caption span{
-  display:block;
-  margin-top:4px;
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.7;
-  max-width:580px;
+  display:block;margin-top:4px;color:var(--muted);font-size:13px;line-height:1.7;max-width:580px;
 }
 
 .metric-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:14px;
-  margin-top:20px;
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:20px;
 }
 .metric{
-  padding:16px;
-  border-radius:22px;
-  background:rgba(255,255,255,.03);
-  border:1px solid var(--line);
+  padding:16px;border-radius:22px;background:rgba(255,255,255,.03);border:1px solid var(--line);
 }
-.metric .label{
-  font-size:11px;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  color:var(--muted);
-  margin-bottom:8px;
-}
-.metric strong{
-  display:block;
-  font-size:22px;
-  margin-bottom:6px;
-}
-.metric p{
-  margin:0;
-  font-size:13px;
-  line-height:1.7;
-  color:#d6deea;
-}
+.metric .label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.metric strong{display:block;font-size:22px;margin-bottom:6px}
+.metric p{margin:0;font-size:13px;line-height:1.7;color:#d6deea}
 
 .ruler-head{
-  display:flex;
-  justify-content:space-between;
-  gap:14px;
-  align-items:flex-start;
-  flex-wrap:wrap;
-  margin-bottom:12px;
+  display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px;
 }
 .ruler-head h3{margin:0;font-size:18px}
-.ruler-head p{
-  margin:6px 0 0;
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.7;
-  max-width:620px;
-}
+.ruler-head p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.7;max-width:620px}
 .current-grade{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 14px;
-  border-radius:18px;
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:18px;
+  background:rgba(255,255,255,.04);border:1px solid var(--line);
 }
 .current-grade .dot{
-  width:18px;
-  height:18px;
-  border-radius:50%;
+  width:18px;height:18px;border-radius:50%;
   box-shadow:0 0 0 1px rgba(255,255,255,.45), inset 0 0 12px rgba(255,255,255,.35);
 }
 .current-grade strong{font-size:18px}
@@ -424,282 +232,156 @@ a{color:inherit;text-decoration:none}
 
 .ruler-shell{padding:16px 10px 6px}
 .ruler-track{
-  height:96px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.08);
+  height:96px;border-radius:999px;border:1px solid rgba(255,255,255,.08);
   background:linear-gradient(90deg,#eef5ff 0%, #faf7ef 12%, #f8efd8 24%, #f3e0b4 36%, #eccf89 48%, #dfb760 60%, #c88f33 74%, #935606 88%, #4b2800 100%);
-  overflow-x:auto;
-  overflow-y:hidden;
-  scrollbar-width:none;
-  -webkit-overflow-scrolling:touch;
-  cursor:grab;
-  touch-action:pan-x;
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab;touch-action:pan-x;
 }
 .ruler-track::-webkit-scrollbar{display:none}
-.ruler-inner{
-  display:flex;
-  align-items:flex-end;
-  min-width:1250px;
-  height:100%;
-  padding:0 18px;
-}
+.ruler-inner{display:flex;align-items:flex-end;min-width:1250px;height:100%;padding:0 18px}
 .grade{
-  width:72px;
-  height:100%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:flex-end;
-  padding-bottom:14px;
-  position:relative;
-  cursor:pointer;
-  user-select:none;
+  width:72px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding-bottom:14px;position:relative;cursor:pointer;user-select:none;
 }
-.grade::before{
-  content:'';
-  position:absolute;
-  top:18px;
-  width:1px;
-  height:34px;
-  background:rgba(255,255,255,.58);
+.grade:before{
+  content:'';position:absolute;top:18px;width:1px;height:34px;background:rgba(255,255,255,.58);
 }
-.grade.active::before{
-  width:2px;
-  height:52px;
-  background:#101826;
-}
+.grade.active:before{width:2px;height:52px;background:#101826}
 .grade-pill{
-  padding:8px 11px;
-  border-radius:999px;
-  min-width:42px;
-  text-align:center;
-  background:rgba(16,24,38,.62);
-  color:#fff;
-  border:1px solid rgba(255,255,255,.16);
-  font-weight:700;
-  font-size:13px;
-  transition:.2s;
+  padding:8px 11px;border-radius:999px;min-width:42px;text-align:center;background:rgba(16,24,38,.62);
+  color:#fff;border:1px solid rgba(255,255,255,.16);font-weight:700;font-size:13px;transition:.2s;
 }
 .grade.active .grade-pill{
-  background:rgba(16,24,38,.98);
-  border-color:rgba(255,255,255,.34);
-  transform:translateY(-2px);
+  background:rgba(16,24,38,.98);border-color:rgba(255,255,255,.34);transform:translateY(-2px);
 }
 .grade-label{
-  margin-top:8px;
-  font-size:11px;
-  font-weight:700;
-  color:#121b29;
-  text-shadow:0 1px 0 rgba(255,255,255,.18);
+  margin-top:8px;font-size:11px;font-weight:700;color:#121b29;text-shadow:0 1px 0 rgba(255,255,255,.18);
 }
 .swipe-tip{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:12px;
-  color:var(--muted);
-  font-size:12px;
+  display:flex;align-items:center;gap:10px;margin-top:12px;color:var(--muted);font-size:12px;
 }
-.swipe-tip .line{
-  height:1px;
-  flex:1;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
-}
+.swipe-tip .line{height:1px;flex:1;background:linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent)}
 
 .loupe{
-  position:absolute;
-  width:174px;
-  height:174px;
-  border-radius:50%;
+  position:absolute;width:174px;height:174px;border-radius:50%;
   border:3px solid rgba(255,255,255,.96);
   box-shadow:0 0 0 10px rgba(255,255,255,.22), 0 22px 40px rgba(0,0,0,.18);
-  overflow:hidden;
-  display:none;
-  pointer-events:none;
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(4px);
+  overflow:hidden;display:none;pointer-events:none;
+  background:rgba(255,255,255,.08);backdrop-filter:blur(4px);
 }
 .loupe.visible{display:block}
-.loupe::after{
-  content:'10×';
-  position:absolute;
-  right:12px;
-  bottom:10px;
-  padding:4px 8px;
-  border-radius:999px;
-  background:rgba(16,24,38,.85);
-  color:#fff;
-  font-size:11px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
+.loupe:after{
+  content:'10×';position:absolute;right:12px;bottom:10px;padding:4px 8px;border-radius:999px;
+  background:rgba(16,24,38,.85);color:#fff;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
 }
-.loupe-content{
-  position:absolute;
-  transform-origin:top left;
-}
+.loupe-content{position:absolute;transform-origin:top left}
 
 .legend{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:10px;
-  margin-top:16px;
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px;
 }
 .legend-item{
-  padding:12px 14px;
-  border-radius:18px;
-  background:rgba(255,255,255,.03);
-  border:1px solid var(--line);
-  cursor:pointer;
-  transition:.2s;
+  padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid var(--line);cursor:pointer;transition:.2s;
 }
-.legend-item.active,
-.legend-item:hover{
-  background:rgba(255,255,255,.05);
-  border-color:rgba(216,183,122,.36);
+.legend-item.active,.legend-item:hover{
+  background:rgba(255,255,255,.05);border-color:rgba(216,183,122,.36);
 }
-.legend-item strong{
-  display:block;
-  font-size:15px;
-  margin-bottom:4px;
-}
-.legend-item span{
-  font-size:12px;
-  line-height:1.6;
-  color:var(--muted);
-}
+.legend-item strong{display:block;font-size:15px;margin-bottom:4px}
+.legend-item span{font-size:12px;line-height:1.6;color:var(--muted)}
 
 .segmented{
-  display:inline-flex;
-  padding:6px;
-  border-radius:999px;
-  background:rgba(255,255,255,.04);
-  border:1px solid var(--line);
-  gap:6px;
+  display:inline-flex;padding:6px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid var(--line);gap:6px;
 }
 .segmented button{
-  appearance:none;
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  font-weight:700;
-  padding:10px 14px;
-  border-radius:999px;
-  cursor:pointer;
-  transition:.2s;
+  appearance:none;border:0;background:transparent;color:var(--muted);font-weight:700;padding:10px 14px;border-radius:999px;cursor:pointer;transition:.2s;
 }
 .segmented button.active{
   background:linear-gradient(135deg, rgba(216,183,122,.28), rgba(242,223,187,.1));
-  color:#fff;
-  border:1px solid rgba(242,223,187,.22);
+  color:#fff;border:1px solid rgba(242,223,187,.22);
 }
-.copy{
-  margin-top:16px;
-  color:var(--muted);
-  line-height:1.8;
-}
+.copy{margin-top:16px;color:var(--muted);line-height:1.8}
 
 .slider{
-  width:100%;
-  appearance:none;
-  height:8px;
-  border-radius:999px;
+  width:100%;appearance:none;height:8px;border-radius:999px;
   background:linear-gradient(90deg, rgba(255,255,255,.22), rgba(216,183,122,.6));
-  outline:none;
-  margin:18px 0 0;
+  outline:none;margin:18px 0 0;
 }
 .slider::-webkit-slider-thumb{
-  appearance:none;
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  background:#fff;
-  border:4px solid rgba(216,183,122,.95);
+  appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;border:4px solid rgba(216,183,122,.95);
   box-shadow:0 4px 18px rgba(0,0,0,.25);
 }
 .slider::-moz-range-thumb{
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  background:#fff;
-  border:4px solid rgba(216,183,122,.95);
+  width:28px;height:28px;border-radius:50%;background:#fff;border:4px solid rgba(216,183,122,.95);
 }
 .scale{
-  display:flex;
-  justify-content:space-between;
-  gap:8px;
-  color:var(--muted);
-  font-size:12px;
-  margin-top:12px;
+  display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;margin-top:12px;
 }
+
+.compare-stage{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  align-items:end;
+}
+.compare-item{text-align:center}
+.compare-label{margin-top:10px;font-size:12px;color:var(--muted)}
 
 .footer{padding:30px 4px 0;color:var(--muted)}
 .footer-card{
-  padding:20px 22px;
-  border-radius:24px;
-  background:rgba(255,255,255,.03);
-  border:1px solid var(--line);
+  padding:20px 22px;border-radius:24px;background:rgba(255,255,255,.03);border:1px solid var(--line);
 }
 
 .lightbox{
-  position:fixed;
-  inset:0;
-  background:rgba(5,8,13,.94);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-  z-index:999;
+  position:fixed;inset:0;background:rgba(5,8,13,.94);display:none;align-items:center;justify-content:center;padding:24px;z-index:999;
 }
 .lightbox.open{display:flex}
 .lightbox-inner{
-  width:min(92vw,980px);
-  height:min(88vh,860px);
-  border-radius:32px;
+  width:min(92vw,980px);height:min(88vh,860px);border-radius:32px;
   background:linear-gradient(180deg, rgba(16,20,29,.98), rgba(8,11,16,.98));
-  border:1px solid rgba(255,255,255,.08);
-  overflow:hidden;
-  position:relative;
-  box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,.08);overflow:hidden;position:relative;box-shadow:var(--shadow);
 }
 .lightbox-close{
-  position:absolute;
-  top:16px;
-  right:16px;
-  z-index:3;
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(255,255,255,.06);
-  color:#fff;
-  font-size:22px;
-  cursor:pointer;
+  position:absolute;top:16px;right:16px;z-index:3;width:46px;height:46px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;font-size:22px;cursor:pointer;
 }
 .lightbox-tip{
-  position:absolute;
-  left:18px;
-  bottom:16px;
-  z-index:3;
-  padding:9px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.09);
-  font-size:11px;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:#dbe4f5;
+  position:absolute;left:18px;bottom:16px;z-index:3;padding:9px 12px;border-radius:999px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#dbe4f5;
 }
 .lightbox-stage{
-  width:100%;
-  height:100%;
-  display:grid;
-  place-items:center;
-  overflow:hidden;
-  cursor:grab;
+  width:100%;height:100%;display:grid;place-items:center;overflow:hidden;cursor:grab;
 }
-.lightbox-content{
-  transform-origin:center center;
-  transition:transform .05s linear;
+.lightbox-content{transform-origin:center center;transition:transform .05s linear}
+
+.cut-overlay{
+  position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;
+}
+.cut-overlay.ha{
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.18) 0 12%, transparent 13%),
+    conic-gradient(from 22.5deg,
+      rgba(255,255,255,.22) 0 10deg, transparent 10deg 45deg,
+      rgba(255,255,255,.22) 45deg 55deg, transparent 55deg 90deg,
+      rgba(255,255,255,.22) 90deg 100deg, transparent 100deg 135deg,
+      rgba(255,255,255,.22) 135deg 145deg, transparent 145deg 180deg,
+      rgba(255,255,255,.22) 180deg 190deg, transparent 190deg 225deg,
+      rgba(255,255,255,.22) 225deg 235deg, transparent 235deg 270deg,
+      rgba(255,255,255,.22) 270deg 280deg, transparent 280deg 315deg,
+      rgba(255,255,255,.22) 315deg 325deg, transparent 325deg 360deg);
+  opacity:.76;
+}
+.cut-overlay.light{
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.18), transparent 38%),
+    conic-gradient(from 0deg,
+      rgba(255,255,255,.22), transparent 10% 16%,
+      rgba(255,216,140,.24) 18%, transparent 22% 28%,
+      rgba(170,220,255,.22) 30%, transparent 34% 40%,
+      rgba(255,255,255,.22) 42%, transparent 46% 52%,
+      rgba(255,216,140,.22) 54%, transparent 58% 64%,
+      rgba(170,220,255,.20) 66%, transparent 70% 76%,
+      rgba(255,255,255,.22) 78%, transparent 82% 88%,
+      rgba(255,216,140,.2) 90%, transparent 94%);
+  opacity:.92;
 }
 
 @media (max-width:1100px){
@@ -707,7 +389,7 @@ a{color:inherit;text-decoration:none}
   .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .nav{display:none}
 }
-@media (max-width:700px){
+@media (max-width:760px){
   .app{padding:14px 12px 72px}
   .hero-card,.section-card{padding:22px}
   .topbar-inner{border-radius:24px;padding:12px}
@@ -720,19 +402,20 @@ a{color:inherit;text-decoration:none}
   .hero h1{font-size:34px}
   .hero p{font-size:15px}
   .loupe{width:148px;height:148px}
+  .compare-stage{grid-template-columns:1fr}
 }
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="topbar">
+  <div class="topbar">
     <div class="topbar-inner">
       <div class="brand">
         <div class="logo"></div>
         <div>
-          <div class="kicker">Refined Edition</div>
+          <div class="kicker">Real Render Edition</div>
           <div class="brand-title">4C Diamond Experience</div>
-          <div class="brand-sub">Luxury dark UI × GIA-style light diamond presentation</div>
+          <div class="brand-sub">Luxury dark UI × real render image presentation</div>
         </div>
       </div>
       <nav class="nav">
@@ -742,26 +425,23 @@ a{color:inherit;text-decoration:none}
         <a href="#carat">Carat</a>
       </nav>
     </div>
-  </header>
+  </div>
 
   <section class="hero">
     <div class="hero-card">
       <div class="hero-grid">
         <div>
-          <div class="kicker">Version 4 · 重構版</div>
-          <h1>黑底高級介面，
-          <br>主鑽石更接近真鑽石展示。</h1>
-          <p>這個版本保留高級 app 感，但把互動程式碼整理得更清晰：Color 用 D–Z 真正橫向滑尺，Clarity 有 10× loupe，Cut 可切換 Hearts &amp; Arrows / Light Return，Carat 可滑動比較，並維持一頁睇晒。</p>
+          <div class="kicker">Version · 真 render 圖版</div>
+          <h1>整頁改成
+          <br>真 render 圖結構。</h1>
+          <p>這個版本不再用程式畫假鑽石，而是直接用你提供的兩張 render 圖做主視覺來源。Color 用真 render 疊色溫、Clarity 用真 render + loupe、Cut 用真 render + 教學覆層、Carat 用真 render 做尺寸比較。</p>
           <div class="actions">
             <a class="btn primary" href="#color">開始睇 Color</a>
             <a class="btn" href="#clarity">直接去 10× 淨度</a>
           </div>
         </div>
         <div class="hero-stage">
-          <div class="spark s1"></div>
-          <div class="spark s2"></div>
-          <div class="spark s3"></div>
-          <div class="hero-diamond-wrap" id="heroDiamond"></div>
+          <div class="render-photo hero-render" id="heroRender"></div>
         </div>
       </div>
     </div>
@@ -772,10 +452,10 @@ a{color:inherit;text-decoration:none}
       <div class="section-head">
         <div>
           <div class="kicker">01 · Color</div>
-          <h2 class="section-title">D–Z 真正橫向滑尺</h2>
-          <p class="section-desc">左右滑動色階尺，逐級比較由 D（無色）到 Z（明顯偏黃／啡）的色調變化。右側主視窗採用更接近真鑽石的頂視展示風格，而不是插畫式幾何示意。</p>
+          <h2 class="section-title">D–Z 真 render 色階</h2>
+          <p class="section-desc">左右滑動色階尺，逐級比較由 D（無色）到 Z（明顯偏黃／啡）的色調變化。右側主視窗已改用真 render 鑽石圖，並以疊色方式模擬不同 color grade 的觀感。</p>
         </div>
-        <div class="badge">Swipe horizontally</div>
+        <div class="badge">Real render + tint overlay</div>
       </div>
 
       <div class="mix-grid">
@@ -783,7 +463,7 @@ a{color:inherit;text-decoration:none}
           <div class="ruler-head">
             <div>
               <h3>Diamond Color Scale</h3>
-              <p>拖曳滑尺或直接點選字母級別。主畫面會同步顯示更真實感的圓鑽展示與該級別說明。</p>
+              <p>拖曳滑尺或直接點選字母級別。主畫面會同步顯示相應色階的真 render 展示與說明。</p>
             </div>
             <div class="current-grade">
               <div class="dot" id="gradeDot"></div>
@@ -823,7 +503,7 @@ a{color:inherit;text-decoration:none}
               <strong id="colorTitle">D · Colorless</strong>
               <span id="colorText">幾乎看不到任何黃調，整體顯得純淨、透亮、冷白。</span>
             </div>
-            <div class="badge" id="colorBadge">Professional education view</div>
+            <div class="badge" id="colorBadge">Real render education view</div>
           </div>
         </div>
       </div>
@@ -835,8 +515,8 @@ a{color:inherit;text-decoration:none}
       <div class="section-head">
         <div>
           <div class="kicker">02 · Clarity</div>
-          <h2 class="section-title">10× 放大鏡模式</h2>
-          <p class="section-desc">以較接近實際教學示範的方式呈現淨度差異。你可以在主鑽石上移動手指或滑鼠，loupe 會以 10× 放大顯示內含物位置、數量與明顯程度。</p>
+          <h2 class="section-title">10× 真 render loupe 模式</h2>
+          <p class="section-desc">主鑽石已改用真 render 圖作展示，再配 loupe 放大效果與內含物模擬層。你可以在主石上移動手指或滑鼠，直接以 10× 方式解說淨度差異。</p>
         </div>
         <div class="badge">Move to inspect with loupe</div>
       </div>
@@ -860,7 +540,7 @@ a{color:inherit;text-decoration:none}
 
         <div class="panel">
           <h3 style="margin:0 0 8px;font-size:20px">Choose clarity grade</h3>
-          <p style="margin:0;color:var(--muted);line-height:1.8;font-size:13px">點選下列淨度級別，主畫面會切換相應的內含物分佈。這是教育模擬頁面，方便更直觀向客人說明不同淨度在 10× 檢視下的差異。</p>
+          <p style="margin:0;color:var(--muted);line-height:1.8;font-size:13px">點選下列淨度級別，主畫面會切換相應的內含物分佈。這一頁保留真 render 主圖，只把瑕疵當成教學模擬覆層。</p>
           <div class="legend" id="clarityLegend"></div>
         </div>
       </div>
@@ -872,8 +552,8 @@ a{color:inherit;text-decoration:none}
       <div class="section-head">
         <div>
           <div class="kicker">03 · Cut</div>
-          <h2 class="section-title">Hearts &amp; Arrows / Light Return</h2>
-          <p class="section-desc">切工不只是外形，而是光如何在鑽石內部移動與回返。這裡用兩個常見教學視角去理解切工：對稱性，以及光線回返表現。</p>
+          <h2 class="section-title">真 render 切工展示</h2>
+          <p class="section-desc">切工不只是外形，而是光如何在鑽石內部移動與回返。這裡改成真 render 鑽石為底，再疊 Hearts &amp; Arrows 或 Light Return 教學覆層。</p>
         </div>
         <div class="segmented" id="cutSwitch">
           <button class="active" data-mode="ha">Hearts &amp; Arrows</button>
@@ -907,21 +587,32 @@ a{color:inherit;text-decoration:none}
       <div class="section-head">
         <div>
           <div class="kicker">04 · Carat</div>
-          <h2 class="section-title">Carat 重量與視覺尺寸</h2>
-          <p class="section-desc">Carat 代表重量，但肉眼感受到的大小亦會受面徑與切工影響。拖動滑桿即可比較不同 carat 的正面視覺尺寸。</p>
+          <h2 class="section-title">Carat 真 render 尺寸比較</h2>
+          <p class="section-desc">左邊固定 0.50ct，右邊用滑桿比較不同重量的正面視覺尺寸。這一頁同樣改成真 render 圖版，而不是 SVG 鑽石。</p>
         </div>
-        <div class="badge">Drag to compare size</div>
+        <div class="badge">0.50ct fixed vs variable size</div>
       </div>
 
       <div class="carat-grid">
         <div class="panel">
           <div class="lab-card viewer" id="caratViewerCard">
-            <div class="lab-card-inner" id="caratViewer"></div>
+            <div class="lab-card-inner">
+              <div class="compare-stage">
+                <div class="compare-item">
+                  <div class="viewer-wrap" id="caratFixed"></div>
+                  <div class="compare-label">固定參考 · 0.50ct</div>
+                </div>
+                <div class="compare-item">
+                  <div class="viewer-wrap" id="caratViewer"></div>
+                  <div class="compare-label" id="caratDynamicLabel">可比較 · 1.00ct</div>
+                </div>
+              </div>
+            </div>
             <div class="viewer-note">Tap to inspect</div>
           </div>
-          <input class="slider" id="caratSlider" type="range" min="0.2" max="5" step="0.01" value="1">
+          <input class="slider" id="caratSlider" type="range" min="0.5" max="5" step="0.01" value="1">
           <div class="scale">
-            <span>0.20ct</span><span>0.50ct</span><span>1.00ct</span><span>2.00ct</span><span>3.00ct</span><span>5.00ct</span>
+            <span>0.50ct</span><span>1.00ct</span><span>2.00ct</span><span>3.00ct</span><span>4.00ct</span><span>5.00ct</span>
           </div>
         </div>
 
@@ -937,9 +628,9 @@ a{color:inherit;text-decoration:none}
     </div>
   </section>
 
-  <footer class="footer">
-    <div class="footer-card">本頁為 4C 教育展示用互動頁面。主鑽石圖像為更真實感的互動模擬，不屬 GIA 官方圖像。</div>
-  </footer>
+  <div class="footer">
+    <div class="footer-card">本頁為 4C 教育展示用互動頁面。主視覺已改用真 render 圖作展示來源，並加入教學用途的互動覆層。</div>
+  </div>
 </div>
 
 <div class="lightbox" id="lightbox">
@@ -953,400 +644,75 @@ a{color:inherit;text-decoration:none}
 </div>
 
 <script>
-const svgNS = 'http://www.w3.org/2000/svg';
+const ASSETS = {
+  neutral: "A35EE74D-3FA7-44AD-8D88-460166BAD22F.jpeg",
+  pink: "0EAA9B1D-DDF4-4295-BBD0-6451F50E8140.jpeg"
+};
 
-const $ = (id) => document.getElementById(id);
+const SPRITES = {
+  // neutral sheet
+  n_tl: { asset: 'neutral', x: '0%',   y: '0%'   },
+  n_tr: { asset: 'neutral', x: '100%', y: '0%'   },
+  n_ml: { asset: 'neutral', x: '0%',   y: '50%'  },
+  n_mr: { asset: 'neutral', x: '100%', y: '50%'  },
+  n_bl: { asset: 'neutral', x: '0%',   y: '100%' },
+  n_br: { asset: 'neutral', x: '100%', y: '100%' },
 
-function createEl(tag, attrs = {}, children = []) {
-  const node = document.createElement(tag);
-  for (const [key, value] of Object.entries(attrs)) {
-    if (key === 'class') node.className = value;
-    else node.setAttribute(key, value);
-  }
-  (Array.isArray(children) ? children : [children]).forEach((child) => {
-    if (child == null) return;
-    node.appendChild(typeof child === 'string' ? document.createTextNode(child) : child);
-  });
-  return node;
-}
-
-function createSvg(tag, attrs = {}) {
-  const node = document.createElementNS(svgNS, tag);
-  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
-  return node;
-}
-
-function mixColor(a, b, t) {
-  const pa = parseInt(a.slice(1), 16);
-  const pb = parseInt(b.slice(1), 16);
-  const ar = (pa >> 16) & 255, ag = (pa >> 8) & 255, ab = pa & 255;
-  const br = (pb >> 16) & 255, bg = (pb >> 8) & 255, bb = pb & 255;
-  const rr = Math.round(ar + (br - ar) * t);
-  const rg = Math.round(ag + (bg - ag) * t);
-  const rb = Math.round(ab + (bb - ab) * t);
-  return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb).toString(16).slice(1);
-}
-
-function realisticDiamondTop({
-  size = 360,
-  tint = '#f8fbff',
-  warmth = 0,
-  inclusions = 0,
-  inclusionOpacity = .26,
-  sparkle = 1.08
-} = {}) {
-  const s = size;
-  const cx = s / 2;
-  const cy = s / 2;
-
-  const root = createSvg('svg', {
-    viewBox: `0 0 ${s} ${s}`,
-    width: s,
-    height: s,
-    role: 'img',
-    'aria-label': 'diamond'
-  });
-
-  const defs = createSvg('defs');
-
-  const clipId = 'clip' + Math.random().toString(36).slice(2);
-  const clip = createSvg('clipPath', { id: clipId });
-  clip.appendChild(createSvg('circle', { cx, cy, r: s * 0.355 }));
-
-  const baseId = 'base' + Math.random().toString(36).slice(2);
-  const base = createSvg('radialGradient', { id: baseId, cx: '50%', cy: '42%', r: '58%' });
-  base.append(
-    createSvg('stop', { offset: '0%', 'stop-color': '#ffffff' }),
-    createSvg('stop', { offset: '18%', 'stop-color': mixColor('#ffffff', tint, .4) }),
-    createSvg('stop', { offset: '44%', 'stop-color': tint }),
-    createSvg('stop', { offset: '74%', 'stop-color': '#d8e0ec' }),
-    createSvg('stop', { offset: '100%', 'stop-color': '#95a3b8' })
-  );
-
-  const glowId = 'glow' + Math.random().toString(36).slice(2);
-  const glow = createSvg('radialGradient', { id: glowId, cx: '50%', cy: '50%', r: '55%' });
-  glow.append(
-    createSvg('stop', { offset: '0%', 'stop-color': 'rgba(255,255,255,.9)' }),
-    createSvg('stop', { offset: '50%', 'stop-color': 'rgba(255,255,255,.14)' }),
-    createSvg('stop', { offset: '100%', 'stop-color': 'rgba(255,255,255,0)' })
-  );
-
-  const blurId = 'blur' + Math.random().toString(36).slice(2);
-  const blur = createSvg('filter', { id: blurId, x: '-50%', y: '-50%', width: '200%', height: '200%' });
-  blur.append(createSvg('feGaussianBlur', { stdDeviation: '7' }));
-
-  defs.append(clip, base, glow, blur);
-  root.appendChild(defs);
-
-  root.appendChild(createSvg('ellipse', {
-    cx, cy: cy + s * 0.31, rx: s * 0.16, ry: s * 0.04, fill: 'rgba(130,154,188,.2)'
-  }));
-  root.appendChild(createSvg('circle', {
-    cx, cy, r: s * 0.285, fill: `url(#${glowId})`, filter: `url(#${blurId})`, opacity: .78
-  }));
-
-  const wrap = createSvg('g', { 'clip-path': `url(#${clipId})` });
-
-  wrap.appendChild(createSvg('circle', {
-    cx, cy, r: s * 0.355,
-    fill: `url(#${baseId})`,
-    stroke: 'rgba(149,163,184,.35)',
-    'stroke-width': '1.4'
-  }));
-
-  const rings = [s * 0.112, s * 0.185, s * 0.258, s * 0.338];
-  const counts = [8, 8, 16, 16];
-
-  const facets = createSvg('g');
-
-  for (let ring = 0; ring < rings.length - 1; ring++) {
-    const r1 = rings[ring];
-    const r2 = rings[ring + 1];
-    const count = counts[ring + 1];
-    const countPrev = counts[ring];
-
-    for (let i = 0; i < count; i++) {
-      const a1 = (-90 + i * (360 / count)) * Math.PI / 180;
-      const a2 = (-90 + (i + 1) * (360 / count)) * Math.PI / 180;
-      const b1 = (-90 + i * (360 / count) + (360 / count) / 2) * Math.PI / 180;
-
-      const p1 = [cx + Math.cos(a1) * r2, cy + Math.sin(a1) * r2];
-      const p2 = [cx + Math.cos(a2) * r2, cy + Math.sin(a2) * r2];
-      const p3 = [cx + Math.cos(b1) * r1, cy + Math.sin(b1) * r1];
-
-      facets.appendChild(createSvg('polygon', {
-        points: `${p1[0]},${p1[1]} ${p2[0]},${p2[1]} ${p3[0]},${p3[1]}`,
-        fill: i % 2 ? 'rgba(255,255,255,.48)' : 'rgba(184,198,220,.38)',
-        stroke: 'rgba(255,255,255,.16)',
-        'stroke-width': '0.6'
-      }));
-    }
-
-    for (let i = 0; i < countPrev; i++) {
-      const a1 = (-90 + i * (360 / countPrev)) * Math.PI / 180;
-      const a2 = (-90 + (i + 1) * (360 / countPrev)) * Math.PI / 180;
-      const m1 = (-90 + i * (360 / countPrev) + (360 / countPrev) / 2) * Math.PI / 180;
-
-      const q1 = [cx + Math.cos(a1) * r1, cy + Math.sin(a1) * r1];
-      const q2 = [cx + Math.cos(a2) * r1, cy + Math.sin(a2) * r1];
-      const q3 = [cx + Math.cos(m1) * (ring ? rings[ring - 1] : r1 * .56), cy + Math.sin(m1) * (ring ? rings[ring - 1] : r1 * .56)];
-
-      facets.appendChild(createSvg('polygon', {
-        points: `${q1[0]},${q1[1]} ${q2[0]},${q2[1]} ${q3[0]},${q3[1]}`,
-        fill: i % 2 ? 'rgba(160,181,212,.28)' : 'rgba(255,255,255,.4)',
-        stroke: 'rgba(255,255,255,.14)',
-        'stroke-width': '0.55'
-      }));
-    }
-  }
-
-  wrap.appendChild(facets);
-
-  wrap.appendChild(createSvg('circle', {
-    cx, cy, r: s * 0.11,
-    fill: 'rgba(255,255,255,.58)',
-    stroke: 'rgba(255,255,255,.75)',
-    'stroke-width': '1'
-  }));
-
-  wrap.appendChild(createSvg('path', {
-    d: `M ${cx - s * 0.16} ${cy - s * 0.18} C ${cx - s * 0.1} ${cy - s * 0.24}, ${cx + s * 0.06} ${cy - s * 0.24}, ${cx + s * 0.14} ${cy - s * 0.16}`,
-    stroke: 'rgba(255,255,255,.7)',
-    'stroke-width': '10',
-    fill: 'none',
-    'stroke-linecap': 'round',
-    opacity: '.24'
-  }));
-
-  wrap.appendChild(createSvg('path', {
-    d: `M ${cx - s * 0.22} ${cy + s * 0.04} C ${cx - s * 0.08} ${cy - s * 0.01}, ${cx + s * 0.06} ${cy - s * 0.02}, ${cx + s * 0.2} ${cy + s * 0.06}`,
-    stroke: 'rgba(255,255,255,.55)',
-    'stroke-width': '7',
-    fill: 'none',
-    'stroke-linecap': 'round',
-    opacity: '.18'
-  }));
-
-  if (warmth > 0) {
-    wrap.appendChild(createSvg('circle', {
-      cx, cy, r: s * 0.3,
-      fill: mixColor('#fff8ef', '#d4973b', Math.min(.88, warmth)),
-      opacity: Math.min(.22, .05 + warmth * .18)
-    }));
-  }
-
-  if (inclusions > 0) {
-    for (let i = 0; i < inclusions; i++) {
-      const ang = (i * 137.5) % 360 * Math.PI / 180;
-      const rr = (0.06 + (i % 8) / 12) * s + (i % 3) * 2;
-      const px = cx + Math.cos(ang) * rr * .58;
-      const py = cy + Math.sin(ang) * rr * .58;
-      const alpha = (inclusionOpacity + (i % 4) * .03).toFixed(2);
-
-      let shape;
-      if (i % 5 === 0) {
-        shape = createSvg('circle', { cx: px, cy: py, r: 2 + (i % 3), fill: `rgba(55,72,97,${alpha})` });
-      } else if (i % 5 === 1) {
-        shape = createSvg('ellipse', { cx: px, cy: py, rx: 4 + (i % 2), ry: 1.8, transform: `rotate(${i * 17} ${px} ${py})`, fill: `rgba(62,79,104,${alpha})` });
-      } else if (i % 5 === 2) {
-        shape = createSvg('path', { d: `M ${px - 5} ${py + 2} Q ${px - 1} ${py - 5} ${px + 5} ${py + 1}`, stroke: `rgba(66,84,108,${alpha})`, 'stroke-width': '1.4', fill: 'none', 'stroke-linecap': 'round' });
-      } else if (i % 5 === 3) {
-        shape = createSvg('path', { d: `M ${px - 3} ${py - 3} L ${px + 3} ${py + 4} M ${px + 4} ${py - 2} L ${px - 3} ${py + 3}`, stroke: `rgba(55,70,92,${alpha})`, 'stroke-width': '1.2', fill: 'none', 'stroke-linecap': 'round' });
-      } else {
-        shape = createSvg('ellipse', { cx: px, cy: py, rx: 1.5, ry: 7 + (i % 3), transform: `rotate(${(i * 13) % 180} ${px} ${py})`, fill: `rgba(72,87,110,${alpha})` });
-      }
-      wrap.appendChild(shape);
-    }
-  }
-
-  const sparkleDots = createSvg('g');
-  const count = Math.max(8, Math.round(12 * sparkle));
-  for (let i = 0; i < count; i++) {
-    const a = i * (360 / count) * Math.PI / 180;
-    const rr = s * 0.22 + (i % 4) * 6;
-    sparkleDots.appendChild(createSvg('circle', {
-      cx: cx + Math.cos(a) * rr,
-      cy: cy + Math.sin(a) * rr,
-      r: 1.1 + (i % 2),
-      fill: 'rgba(255,255,255,.82)'
-    }));
-  }
-  wrap.appendChild(sparkleDots);
-
-  root.appendChild(wrap);
-  root.appendChild(createSvg('circle', {
-    cx, cy, r: s * 0.355,
-    fill: 'none',
-    stroke: 'rgba(130,148,170,.5)',
-    'stroke-width': '1.6'
-  }));
-
-  return root;
-}
-
-function heartsArrows(size = 360) {
-  const s = size, cx = s / 2, cy = s / 2;
-  const root = createSvg('svg', { viewBox: `0 0 ${s} ${s}`, width: s, height: s });
-
-  const defs = createSvg('defs');
-
-  const bgId = 'ha' + Math.random().toString(36).slice(2);
-  const bg = createSvg('radialGradient', { id: bgId, cx: '50%', cy: '50%', r: '55%' });
-  bg.append(
-    createSvg('stop', { offset: '0%', 'stop-color': '#1a2230' }),
-    createSvg('stop', { offset: '100%', 'stop-color': '#090d14' })
-  );
-
-  const redId = 'red' + Math.random().toString(36).slice(2);
-  const red = createSvg('radialGradient', { id: redId, cx: '50%', cy: '50%', r: '50%' });
-  red.append(
-    createSvg('stop', { offset: '0%', 'stop-color': '#ff9a9a' }),
-    createSvg('stop', { offset: '100%', 'stop-color': '#7d0f1b' })
-  );
-
-  defs.append(bg, red);
-  root.appendChild(defs);
-
-  root.appendChild(createSvg('circle', {
-    cx, cy, r: s * .42,
-    fill: `url(#${bgId})`,
-    stroke: 'rgba(255,255,255,.22)',
-    'stroke-width': '2'
-  }));
-
-  for (let i = 0; i < 8; i++) {
-    const ang = i * Math.PI / 4;
-    const ax = cx + Math.cos(ang) * s * .17;
-    const ay = cy + Math.sin(ang) * s * .17;
-
-    root.appendChild(createSvg('path', {
-      d: `M ${cx} ${cy} L ${cx + Math.cos(ang - .06) * s * .34} ${cy + Math.sin(ang - .06) * s * .34} L ${cx + Math.cos(ang) * s * .285} ${cy + Math.sin(ang) * s * .285} L ${cx + Math.cos(ang + .06) * s * .34} ${cy + Math.sin(ang + .06) * s * .34} Z`,
-      fill: 'rgba(255,255,255,.92)'
-    }));
-
-    root.appendChild(createSvg('path', {
-      d: `M ${ax} ${ay + s * .034} C ${ax - s * .032} ${ay + s * .006}, ${ax - s * .033} ${ay - s * .022}, ${ax} ${ay - s * .012} C ${ax + s * .033} ${ay - s * .022}, ${ax + s * .032} ${ay + s * .006}, ${ax} ${ay + s * .034} Z`,
-      fill: `url(#${redId})`,
-      transform: `rotate(${ang * 180 / Math.PI} ${ax} ${ay})`
-    }));
-  }
-
-  root.appendChild(createSvg('circle', {
-    cx, cy, r: s * .06,
-    fill: 'rgba(255,255,255,.2)',
-    stroke: 'rgba(255,255,255,.68)',
-    'stroke-width': '1.4'
-  }));
-
-  return root;
-}
-
-function lightReturn(size = 360) {
-  const s = size, cx = s / 2, cy = s / 2;
-  const root = createSvg('svg', { viewBox: `0 0 ${s} ${s}`, width: s, height: s });
-
-  const defs = createSvg('defs');
-  const bgId = 'lr' + Math.random().toString(36).slice(2);
-  const bg = createSvg('radialGradient', { id: bgId, cx: '50%', cy: '50%', r: '56%' });
-  bg.append(
-    createSvg('stop', { offset: '0%', 'stop-color': '#fbfeff' }),
-    createSvg('stop', { offset: '22%', 'stop-color': '#d9ecff' }),
-    createSvg('stop', { offset: '44%', 'stop-color': '#7fc0ff' }),
-    createSvg('stop', { offset: '60%', 'stop-color': '#1c4b8f' }),
-    createSvg('stop', { offset: '78%', 'stop-color': '#0f1b34' }),
-    createSvg('stop', { offset: '100%', 'stop-color': '#090d14' })
-  );
-  defs.appendChild(bg);
-  root.appendChild(defs);
-
-  root.appendChild(createSvg('circle', {
-    cx, cy, r: s * .42, fill: `url(#${bgId})`
-  }));
-
-  for (let i = 0; i < 16; i++) {
-    const a = i * (Math.PI / 8);
-    root.appendChild(createSvg('line', {
-      x1: cx + Math.cos(a) * s * .06,
-      y1: cy + Math.sin(a) * s * .06,
-      x2: cx + Math.cos(a) * s * .38,
-      y2: cy + Math.sin(a) * s * .38,
-      stroke: i % 2 ? 'rgba(255,255,255,.78)' : 'rgba(255,203,123,.62)',
-      'stroke-width': (i % 4) + 1,
-      'stroke-linecap': 'round',
-      opacity: '.84'
-    }));
-  }
-
-  for (let i = 0; i < 24; i++) {
-    const a = i * (Math.PI / 12);
-    const rr = s * .22 + ((i % 5) - 2) * 5;
-    root.appendChild(createSvg('circle', {
-      cx: cx + Math.cos(a) * rr,
-      cy: cy + Math.sin(a) * rr,
-      r: 2.6 + (i % 2),
-      fill: i % 3 ? 'rgba(255,255,255,.9)' : 'rgba(255,190,88,.82)'
-    }));
-  }
-
-  root.appendChild(createSvg('circle', {
-    cx, cy, r: s * .07,
-    fill: 'rgba(255,255,255,.34)',
-    stroke: 'rgba(255,255,255,.88)',
-    'stroke-width': '2'
-  }));
-
-  return root;
-}
+  // pink sheet
+  p_tl: { asset: 'pink', x: '0%',   y: '0%'   },
+  p_tr: { asset: 'pink', x: '100%', y: '0%'   },
+  p_ml: { asset: 'pink', x: '0%',   y: '50%'  },
+  p_mr: { asset: 'pink', x: '100%', y: '50%'  },
+  p_bl: { asset: 'pink', x: '0%',   y: '100%' },
+  p_br: { asset: 'pink', x: '100%', y: '100%' }
+};
 
 const COLOR_DATA = [
-  {g:'D',tint:'#f8fbff',warm:0.00,title:'Colorless',desc:'幾乎看不到任何黃調，整體顯得純淨、透亮、冷白。',category:'Colorless',categoryDesc:'通常屬最受市場重視的無色範圍。',tone:'Icy White',toneDesc:'在白光下呈現清冷、冰透感。',use:'Premium Showcase',useDesc:'適合高端展示與教育比較用途。'},
-  {g:'E',tint:'#f7fbff',warm:0.01,title:'Colorless',desc:'非常接近 D 色，只有在嚴格比對下才可能見到極輕微色調。',category:'Colorless',categoryDesc:'仍屬無色級別。',tone:'Cool White',toneDesc:'乾淨純白，與 D 極接近。',use:'Luxury Retail',useDesc:'高端零售中十分常見。'},
-  {g:'F',tint:'#f6faff',warm:0.02,title:'Colorless',desc:'肉眼通常仍呈無色觀感，屬高質感白色。',category:'Colorless',categoryDesc:'無色系列下限。',tone:'Crystal White',toneDesc:'觀感非常純淨。',use:'Premium Daily Wear',useDesc:'兼顧美感與實用性。'},
-  {g:'G',tint:'#f7f8fb',warm:0.05,title:'Near Colorless',desc:'接近無色，面向正常觀察時仍相當白。',category:'Near Colorless',categoryDesc:'在佩戴情境中通常表現亮白。',tone:'Soft White',toneDesc:'帶極輕微暖感。',use:'Popular Fine Jewelry',useDesc:'市場接受度高。'},
-  {g:'H',tint:'#f7f5ef',warm:0.08,title:'Near Colorless',desc:'在側面或對比環境下可見微暖色調。',category:'Near Colorless',categoryDesc:'屬受歡迎的平衡型色級。',tone:'Warm White',toneDesc:'開始出現微暖黃感。',use:'Smart Value',useDesc:'視覺與預算較平衡。'},
-  {g:'I',tint:'#f7eedb',warm:0.12,title:'Near Colorless',desc:'暖感稍為明顯，但正面依然可維持明亮印象。',category:'Near Colorless',categoryDesc:'常見於實用佩戴級別。',tone:'Hint of Warmth',toneDesc:'在暖光下更易感受到色調。',use:'Value-driven Selection',useDesc:'較重視性價比時常見。'},
-  {g:'J',tint:'#f5e6c4',warm:0.16,title:'Near Colorless',desc:'開始見到明顯暖白感，與高色級對比時差距較清楚。',category:'Near Colorless',categoryDesc:'屬近無色末端。',tone:'Creamy White',toneDesc:'有柔和奶白暖感。',use:'Vintage Warm Style',useDesc:'適合喜歡柔和色溫的人。'},
-  {g:'K',tint:'#f1dbad',warm:0.22,title:'Faint',desc:'已可察覺淡黃調，特別在白底或高色級對比下。',category:'Faint',categoryDesc:'進入微淡色範圍。',tone:'Soft Champagne',toneDesc:'暖感開始穩定存在。',use:'Warm-tone Jewelry',useDesc:'與黃金鑲嵌可較協調。'},
-  {g:'L',tint:'#edd19a',warm:0.27,title:'Faint',desc:'淡黃色更容易被察覺，整體觀感更溫暖。',category:'Faint',categoryDesc:'淡色調更加明顯。',tone:'Light Champagne',toneDesc:'偏暖、柔和。',use:'Gold Setting Friendly',useDesc:'配黃金常較自然。'},
-  {g:'M',tint:'#e7c27c',warm:0.34,title:'Faint',desc:'可清楚感受到偏黃感，較不屬冷白類型。',category:'Faint',categoryDesc:'肉眼可見暖調。',tone:'Champagne Glow',toneDesc:'暖光下更顯金感。',use:'Vintage Warm Look',useDesc:'適合特定風格定位。'},
-  {g:'N',tint:'#dfb15e',warm:0.42,title:'Very Light',desc:'顏色更加明顯，整體帶淡金黃色印象。',category:'Very Light',categoryDesc:'已非白鑽主流觀感。',tone:'Golden Tint',toneDesc:'色調穩定偏暖。',use:'Educational Comparison',useDesc:'適合作為色階教學比較。'},
-  {g:'O',tint:'#d29736',warm:0.48,title:'Very Light',desc:'偏黃程度加深，暖調主導。',category:'Very Light',categoryDesc:'用於示範色階差異很直觀。',tone:'Honey Gold',toneDesc:'暖黃更濃。',use:'Teaching Demo',useDesc:'教學對比用途佳。'},
-  {g:'P',tint:'#bd7f1a',warm:0.56,title:'Very Light',desc:'可明顯視為偏黃鑽石。',category:'Very Light',categoryDesc:'遠離無色與近無色區間。',tone:'Amber Light',toneDesc:'偏金黃色更鮮明。',use:'Contrast Illustration',useDesc:'適合作為顏色對比樣本。'},
-  {g:'Q',tint:'#a66b10',warm:0.62,title:'Light',desc:'明顯暖黃，正面觀感亦容易察覺。',category:'Light',categoryDesc:'進入輕色範圍。',tone:'Warm Amber',toneDesc:'色彩存在感高。',use:'Color Education',useDesc:'顏色教學很清楚。'},
-  {g:'R',tint:'#8e5807',warm:0.68,title:'Light',desc:'黃調更深，容易一眼辨識出暖色傾向。',category:'Light',categoryDesc:'色感不再細微。',tone:'Deep Amber',toneDesc:'色澤較濃厚。',use:'Demonstration Piece',useDesc:'適合色差示範。'},
-  {g:'S',tint:'#7e4d01',warm:0.72,title:'Light',desc:'顏色偏深，整體暖黃感強。',category:'Light',categoryDesc:'在白底下非常清楚。',tone:'Burnished Gold',toneDesc:'暖度高且厚實。',use:'Advanced Education',useDesc:'用於說明色級後段。'},
-  {g:'T',tint:'#6f4300',warm:0.76,title:'Light',desc:'偏黃啡感更顯著。',category:'Light',categoryDesc:'與高色級差異極明顯。',tone:'Golden Brown',toneDesc:'帶輕微啡調。',use:'Color-range Training',useDesc:'進階教學適合。'},
-  {g:'U',tint:'#653b00',warm:0.80,title:'Tinted',desc:'色調更濃，偏暖褐。',category:'Tinted',categoryDesc:'進入明顯帶色範圍。',tone:'Bronze Gold',toneDesc:'明顯金啡感。',use:'Range End Study',useDesc:'適合顏色尾段示範。'},
-  {g:'V',tint:'#5a3400',warm:0.84,title:'Tinted',desc:'偏褐暖調突出。',category:'Tinted',categoryDesc:'已屬非常明顯色感。',tone:'Bronze Amber',toneDesc:'色澤濃而暖。',use:'Visual Contrast',useDesc:'用於極端對比觀察。'},
-  {g:'W',tint:'#512f00',warm:0.88,title:'Tinted',desc:'色感強烈，已不再以白鑽觀感為主。',category:'Tinted',categoryDesc:'屬顏色明顯階段。',tone:'Antique Gold',toneDesc:'具有濃厚暖調。',use:'Educational End Range',useDesc:'教學用途最為直觀。'},
-  {g:'X',tint:'#492a00',warm:0.92,title:'Tinted',desc:'顏色很深，帶金褐色。',category:'Tinted',categoryDesc:'接近色階尾段。',tone:'Aged Honey',toneDesc:'暖色很重。',use:'Color Tail Reference',useDesc:'作尾段參考。'},
-  {g:'Y',tint:'#432600',warm:0.96,title:'Tinted',desc:'可見深暖褐黃調。',category:'Tinted',categoryDesc:'色澤明顯偏深。',tone:'Rich Bronze',toneDesc:'偏深暖棕。',use:'Instructional Contrast',useDesc:'極端比較明顯。'},
-  {g:'Z',tint:'#3d2200',warm:1.00,title:'Tinted',desc:'色階末端，具有非常明顯的黃／啡色調。',category:'Tinted',categoryDesc:'屬尾段色彩級別。',tone:'Deep Tinted Gold',toneDesc:'暖黃與褐感最濃。',use:'End-of-scale Example',useDesc:'適合作為 D–Z 尾段代表。'}
+  {g:'D', tint:'rgba(248,251,255,0.02)', title:'Colorless', desc:'幾乎看不到任何黃調，整體顯得純淨、透亮、冷白。', category:'Colorless', categoryDesc:'通常屬最受市場重視的無色範圍。', tone:'Icy White', toneDesc:'在白光下呈現清冷、冰透感。', use:'Premium Showcase', useDesc:'適合高端展示與教育比較用途。'},
+  {g:'E', tint:'rgba(247,251,255,0.04)', title:'Colorless', desc:'非常接近 D 色，只有在嚴格比對下才可能見到極輕微色調。', category:'Colorless', categoryDesc:'仍屬無色級別。', tone:'Cool White', toneDesc:'乾淨純白，與 D 極接近。', use:'Luxury Retail', useDesc:'高端零售中十分常見。'},
+  {g:'F', tint:'rgba(246,250,255,0.06)', title:'Colorless', desc:'肉眼通常仍呈無色觀感，屬高質感白色。', category:'Colorless', categoryDesc:'無色系列下限。', tone:'Crystal White', toneDesc:'觀感非常純淨。', use:'Premium Daily Wear', useDesc:'兼顧美感與實用性。'},
+  {g:'G', tint:'rgba(247,248,251,0.08)', title:'Near Colorless', desc:'接近無色，面向正常觀察時仍相當白。', category:'Near Colorless', categoryDesc:'在佩戴情境中通常表現亮白。', tone:'Soft White', toneDesc:'帶極輕微暖感。', use:'Popular Fine Jewelry', useDesc:'市場接受度高。'},
+  {g:'H', tint:'rgba(247,245,239,0.10)', title:'Near Colorless', desc:'在側面或對比環境下可見微暖色調。', category:'Near Colorless', categoryDesc:'屬受歡迎的平衡型色級。', tone:'Warm White', toneDesc:'開始出現微暖黃感。', use:'Smart Value', useDesc:'視覺與預算較平衡。'},
+  {g:'I', tint:'rgba(247,238,219,0.14)', title:'Near Colorless', desc:'暖感稍為明顯，但正面依然可維持明亮印象。', category:'Near Colorless', categoryDesc:'常見於實用佩戴級別。', tone:'Hint of Warmth', toneDesc:'在暖光下更易感受到色調。', use:'Value-driven Selection', useDesc:'較重視性價比時常見。'},
+  {g:'J', tint:'rgba(245,230,196,0.18)', title:'Near Colorless', desc:'開始見到明顯暖白感，與高色級對比時差距較清楚。', category:'Near Colorless', categoryDesc:'屬近無色末端。', tone:'Creamy White', toneDesc:'有柔和奶白暖感。', use:'Vintage Warm Style', useDesc:'適合喜歡柔和色溫的人。'},
+  {g:'K', tint:'rgba(241,219,173,0.22)', title:'Faint', desc:'已可察覺淡黃調，特別在白底或高色級對比下。', category:'Faint', categoryDesc:'進入微淡色範圍。', tone:'Soft Champagne', toneDesc:'暖感開始穩定存在。', use:'Warm-tone Jewelry', useDesc:'與黃金鑲嵌可較協調。'},
+  {g:'L', tint:'rgba(237,209,154,0.26)', title:'Faint', desc:'淡黃色更容易被察覺，整體觀感更溫暖。', category:'Faint', categoryDesc:'淡色調更加明顯。', tone:'Light Champagne', toneDesc:'偏暖、柔和。', use:'Gold Setting Friendly', useDesc:'配黃金常較自然。'},
+  {g:'M', tint:'rgba(231,194,124,0.30)', title:'Faint', desc:'可清楚感受到偏黃感，較不屬冷白類型。', category:'Faint', categoryDesc:'肉眼可見暖調。', tone:'Champagne Glow', toneDesc:'暖光下更顯金感。', use:'Vintage Warm Look', useDesc:'適合特定風格定位。'},
+  {g:'N', tint:'rgba(223,177,94,0.34)', title:'Very Light', desc:'顏色更加明顯，整體帶淡金黃色印象。', category:'Very Light', categoryDesc:'已非白鑽主流觀感。', tone:'Golden Tint', toneDesc:'色調穩定偏暖。', use:'Educational Comparison', useDesc:'適合作為色階教學比較。'},
+  {g:'O', tint:'rgba(210,151,54,0.38)', title:'Very Light', desc:'偏黃程度加深，暖調主導。', category:'Very Light', categoryDesc:'用於示範色階差異很直觀。', tone:'Honey Gold', toneDesc:'暖黃更濃。', use:'Teaching Demo', useDesc:'教學對比用途佳。'},
+  {g:'P', tint:'rgba(189,127,26,0.42)', title:'Very Light', desc:'可明顯視為偏黃鑽石。', category:'Very Light', categoryDesc:'遠離無色與近無色區間。', tone:'Amber Light', toneDesc:'偏金黃色更鮮明。', use:'Contrast Illustration', useDesc:'適合作為顏色對比樣本。'},
+  {g:'Q', tint:'rgba(166,107,16,0.46)', title:'Light', desc:'明顯暖黃，正面觀感亦容易察覺。', category:'Light', categoryDesc:'進入輕色範圍。', tone:'Warm Amber', toneDesc:'色彩存在感高。', use:'Color Education', useDesc:'顏色教學很清楚。'},
+  {g:'R', tint:'rgba(142,88,7,0.50)', title:'Light', desc:'黃調更深，容易一眼辨識出暖色傾向。', category:'Light', categoryDesc:'色感不再細微。', tone:'Deep Amber', toneDesc:'色澤較濃厚。', use:'Demonstration Piece', useDesc:'適合色差示範。'},
+  {g:'S', tint:'rgba(126,77,1,0.54)', title:'Light', desc:'顏色偏深，整體暖黃感強。', category:'Light', categoryDesc:'在白底下非常清楚。', tone:'Burnished Gold', toneDesc:'暖度高且厚實。', use:'Advanced Education', useDesc:'用於說明色級後段。'},
+  {g:'T', tint:'rgba(111,67,0,0.58)', title:'Light', desc:'偏黃啡感更顯著。', category:'Light', categoryDesc:'與高色級差異極明顯。', tone:'Golden Brown', toneDesc:'帶輕微啡調。', use:'Color-range Training', useDesc:'進階教學適合。'},
+  {g:'U', tint:'rgba(101,59,0,0.62)', title:'Tinted', desc:'色調更濃，偏暖褐。', category:'Tinted', categoryDesc:'進入明顯帶色範圍。', tone:'Bronze Gold', toneDesc:'明顯金啡感。', use:'Range End Study', useDesc:'適合顏色尾段示範。'},
+  {g:'V', tint:'rgba(90,52,0,0.66)', title:'Tinted', desc:'偏褐暖調突出。', category:'Tinted', categoryDesc:'已屬非常明顯色感。', tone:'Bronze Amber', toneDesc:'色澤濃而暖。', use:'Visual Contrast', useDesc:'用於極端對比觀察。'},
+  {g:'W', tint:'rgba(81,47,0,0.70)', title:'Tinted', desc:'色感強烈，已不再以白鑽觀感為主。', category:'Tinted', categoryDesc:'屬顏色明顯階段。', tone:'Antique Gold', toneDesc:'具有濃厚暖調。', use:'Educational End Range', useDesc:'教學用途最為直觀。'},
+  {g:'X', tint:'rgba(73,42,0,0.74)', title:'Tinted', desc:'顏色很深，帶金褐色。', category:'Tinted', categoryDesc:'接近色階尾段。', tone:'Aged Honey', toneDesc:'暖色很重。', use:'Color Tail Reference', useDesc:'作尾段參考。'},
+  {g:'Y', tint:'rgba(67,38,0,0.78)', title:'Tinted', desc:'可見深暖褐黃調。', category:'Tinted', categoryDesc:'色澤明顯偏深。', tone:'Rich Bronze', toneDesc:'偏深暖棕。', use:'Instructional Contrast', useDesc:'極端比較明顯。'},
+  {g:'Z', tint:'rgba(61,34,0,0.82)', title:'Tinted', desc:'色階末端，具有非常明顯的黃／啡色調。', category:'Tinted', categoryDesc:'屬尾段色彩級別。', tone:'Deep Tinted Gold', toneDesc:'暖黃與褐感最濃。', use:'End-of-scale Example', useDesc:'適合作為 D–Z 尾段代表。'}
 ];
 
 const CLARITY_DATA = [
-  {g:'FL',title:'Flawless',inclusions:0,opacity:.14,desc:'在 10× 放大下未見內部或外部瑕疵，屬極高淨度等級。',badge:'Loupe inspection ready'},
-  {g:'IF',title:'Internally Flawless',inclusions:1,opacity:.16,desc:'內部沒有可見內含物，只可能有極輕微表面特徵。',badge:'Surface features minimal'},
-  {g:'VVS1',title:'Very Very Slightly Included 1',inclusions:3,opacity:.18,desc:'極其微小的內含物，通常需要熟練觀察才容易找到。',badge:'Minute inclusions'},
-  {g:'VVS2',title:'Very Very Slightly Included 2',inclusions:5,opacity:.20,desc:'內含物仍非常細微，但比 VVS1 稍易找到。',badge:'Tiny internal features'},
-  {g:'VS1',title:'Very Slightly Included 1',inclusions:8,opacity:.24,desc:'微小內含物在 10× 下可見，肉眼通常不明顯。',badge:'Minor inclusions'},
-  {g:'VS2',title:'Very Slightly Included 2',inclusions:12,opacity:.28,desc:'內含物數量或位置較明顯，但多數情況下仍不易肉眼察覺。',badge:'Visible under 10×'},
-  {g:'SI1',title:'Slightly Included 1',inclusions:18,opacity:.34,desc:'在 10× 放大下容易看見，部分情況肉眼亦可能察覺。',badge:'Noticeable under loupe'},
-  {g:'SI2',title:'Slightly Included 2',inclusions:24,opacity:.40,desc:'內含物較多或較明顯，肉眼可見機會增加。',badge:'Eye-visible possible'},
-  {g:'I1',title:'Included 1',inclusions:32,opacity:.48,desc:'內含物明顯，可能影響透明感與整體觀感。',badge:'Obvious inclusions'},
-  {g:'I2',title:'Included 2',inclusions:42,opacity:.56,desc:'內含物數量與尺寸都較大，對外觀及光線表現影響更強。',badge:'Heavy inclusion pattern'},
-  {g:'I3',title:'Included 3',inclusions:54,opacity:.64,desc:'大量且清晰的內含物，對透明度及美觀影響顯著。',badge:'Very high inclusion visibility'}
+  {g:'FL',title:'Flawless',inclusions:0,desc:'在 10× 放大下未見內部或外部瑕疵，屬極高淨度等級。',badge:'Loupe inspection ready'},
+  {g:'IF',title:'Internally Flawless',inclusions:1,desc:'內部沒有可見內含物，只可能有極輕微表面特徵。',badge:'Surface features minimal'},
+  {g:'VVS1',title:'Very Very Slightly Included 1',inclusions:3,desc:'極其微小的內含物，通常需要熟練觀察才容易找到。',badge:'Minute inclusions'},
+  {g:'VVS2',title:'Very Very Slightly Included 2',inclusions:5,desc:'內含物仍非常細微，但比 VVS1 稍易找到。',badge:'Tiny internal features'},
+  {g:'VS1',title:'Very Slightly Included 1',inclusions:8,desc:'微小內含物在 10× 下可見，肉眼通常不明顯。',badge:'Minor inclusions'},
+  {g:'VS2',title:'Very Slightly Included 2',inclusions:12,desc:'內含物數量或位置較明顯，但多數情況下仍不易肉眼察覺。',badge:'Visible under 10×'},
+  {g:'SI1',title:'Slightly Included 1',inclusions:18,desc:'在 10× 放大下容易看見，部分情況肉眼亦可能察覺。',badge:'Noticeable under loupe'},
+  {g:'SI2',title:'Slightly Included 2',inclusions:24,desc:'內含物較多或較明顯，肉眼可見機會增加。',badge:'Eye-visible possible'}
 ];
 
 const CUT_DATA = {
-  ha: {
+  ha:{
     copy:'完美對稱時，可見清晰且均衡的八心八箭圖樣，反映出比例與工藝控制都十分優秀。',
     m1:['Excellent','圖樣分佈均衡，心箭輪廓乾淨清晰。'],
     m2:['High','亮區集中，白光反射均勻而強烈。'],
     m3:['Balanced','光譜色散自然，火彩不散亂。'],
     m4:['Dynamic','移動時明暗切換俐落，閃爍感明顯。']
   },
-  light: {
+  light:{
     copy:'當回光優秀時，鑽石正面會呈現更強烈的明亮區、色散火彩與動態閃爍效果。',
     m1:['Precision','比例與角度讓光線更有效回返眼睛。'],
     m2:['Very High','白光表現更集中而飽滿。'],
@@ -1355,47 +721,96 @@ const CUT_DATA = {
   }
 };
 
-let colorNode = null;
-let clarityNode = null;
-let cutNode = null;
-let caratNode = null;
+function $(id){ return document.getElementById(id); }
 
-function initHero() {
-  $('heroDiamond').appendChild(
-    realisticDiamondTop({ size: 420, tint: '#f9fbff', sparkle: 1.2, warmth: .01 })
-  );
+function createRenderNode(spriteKey, className = '', overlay = 'none'){
+  const s = SPRITES[spriteKey];
+  const div = document.createElement('div');
+  div.className = `render-photo ${className}`.trim();
+  div.style.setProperty('--img', `url("${ASSETS[s.asset]}")`);
+  div.style.setProperty('--pos-x', s.x);
+  div.style.setProperty('--pos-y', s.y);
+  div.style.setProperty('--overlay', overlay);
+  return div;
 }
 
-function initColorSection() {
+function createClarityOverlay(count){
+  const layer = document.createElement('div');
+  layer.style.position = 'absolute';
+  layer.style.inset = '0';
+  layer.style.pointerEvents = 'none';
+
+  for(let i=0;i<count;i++){
+    const dot = document.createElement('span');
+    dot.style.position = 'absolute';
+    dot.style.left = `${12 + ((i * 137) % 68)}%`;
+    dot.style.top = `${16 + ((i * 83) % 52)}%`;
+    dot.style.background = `rgba(36,48,66,${0.18 + (i % 4) * 0.05})`;
+
+    if(i % 5 === 0){
+      dot.style.width = `${4 + (i % 3)}px`;
+      dot.style.height = `${4 + (i % 3)}px`;
+      dot.style.borderRadius = '50%';
+    }else if(i % 5 === 1){
+      dot.style.width = `${10 + (i % 2) * 3}px`;
+      dot.style.height = '2px';
+      dot.style.borderRadius = '999px';
+      dot.style.transform = `rotate(${i * 17}deg)`;
+    }else if(i % 5 === 2){
+      dot.style.width = '3px';
+      dot.style.height = `${12 + (i % 3) * 3}px`;
+      dot.style.borderRadius = '999px';
+      dot.style.transform = `rotate(${(i * 13) % 180}deg)`;
+    }else if(i % 5 === 3){
+      dot.style.width = `${7 + (i % 2) * 2}px`;
+      dot.style.height = `${7 + (i % 2) * 2}px`;
+      dot.style.borderRadius = '50% / 40%';
+      dot.style.transform = `rotate(${i * 9}deg)`;
+    }else{
+      dot.style.width = '8px';
+      dot.style.height = '2px';
+      dot.style.borderRadius = '999px';
+      dot.style.transform = `rotate(${i * 29}deg)`;
+    }
+    layer.appendChild(dot);
+  }
+  return layer;
+}
+
+function setHero(){
+  const hero = $('heroRender');
+  hero.style.setProperty('--img', `url("${ASSETS.neutral}")`);
+  hero.style.setProperty('--pos-x', '0%');
+  hero.style.setProperty('--pos-y', '0%');
+  hero.style.setProperty('--overlay', 'linear-gradient(rgba(255,255,255,.02), rgba(255,255,255,.02))');
+}
+
+function initColor(){
   const rulerInner = $('rulerInner');
   const rulerTrack = $('rulerTrack');
-  let activeIndex = 0;
+  let activeColor = 0;
+  let colorNode = null;
 
   COLOR_DATA.forEach((item, idx) => {
-    const node = createEl('div', {
-      class: 'grade' + (idx === 0 ? ' active' : ''),
-      'data-index': idx
-    }, [
-      createEl('div', { class: 'grade-pill' }, item.g),
-      createEl('div', { class: 'grade-label' }, item.title.split(' ')[0])
-    ]);
+    const node = document.createElement('div');
+    node.className = 'grade' + (idx === 0 ? ' active' : '');
+    node.innerHTML = `<div class="grade-pill">${item.g}</div><div class="grade-label">${item.title.split(' ')[0]}</div>`;
     node.addEventListener('click', () => setColor(idx, true));
     rulerInner.appendChild(node);
   });
 
-  function centerMark(i, smooth = true) {
+  function centerMark(i, smooth = true){
     const mark = rulerInner.children[i];
     const left = mark.offsetLeft - rulerTrack.clientWidth / 2 + mark.clientWidth / 2;
     rulerTrack.scrollTo({ left, behavior: smooth ? 'smooth' : 'auto' });
   }
 
-  function setColor(i, scroll = true) {
-    activeIndex = Math.max(0, Math.min(COLOR_DATA.length - 1, i));
-    [...rulerInner.children].forEach((node, idx) => node.classList.toggle('active', idx === activeIndex));
+  function setColor(i, scroll = true){
+    activeColor = Math.max(0, Math.min(COLOR_DATA.length - 1, i));
+    [...rulerInner.children].forEach((n, idx) => n.classList.toggle('active', idx === activeColor));
 
-    const d = COLOR_DATA[activeIndex];
-
-    $('gradeDot').style.background = d.tint;
+    const d = COLOR_DATA[activeColor];
+    $('gradeDot').style.background = d.tint.replace(/0\.\d+\)/, '0.95)');
     $('gradeText').textContent = d.g;
     $('gradeMini').textContent = d.title;
     $('mGrade').textContent = d.g;
@@ -1411,199 +826,176 @@ function initColorSection() {
     $('colorBadge').textContent = `${d.category} range`;
 
     $('colorViewer').innerHTML = '';
-    colorNode = createEl('div', { class: 'viewer-wrap' });
-    colorNode.appendChild(realisticDiamondTop({
-      size: 330,
-      tint: d.tint,
-      warmth: d.warm,
-      sparkle: 1.08
-    }));
+    colorNode = createRenderNode(
+      'n_tl',
+      'viewer-wrap',
+      `linear-gradient(${d.tint}, ${d.tint})`
+    );
     $('colorViewer').appendChild(colorNode);
 
-    if (scroll) centerMark(activeIndex, true);
+    if(scroll) centerMark(activeColor, true);
   }
 
   setColor(0, false);
 
-  let isDrag = false;
-  let startX = 0;
-  let baseLeft = 0;
+  let isDrag = false, startX = 0, baseLeft = 0;
+  ['mousedown', 'touchstart'].forEach(evt => rulerTrack.addEventListener(evt, e => {
+    isDrag = true;
+    startX = (e.touches ? e.touches[0].pageX : e.pageX) - rulerTrack.offsetLeft;
+    baseLeft = rulerTrack.scrollLeft;
+    rulerTrack.style.cursor = 'grabbing';
+  }, { passive:true }));
 
-  ['mousedown', 'touchstart'].forEach((evt) => {
-    rulerTrack.addEventListener(evt, (e) => {
-      isDrag = true;
-      startX = (e.touches ? e.touches[0].pageX : e.pageX) - rulerTrack.offsetLeft;
-      baseLeft = rulerTrack.scrollLeft;
-      rulerTrack.style.cursor = 'grabbing';
-    }, { passive: true });
-  });
+  ['mouseup','mouseleave','touchend'].forEach(evt => window.addEventListener(evt, () => {
+    isDrag = false;
+    rulerTrack.style.cursor = 'grab';
+  }));
 
-  ['mouseup', 'mouseleave', 'touchend'].forEach((evt) => {
-    window.addEventListener(evt, () => {
-      isDrag = false;
-      rulerTrack.style.cursor = 'grab';
-    });
-  });
-
-  ['mousemove', 'touchmove'].forEach((evt) => {
-    window.addEventListener(evt, (e) => {
-      if (!isDrag) return;
-      const x = (e.touches ? e.touches[0].pageX : e.pageX) - rulerTrack.offsetLeft;
-      rulerTrack.scrollLeft = baseLeft - (x - startX) * 1.25;
-    }, { passive: true });
-  });
+  ['mousemove','touchmove'].forEach(evt => window.addEventListener(evt, e => {
+    if(!isDrag) return;
+    const x = (e.touches ? e.touches[0].pageX : e.pageX) - rulerTrack.offsetLeft;
+    rulerTrack.scrollLeft = baseLeft - (x - startX) * 1.25;
+  }, { passive:true }));
 
   let scrollTimer;
   rulerTrack.addEventListener('scroll', () => {
     clearTimeout(scrollTimer);
     scrollTimer = setTimeout(() => {
-      let nearest = 0;
-      let best = Infinity;
+      let nearest = 0, best = Infinity;
       [...rulerInner.children].forEach((mark, idx) => {
-        const diff = Math.abs(
-          (mark.offsetLeft + mark.offsetWidth / 2) -
-          (rulerTrack.scrollLeft + rulerTrack.clientWidth / 2)
-        );
-        if (diff < best) {
-          best = diff;
-          nearest = idx;
-        }
+        const diff = Math.abs((mark.offsetLeft + mark.offsetWidth / 2) - (rulerTrack.scrollLeft + rulerTrack.clientWidth / 2));
+        if(diff < best){ best = diff; nearest = idx; }
       });
       setColor(nearest, false);
     }, 70);
-  }, { passive: true });
+  }, { passive:true });
+
+  $('colorViewerCard').addEventListener('click', () => openLightbox(colorNode));
 }
 
-function initClaritySection() {
+function initClarity(){
   const legend = $('clarityLegend');
-  const diamondWrap = $('clarityDiamond');
+  const diamond = $('clarityDiamond');
   const loupe = $('loupe');
   const loupeContent = $('loupeContent');
   const clarityStage = $('clarityStage');
+  let clarityNode = null;
 
   CLARITY_DATA.forEach((item, idx) => {
-    const card = createEl('div', {
-      class: 'legend-item' + (idx === 0 ? ' active' : ''),
-      'data-index': idx
-    }, [
-      createEl('strong', {}, `${item.g} · ${item.title}`),
-      createEl('span', {}, item.desc)
-    ]);
+    const card = document.createElement('div');
+    card.className = 'legend-item' + (idx === 0 ? ' active' : '');
+    card.innerHTML = `<strong>${item.g} · ${item.title}</strong><span>${item.desc}</span>`;
     card.addEventListener('click', () => setClarity(idx));
     legend.appendChild(card);
   });
 
-  function setClarity(i) {
+  function setClarity(i){
     const d = CLARITY_DATA[i];
-
-    [...legend.children].forEach((node, idx) => node.classList.toggle('active', idx === i));
+    [...legend.children].forEach((n, idx) => n.classList.toggle('active', idx === i));
 
     $('clarityTitle').textContent = `${d.g} · ${d.title}`;
     $('clarityText').textContent = d.desc;
     $('clarityBadge').textContent = d.badge;
 
-    diamondWrap.innerHTML = '';
-    clarityNode = createEl('div', { class: 'viewer-wrap' });
-    clarityNode.appendChild(realisticDiamondTop({
-      size: 330,
-      tint: '#f8fbff',
-      sparkle: 1.02,
-      inclusions: d.inclusions,
-      inclusionOpacity: d.opacity
-    }));
-    diamondWrap.appendChild(clarityNode);
+    diamond.innerHTML = '';
+    clarityNode = createRenderNode('p_tr', 'viewer-wrap');
+    clarityNode.appendChild(createClarityOverlay(d.inclusions));
+    diamond.appendChild(clarityNode);
 
     loupeContent.innerHTML = '';
-    loupeContent.appendChild(realisticDiamondTop({
-      size: 660,
-      tint: '#f8fbff',
-      sparkle: 1.02,
-      inclusions: d.inclusions,
-      inclusionOpacity: d.opacity
-    }));
+    const big = createRenderNode('p_tr', '', 'none');
+    big.style.width = '660px';
+    big.style.height = '660px';
+    big.style.borderRadius = '0';
+    big.style.boxShadow = 'none';
+    big.appendChild(createClarityOverlay(d.inclusions));
+    loupeContent.appendChild(big);
   }
 
-  function moveLoupe(e) {
+  function moveLoupe(e){
     const rect = clarityStage.getBoundingClientRect();
     const p = e.touches ? e.touches[0] : e;
     const x = p.clientX - rect.left;
     const y = p.clientY - rect.top;
-
     loupe.style.left = `${x - loupe.offsetWidth / 2}px`;
     loupe.style.top = `${y - loupe.offsetHeight / 2}px`;
 
     const scale = 1.9;
-    loupeContent.style.transform =
-      `translate(${-x * scale + loupe.offsetWidth / 2}px, ${-y * scale + loupe.offsetHeight / 2}px) scale(${scale})`;
+    loupeContent.style.transform = `translate(${-x * scale + loupe.offsetWidth / 2}px, ${-y * scale + loupe.offsetHeight / 2}px) scale(${scale})`;
   }
 
   clarityStage.addEventListener('mouseenter', () => loupe.classList.add('visible'));
   clarityStage.addEventListener('mouseleave', () => loupe.classList.remove('visible'));
   clarityStage.addEventListener('mousemove', moveLoupe);
-  clarityStage.addEventListener('touchstart', () => loupe.classList.add('visible'), { passive: true });
-  clarityStage.addEventListener('touchmove', moveLoupe, { passive: true });
+  clarityStage.addEventListener('touchstart', () => loupe.classList.add('visible'), { passive:true });
+  clarityStage.addEventListener('touchmove', moveLoupe, { passive:true });
   clarityStage.addEventListener('touchend', () => loupe.classList.remove('visible'));
 
   setClarity(0);
 }
 
-function initCutSection() {
+function initCut(){
+  const cutViewer = $('cutViewer');
   const switcher = $('cutSwitch');
-  const viewer = $('cutViewer');
+  let cutNode = null;
 
-  function applyCut(mode) {
-    [...switcher.querySelectorAll('button')].forEach((btn) => {
-      btn.classList.toggle('active', btn.dataset.mode === mode);
-    });
+  function applyCut(mode){
+    [...switcher.querySelectorAll('button')].forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
 
-    viewer.innerHTML = '';
-    cutNode = createEl('div', { class: 'viewer-wrap' });
-    cutNode.appendChild(mode === 'ha' ? heartsArrows(340) : lightReturn(340));
-    viewer.appendChild(cutNode);
+    cutViewer.innerHTML = '';
+    cutNode = createRenderNode(mode === 'ha' ? 'p_tl' : 'p_mr', 'viewer-wrap');
+    const overlay = document.createElement('div');
+    overlay.className = `cut-overlay ${mode}`;
+    cutNode.appendChild(overlay);
+    cutViewer.appendChild(cutNode);
 
-    const config = CUT_DATA[mode];
-    $('cutCopy').textContent = config.copy;
-    $('cutM1').textContent = config.m1[0]; $('cutM1d').textContent = config.m1[1];
-    $('cutM2').textContent = config.m2[0]; $('cutM2d').textContent = config.m2[1];
-    $('cutM3').textContent = config.m3[0]; $('cutM3d').textContent = config.m3[1];
-    $('cutM4').textContent = config.m4[0]; $('cutM4d').textContent = config.m4[1];
+    const c = CUT_DATA[mode];
+    $('cutCopy').textContent = c.copy;
+    $('cutM1').textContent = c.m1[0]; $('cutM1d').textContent = c.m1[1];
+    $('cutM2').textContent = c.m2[0]; $('cutM2d').textContent = c.m2[1];
+    $('cutM3').textContent = c.m3[0]; $('cutM3d').textContent = c.m3[1];
+    $('cutM4').textContent = c.m4[0]; $('cutM4d').textContent = c.m4[1];
   }
 
-  switcher.addEventListener('click', (e) => {
+  switcher.addEventListener('click', e => {
     const btn = e.target.closest('button[data-mode]');
-    if (!btn) return;
+    if(!btn) return;
     applyCut(btn.dataset.mode);
   });
 
   applyCut('ha');
+
+  $('cutViewerCard').addEventListener('click', () => openLightbox(cutNode));
 }
 
-function initCaratSection() {
-  const slider = $('caratSlider');
+function initCarat(){
+  const fixed = $('caratFixed');
   const viewer = $('caratViewer');
+  const slider = $('caratSlider');
+  let fixedNode = null;
+  let dynamicNode = null;
 
-  function caratToMm(ct) {
-    return 6.5 * Math.pow(ct, 1 / 3);
-  }
+  function caratToMm(ct){ return 6.5 * Math.pow(ct, 1/3); }
 
-  function setCarat(value) {
+  function setCarat(value){
     const ct = parseFloat(value);
-    const size = Math.max(120, Math.min(320, 165 * Math.pow(ct, .34)));
+    const fixedScale = 0.84;
+    const dynamicScale = 0.84 * Math.pow(ct / 0.5, 1/3);
 
+    fixed.innerHTML = '';
     viewer.innerHTML = '';
-    caratNode = createEl('div', {
-      class: 'viewer-wrap',
-      style: `width:${size}px;aspect-ratio:1/1;`
-    });
-    caratNode.appendChild(realisticDiamondTop({
-      size,
-      tint: '#f9fbff',
-      sparkle: 1.05 + ct / 8,
-      warmth: .01
-    }));
-    viewer.appendChild(caratNode);
+
+    fixedNode = createRenderNode('n_br', 'viewer-wrap');
+    fixedNode.style.transform = `scale(${fixedScale})`;
+
+    dynamicNode = createRenderNode('n_br', 'viewer-wrap');
+    dynamicNode.style.transform = `scale(${dynamicScale})`;
+
+    fixed.appendChild(fixedNode);
+    viewer.appendChild(dynamicNode);
 
     $('caratValue').textContent = `${ct.toFixed(2)} ct`;
+    $('caratDynamicLabel').textContent = `可比較 · ${ct.toFixed(2)}ct`;
     $('caratFace').textContent = `${caratToMm(ct).toFixed(1)} mm`;
 
     let spread = 'Balanced';
@@ -1611,27 +1003,22 @@ function initCaratSection() {
     let pres = 'Classic Premium';
     let presDesc = '適合標準主推展示與比較。';
 
-    if (ct < 0.5) {
-      spread = 'Delicate';
-      spreadDesc = '視覺尺寸較小，風格精緻。';
-      pres = 'Subtle Fine Jewelry';
-      presDesc = '適合日常低調佩戴。';
-    } else if (ct < 1) {
+    if(ct < 1){
       spread = 'Elegant';
       spreadDesc = '視覺觀感輕巧而精緻。';
       pres = 'Refined Everyday';
       presDesc = '屬常見入門至中高階範圍。';
-    } else if (ct < 2) {
+    }else if(ct < 2){
       spread = 'Balanced';
       spreadDesc = '大小與亮感取得不錯平衡。';
       pres = 'Classic Premium';
       presDesc = '適合標準主推展示與比較。';
-    } else if (ct < 3.5) {
+    }else if(ct < 3.5){
       spread = 'Bold';
       spreadDesc = '正面視覺存在感明顯增強。';
       pres = 'Statement Luxury';
       presDesc = '適合高端展示焦點。';
-    } else {
+    }else{
       spread = 'Showpiece';
       spreadDesc = '視覺尺寸突出，收藏展示感強。';
       pres = 'High Impact Showcase';
@@ -1644,134 +1031,131 @@ function initCaratSection() {
     $('caratPresDesc').textContent = presDesc;
   }
 
-  slider.addEventListener('input', (e) => setCarat(e.target.value));
+  slider.addEventListener('input', e => setCarat(e.target.value));
   setCarat(slider.value);
+
+  $('caratViewerCard').addEventListener('click', () => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'compare-stage';
+    wrapper.style.width = 'min(900px,90vw)';
+    wrapper.style.gap = '18px';
+
+    const left = document.createElement('div');
+    left.className = 'compare-item';
+    left.appendChild(fixedNode.cloneNode(true));
+
+    const right = document.createElement('div');
+    right.className = 'compare-item';
+    right.appendChild(dynamicNode.cloneNode(true));
+
+    wrapper.appendChild(left);
+    wrapper.appendChild(right);
+
+    openLightbox(wrapper);
+  });
 }
 
-function initLightbox() {
-  const lightbox = $('lightbox');
-  const lightboxStage = $('lightboxStage');
-  const lightboxContent = $('lightboxContent');
-  const lightboxClose = $('lightboxClose');
+const lightbox = $('lightbox');
+const lightboxStage = $('lightboxStage');
+const lightboxContent = $('lightboxContent');
+const lightboxClose = $('lightboxClose');
 
-  let lbScale = 1;
-  let lbX = 0;
-  let lbY = 0;
-  let dragging = false;
-  let dragStart = { x: 0, y: 0 };
-  let touchDist = 0;
+let lbScale = 1, lbX = 0, lbY = 0, dragging = false, dragStart = {x:0,y:0}, touchDist = 0;
 
-  function apply() {
-    lightboxContent.style.transform = `translate(${lbX}px, ${lbY}px) scale(${lbScale})`;
-  }
+function applyLightbox(){
+  lightboxContent.style.transform = `translate(${lbX}px, ${lbY}px) scale(${lbScale})`;
+}
+function openLightbox(source){
+  if(!source) return;
+  lightboxContent.innerHTML = '';
+  lightboxContent.appendChild(source.cloneNode(true));
+  lightbox.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  lbScale = 1; lbX = 0; lbY = 0;
+  applyLightbox();
+}
+function closeLightbox(){
+  lightbox.classList.remove('open');
+  document.body.style.overflow = '';
+}
 
-  function open(source) {
-    if (!source) return;
-    lightboxContent.innerHTML = '';
-    lightboxContent.appendChild(source.cloneNode(true));
-    lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    lbScale = 1;
-    lbX = 0;
-    lbY = 0;
-    apply();
-  }
+lightboxClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', e => { if(e.target === lightbox) closeLightbox(); });
+window.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
 
-  function close() {
-    lightbox.classList.remove('open');
-    document.body.style.overflow = '';
-  }
+lightboxStage.addEventListener('wheel', e => {
+  e.preventDefault();
+  lbScale = Math.max(.6, Math.min(6, lbScale + (e.deltaY < 0 ? .18 : -.18)));
+  applyLightbox();
+}, { passive:false });
 
-  lightboxClose.addEventListener('click', close);
-  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
-  window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+lightboxStage.addEventListener('mousedown', e => {
+  dragging = true;
+  dragStart = { x:e.clientX - lbX, y:e.clientY - lbY };
+  lightboxStage.style.cursor = 'grabbing';
+});
+window.addEventListener('mouseup', () => {
+  dragging = false;
+  lightboxStage.style.cursor = 'grab';
+});
+window.addEventListener('mousemove', e => {
+  if(!dragging) return;
+  lbX = e.clientX - dragStart.x;
+  lbY = e.clientY - dragStart.y;
+  applyLightbox();
+});
 
-  lightboxStage.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    lbScale = Math.max(.6, Math.min(6, lbScale + (e.deltaY < 0 ? .18 : -.18)));
-    apply();
-  }, { passive: false });
-
-  lightboxStage.addEventListener('mousedown', (e) => {
+lightboxStage.addEventListener('touchstart', e => {
+  if(e.touches.length === 1){
     dragging = true;
-    dragStart = { x: e.clientX - lbX, y: e.clientY - lbY };
-    lightboxStage.style.cursor = 'grabbing';
-  });
+    dragStart = { x:e.touches[0].clientX - lbX, y:e.touches[0].clientY - lbY };
+  }
+  if(e.touches.length === 2){
+    touchDist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+  }
+}, { passive:true });
 
-  window.addEventListener('mouseup', () => {
-    dragging = false;
-    lightboxStage.style.cursor = 'grab';
-  });
+lightboxStage.addEventListener('touchmove', e => {
+  if(e.touches.length === 1 && dragging){
+    lbX = e.touches[0].clientX - dragStart.x;
+    lbY = e.touches[0].clientY - dragStart.y;
+    applyLightbox();
+  }else if(e.touches.length === 2){
+    const d = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    const delta = (d - touchDist) / 140;
+    touchDist = d;
+    lbScale = Math.max(.6, Math.min(6, lbScale + delta));
+    applyLightbox();
+  }
+}, { passive:true });
 
-  window.addEventListener('mousemove', (e) => {
-    if (!dragging) return;
-    lbX = e.clientX - dragStart.x;
-    lbY = e.clientY - dragStart.y;
-    apply();
-  });
+lightboxStage.addEventListener('touchend', () => { dragging = false; });
 
-  lightboxStage.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 1) {
-      dragging = true;
-      dragStart = {
-        x: e.touches[0].clientX - lbX,
-        y: e.touches[0].clientY - lbY
-      };
-    }
-    if (e.touches.length === 2) {
-      touchDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-    }
-  }, { passive: true });
-
-  lightboxStage.addEventListener('touchmove', (e) => {
-    if (e.touches.length === 1 && dragging) {
-      lbX = e.touches[0].clientX - dragStart.x;
-      lbY = e.touches[0].clientY - dragStart.y;
-      apply();
-    } else if (e.touches.length === 2) {
-      const d = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const delta = (d - touchDist) / 140;
-      touchDist = d;
-      lbScale = Math.max(.6, Math.min(6, lbScale + delta));
-      apply();
-    }
-  }, { passive: true });
-
-  lightboxStage.addEventListener('touchend', () => { dragging = false; });
-
-  $('colorViewerCard').addEventListener('click', () => open(colorNode));
-  $('cutViewerCard').addEventListener('click', () => open(cutNode));
-  $('caratViewerCard').addEventListener('click', () => open(caratNode));
-}
-
-function initNavObserver() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      document.querySelectorAll('.nav a').forEach((a) => {
-        a.classList.toggle('active', a.getAttribute('href').slice(1) === entry.target.id);
-      });
+function initNavObserver(){
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        document.querySelectorAll('.nav a').forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href').slice(1) === entry.target.id);
+        });
+      }
     });
-  }, {
-    rootMargin: '-35% 0px -55% 0px',
-    threshold: 0.01
-  });
+  }, { rootMargin:'-35% 0px -55% 0px', threshold:0.01 });
 
-  ['color', 'clarity', 'cut', 'carat'].forEach((id) => observer.observe($(id)));
+  ['color','clarity','cut','carat'].forEach(id => observer.observe($(id)));
 }
 
-initHero();
-initColorSection();
-initClaritySection();
-initCutSection();
-initCaratSection();
-initLightbox();
+setHero();
+initColor();
+initClarity();
+initCut();
+initCarat();
 initNavObserver();
 </script>
 </body>

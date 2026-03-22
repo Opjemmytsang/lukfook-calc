@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>六福計算工具入口</title>
+  <title>六福計算工具首頁</title>
   <style>
     :root{
       --wine:#8B2A2E;
@@ -36,6 +36,16 @@
       background:linear-gradient(135deg, rgba(255,255,255,.98), rgba(200,165,90,.10));
       box-shadow:var(--shadow);
       padding:26px;
+    }
+    .logo{
+      width:220px;
+      max-width:82vw;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:18px;
+      padding:10px 14px;
+      box-sizing:border-box;
+      margin-bottom:14px;
     }
     h1{
       margin:0 0 10px;
@@ -77,7 +87,7 @@
       padding:20px;
       display:flex;
       flex-direction:column;
-      min-height:290px;
+      min-height:300px;
       position:relative;
       overflow:hidden;
     }
@@ -94,6 +104,7 @@
       color:var(--wine-dark);
       letter-spacing:.6px;
       margin-bottom:10px;
+      position:relative;z-index:1;
     }
     .title{
       font-size:24px;
@@ -164,28 +175,29 @@
 <body>
   <div class="wrap">
     <div class="hero">
-      <h1>六福計算工具入口</h1>
+      <img class="logo" src="logo.png" alt="六福珠寶 LUKFOOK JEWELLERY" onerror="this.style.display='none'" />
+      <h1>六福計算工具首頁</h1>
       <div class="sub">
-        已整理成獨立入口頁，方便你之後直接放上 GitHub Pages 或給同事開啟。現時保留原本主工具不變，避免影響你已在用的功能，同時新增折扣情景頁作為第二個工具入口。
+        現已正式將首頁獨立出來。原本的主工具已備份為 <strong>main-tool.html</strong>，之後你打開首頁，就可以直接進入不同工具，不會再和主程式互相混亂。
       </div>
       <div class="chips">
-        <span class="chip">六福紅金風格</span>
+        <span class="chip">首頁版 index.html</span>
+        <span class="chip">主工具已備份</span>
         <span class="chip">手機 / iPad 可用</span>
-        <span class="chip">兩個工具分開，不怕互相影響</span>
       </div>
 
       <div class="grid">
         <div class="card">
           <div class="eyebrow">TOOL 01</div>
           <div class="title">貴金屬回收／兌換／賣出計算工具</div>
-          <div class="desc">原本的主工具，適合處理賣出、買入、兌換、金價更新、客人展示畫面等日常用途。</div>
+          <div class="desc">原本你一直使用的主工具，現已改為獨立頁面，方便保留完整功能，包括金價更新、內部版面及對客展示版面。</div>
           <ul class="list">
             <li>支援飾金 / 添富金 / 金粒金條 / 鉑金</li>
             <li>可切換內部版面與對客展示版面</li>
-            <li>保留你原本已完成的功能結構</li>
+            <li>原本功能已完整保留到 main-tool.html</li>
           </ul>
           <div class="actions">
-            <a class="btn primary" href="./index.html">打開主工具</a>
+            <a class="btn primary" href="./main-tool.html">打開主工具</a>
           </div>
         </div>
 
@@ -206,7 +218,7 @@
       </div>
 
       <div class="foot">
-        這一版屬於「入口頁」做法。因為這樣最安全，不會直接覆蓋你原本的 <strong>index.html</strong>。如你下一步想，我可以再幫你把入口頁改成真正首頁版本，或者再加第 3 個工具，例如「半工 / 免工 快速價目表」。
+        這版已適合直接作為 GitHub Pages 首頁使用。你之後只要打開 <strong>index.html</strong>，就會先見到工具入口，再按去相應頁面。
       </div>
     </div>
   </div>

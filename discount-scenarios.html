@@ -306,8 +306,8 @@
             <div class="syncValue" id="liveGoldPrice">—</div>
             <div class="syncSub" id="goldPriceStatus">正在讀取今日金價…</div>
             <div class="btnRow">
-              <button class="primary" id="refreshPriceBtn" type="button">更新金價</button>
-              <button class="secondary" id="applyPriceBtn" type="button">套用今日金價</button>
+              <button class="primary" id="refreshPriceBtn" type="button">刷新金價</button>
+              <button class="secondary" id="applyPriceBtn" type="button">引用今日金價</button>
             </div>
           </div>
 
@@ -327,8 +327,8 @@
           </div>
 
           <div class="btnRow">
-            <button class="primary" id="copyBtn" type="button">複製結果</button>
-            <button class="secondary" id="resetBtn" type="button">清除重填</button>
+            <button class="primary" id="copyBtn" type="button">複製摘要</button>
+            <button class="secondary" id="resetBtn" type="button">重新輸入</button>
           </div>
 
           <div class="note">
@@ -598,7 +598,7 @@
       try{
         await navigator.clipboard.writeText(text);
         $('copyBtn').textContent = '已複製';
-        setTimeout(() => $('copyBtn').textContent = '複製結果', 1200);
+        setTimeout(() => $('copyBtn').textContent = '複製摘要', 1200);
       } catch(e){
         alert('未能自動複製，請手動複製下方內容。');
       }

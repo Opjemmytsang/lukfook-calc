@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>飾金折扣情景計算器</title>
+  <style>
+    :root{
+      --wine:#8B2A2E;
+      --wine-dark:#6F1E22;
+      --gold:#C8A55A;
+      --bg:#FCF8F2;
+      --card:#ffffff;
+      --text:#1B1B1B;
+      --muted:#6A6156;
+      --border:rgba(200,165,90,.36);
+      --shadow:0 18px 42px rgba(20,10,5,.10);
+      --shadow-soft:0 10px 22px rgba(20,10,5,.06);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","Microsoft JhengHei",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 400px at 0% 0%, rgba(200,165,90,.18), transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, rgba(139,42,46,.10), transparent 55%),
+        linear-gradient(180deg,#fff,var(--bg));
+      padding:20px;
+    }
+
+    .wrap{max-width:1180px;margin:0 auto}
+    .hero{
+      background:linear-gradient(135deg, rgba(255,255,255,.98), rgba(200,165,90,.08));
+      border:1px solid var(--border);
+      border-radius:calc(var(--radius) + 8px);
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+    .title{
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    h1{
+      margin:0 0 8px;
+      color:var(--wine-dark);
+      font-size:28px;
+      line-height:1.15;
+      letter-spacing:.3px;
+    }
+    .sub{
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.7;
+      max-width:860px;
+    }
+    .chipRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(200,165,90,.5);
+      background:rgba(200,165,90,.12);
+      color:var(--wine-dark);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:360px 1fr;
+      gap:16px;
+      margin-top:16px;
+    }
+    @media(max-width:980px){ .layout{grid-template-columns:1fr;} }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-soft);
+      padding:16px;
+    }
+    .sectionTitle{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-end;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    .sectionTitle .t{
+      color:var(--wine-dark);
+      font-weight:950;
+      font-size:14px;
+      letter-spacing:.25px;
+    }
+    .sectionTitle .s{
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .field{margin-bottom:12px}
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 6px 2px;
+    }
+    input,select{
+      width:100%;
+      padding:12px 13px;
+      border-radius:16px;
+      border:1px solid rgba(0,0,0,.12);
+      background:#fff;
+      font-size:15px;
+      outline:none;
+    }
+    input:focus,select:focus{
+      border-color:rgba(200,165,90,.8);
+      box-shadow:0 0 0 3px rgba(200,165,90,.16);
+    }
+
+    .twoCol{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .btnRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    button{
+      border:none;
+      border-radius:16px;
+      padding:12px 16px;
+      font-size:14px;
+      cursor:pointer;
+    }
+    .primary{
+      color:#fff;
+      background:linear-gradient(135deg,var(--wine),var(--wine-dark));
+      box-shadow:0 12px 24px rgba(139,42,46,.18);
+    }
+    .secondary{
+      background:#fff;
+      border:1px solid rgba(200,165,90,.58);
+      color:var(--text);
+    }
+
+    .summaryGrid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;
+    }
+    @media(max-width:900px){ .summaryGrid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+    @media(max-width:560px){ .summaryGrid{grid-template-columns:1fr;} }
+
+    .metric{
+      border:1px solid rgba(0,0,0,.08);
+      border-radius:18px;
+      background:linear-gradient(135deg, rgba(200,165,90,.08), rgba(139,42,46,.04));
+      padding:14px;
+      min-height:108px;
+    }
+    .metric .k{font-size:12px;color:var(--muted);margin-bottom:8px}
+    .metric .v{font-size:28px;font-weight:980;color:var(--wine-dark);line-height:1.05}
+    .metric .x{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.55}
+
+    .scenarioGrid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    @media(max-width:860px){ .scenarioGrid{grid-template-columns:1fr;} }
+
+    .scenario{
+      border:1px solid rgba(200,165,90,.40);
+      border-radius:22px;
+      background:#fff;
+      overflow:hidden;
+      box-shadow:var(--shadow-soft);
+    }
+    .scenarioHead{
+      padding:14px 16px;
+      background:linear-gradient(135deg, rgba(139,42,46,.07), rgba(200,165,90,.10));
+      border-bottom:1px solid rgba(200,165,90,.26);
+    }
+    .scenarioHead .name{
+      font-size:16px;
+      font-weight:950;
+      color:var(--wine-dark);
+      margin-bottom:4px;
+    }
+    .scenarioHead .formula{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+    .scenarioBody{padding:16px}
+    .scenarioPrice{
+      font-size:34px;
+      font-weight:990;
+      color:var(--wine-dark);
+      line-height:1.05;
+      word-break:break-word;
+    }
+    .scenarioRound{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:10px;
+    }
+    .breakdown{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px dashed rgba(200,165,90,.55);
+      font-size:13px;
+      color:var(--text);
+      line-height:1.8;
+    }
+    .breakdown .m{color:var(--muted)}
+
+    .note{
+      margin-top:14px;
+      padding:12px 14px;
+      border:1px dashed rgba(200,165,90,.58);
+      background:rgba(200,165,90,.10);
+      border-radius:18px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+    .copyBox{
+      margin-top:14px;
+      padding:14px;
+      border:1px solid rgba(0,0,0,.08);
+      border-radius:18px;
+      background:#fff;
+      min-height:120px;
+      white-space:pre-wrap;
+      line-height:1.7;
+      font-size:13px;
+    }
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="title">
+        <div>
+          <h1>飾金折扣情景計算器</h1>
+          <div class="sub">
+            輸入飾金售出價、金重、工費後，系統會自動用固定公式計算佣金：<strong>（售出價 × 金重 + 工費）× 2%</strong>，
+            並即時列出 5 個常用情景：<strong>全單95折、金價95折半工全佣、金價正常半工全佣、全工全佣、免工全佣</strong>。
+          </div>
+          <div class="chipRow">
+            <div class="chip">佣金固定：原價全單 × 2%</div>
+            <div class="chip">可切換單位：両 / 克</div>
+            <div class="chip">即時計算＋可複製結果</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div class="card">
+          <div class="sectionTitle">
+            <div class="t">輸入資料</div>
+            <div class="s">更改任何欄位會即時更新</div>
+          </div>
+
+          <div class="field">
+            <label>貨幣</label>
+            <select id="currency">
+              <option value="HK$">HK$</option>
+              <option value="MOP$">MOP$</option>
+              <option value="RM">RM</option>
+              <option value="$">$</option>
+            </select>
+          </div>
+
+          <div class="twoCol">
+            <div class="field">
+              <label>金重單位</label>
+              <select id="unit">
+                <option value="両">両</option>
+                <option value="克">克</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>金重</label>
+              <input id="weight" type="number" step="0.001" inputmode="decimal" placeholder="例如：1.234" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>飾金售出價（每両 / 每克）</label>
+            <input id="sellPrice" type="number" step="0.01" inputmode="decimal" placeholder="例如：35000" />
+          </div>
+
+          <div class="field">
+            <label>工費</label>
+            <input id="laborFee" type="number" step="0.01" inputmode="decimal" placeholder="例如：2000" />
+          </div>
+
+          <div class="btnRow">
+            <button class="primary" id="copyBtn" type="button">複製結果</button>
+            <button class="secondary" id="resetBtn" type="button">清除重填</button>
+          </div>
+
+          <div class="note">
+            <strong>計法定義：</strong><br>
+            1. 金價金額 = 售出價 × 金重<br>
+            2. 固定佣金 =（金價金額 + 工費）× 2%<br>
+            3. 各情景均以同一筆固定佣金計算，不需要另外輸入佣金。
+          </div>
+
+          <div class="copyBox" id="copyText">請先輸入資料，系統會自動生成可複製內容。</div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="sectionTitle">
+              <div class="t">基礎拆解</div>
+              <div class="s">先看原價與固定佣金</div>
+            </div>
+
+            <div class="summaryGrid">
+              <div class="metric">
+                <div class="k">金價金額</div>
+                <div class="v" id="goldAmount">—</div>
+                <div class="x">售出價 × 金重</div>
+              </div>
+              <div class="metric">
+                <div class="k">工費</div>
+                <div class="v" id="laborAmount">—</div>
+                <div class="x">由你手動輸入</div>
+              </div>
+              <div class="metric">
+                <div class="k">原價全單</div>
+                <div class="v" id="subtotalAmount">—</div>
+                <div class="x">金價金額 + 工費</div>
+              </div>
+              <div class="metric">
+                <div class="k">固定佣金（2%）</div>
+                <div class="v" id="commissionAmount">—</div>
+                <div class="x">（原價全單）× 2%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenarioGrid" id="scenarioGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const scenarioGrid = $('scenarioGrid');
+
+    const scenarios = [
+      {
+        key:'all95',
+        name:'全單95折',
+        formula:'（金價金額 + 工費）× 95% + 固定佣金',
+        calc:(gold,labor,commission)=> ((gold + labor) * 0.95) + commission,
+        detail:(gold,labor,commission)=>[
+          ['折後單價部分', (gold + labor) * 0.95],
+          ['固定佣金', commission]
+        ]
+      },
+      {
+        key:'gold95HalfLabor',
+        name:'金價95折半工全佣',
+        formula:'（金價金額 × 95%）+（工費 × 50%）+ 固定佣金',
+        calc:(gold,labor,commission)=> (gold * 0.95) + (labor * 0.5) + commission,
+        detail:(gold,labor,commission)=>[
+          ['95折金價部分', gold * 0.95],
+          ['半工', labor * 0.5],
+          ['固定佣金', commission]
+        ]
+      },
+      {
+        key:'goldNormalHalfLabor',
+        name:'金價正常半工全佣',
+        formula:'金價金額 +（工費 × 50%）+ 固定佣金',
+        calc:(gold,labor,commission)=> gold + (labor * 0.5) + commission,
+        detail:(gold,labor,commission)=>[
+          ['正常金價部分', gold],
+          ['半工', labor * 0.5],
+          ['固定佣金', commission]
+        ]
+      },
+      {
+        key:'fullLabor',
+        name:'全工全佣',
+        formula:'金價金額 + 工費 + 固定佣金',
+        calc:(gold,labor,commission)=> gold + labor + commission,
+        detail:(gold,labor,commission)=>[
+          ['正常金價部分', gold],
+          ['全工', labor],
+          ['固定佣金', commission]
+        ]
+      },
+      {
+        key:'noLabor',
+        name:'免工全佣',
+        formula:'金價金額 + 固定佣金',
+        calc:(gold,labor,commission)=> gold + commission,
+        detail:(gold,labor,commission)=>[
+          ['正常金價部分', gold],
+          ['免工', 0],
+          ['固定佣金', commission]
+        ]
+      }
+    ];
+
+    function isNum(x){
+      return Number.isFinite(x) && !Number.isNaN(x);
+    }
+
+    function fmtMoney(n){
+      const currency = $('currency').value || 'HK$';
+      if(!isNum(n)) return '—';
+      return `${currency} ${n.toLocaleString('zh-HK', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    }
+
+    function fmtMoneyInt(n){
+      const currency = $('currency').value || 'HK$';
+      if(!isNum(n)) return '—';
+      return `${currency} ${Math.round(n).toLocaleString('zh-HK')}`;
+    }
+
+    function getValues(){
+      const sellPrice = Number($('sellPrice').value);
+      const weight = Number($('weight').value);
+      const labor = Number($('laborFee').value);
+      return {
+        sellPrice: isNum(sellPrice) && sellPrice >= 0 ? sellPrice : NaN,
+        weight: isNum(weight) && weight >= 0 ? weight : NaN,
+        labor: isNum(labor) && labor >= 0 ? labor : NaN
+      };
+    }
+
+    function buildBreakdown(detailList){
+      return detailList.map(([label, value]) => `
+        <div><span class="m">${label}</span>：<strong>${fmtMoney(value)}</strong></div>
+      `).join('');
+    }
+
+    function renderEmpty(){
+      $('goldAmount').textContent = '—';
+      $('laborAmount').textContent = '—';
+      $('subtotalAmount').textContent = '—';
+      $('commissionAmount').textContent = '—';
+      scenarioGrid.innerHTML = scenarios.map(s => `
+        <div class="scenario">
+          <div class="scenarioHead">
+            <div class="name">${s.name}</div>
+            <div class="formula">${s.formula}</div>
+          </div>
+          <div class="scenarioBody">
+            <div class="scenarioPrice">—</div>
+            <div class="scenarioRound">未有資料</div>
+            <div class="breakdown">請先輸入飾金售出價、金重及工費。</div>
+          </div>
+        </div>
+      `).join('');
+      $('copyText').textContent = '請先輸入資料，系統會自動生成可複製內容。';
+    }
+
+    function render(){
+      const { sellPrice, weight, labor } = getValues();
+
+      if(!(isNum(sellPrice) && isNum(weight) && isNum(labor) && sellPrice > 0 && weight > 0)){
+        renderEmpty();
+        return;
+      }
+
+      const gold = sellPrice * weight;
+      const subtotal = gold + labor;
+      const commission = subtotal * 0.02;
+
+      $('goldAmount').textContent = fmtMoney(gold);
+      $('laborAmount').textContent = fmtMoney(labor);
+      $('subtotalAmount').textContent = fmtMoney(subtotal);
+      $('commissionAmount').textContent = fmtMoney(commission);
+
+      scenarioGrid.innerHTML = scenarios.map(s => {
+        const total = s.calc(gold, labor, commission);
+        return `
+          <div class="scenario">
+            <div class="scenarioHead">
+              <div class="name">${s.name}</div>
+              <div class="formula">${s.formula}</div>
+            </div>
+            <div class="scenarioBody">
+              <div class="scenarioPrice">${fmtMoney(total)}</div>
+              <div class="scenarioRound">四捨五入參考：<strong>${fmtMoneyInt(total)}</strong></div>
+              <div class="breakdown">${buildBreakdown(s.detail(gold, labor, commission))}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const unit = $('unit').value;
+      const lines = [
+        '飾金折扣情景計算結果',
+        `- 售出價：${fmtMoney(sellPrice).replace(/\.00$/, '')} / 每${unit}`,
+        `- 金重：${weight.toLocaleString('zh-HK', {maximumFractionDigits:3})} ${unit}`,
+        `- 工費：${fmtMoney(labor)}`,
+        `- 金價金額：${fmtMoney(gold)}`,
+        `- 原價全單：${fmtMoney(subtotal)}`,
+        `- 固定佣金（2%）：${fmtMoney(commission)}`,
+        '',
+        ...scenarios.map(s => {
+          const total = s.calc(gold, labor, commission);
+          return `【${s.name}】${fmtMoney(total)}（取整：${fmtMoneyInt(total)}）`;
+        })
+      ];
+
+      $('copyText').textContent = lines.join('\n');
+    }
+
+    async function copyResult(){
+      const text = $('copyText').textContent.trim();
+      if(!text || text.includes('請先輸入資料')) return;
+      try{
+        await navigator.clipboard.writeText(text);
+        $('copyBtn').textContent = '已複製';
+        setTimeout(() => $('copyBtn').textContent = '複製結果', 1200);
+      } catch(e){
+        alert('未能自動複製，請手動複製下方內容。');
+      }
+    }
+
+    function resetAll(){
+      $('currency').value = 'HK$';
+      $('unit').value = '両';
+      $('weight').value = '';
+      $('sellPrice').value = '';
+      $('laborFee').value = '';
+      renderEmpty();
+    }
+
+    ['currency','unit','weight','sellPrice','laborFee'].forEach(id => {
+      $(id).addEventListener('input', render);
+      $(id).addEventListener('change', render);
+    });
+
+    $('copyBtn').addEventListener('click', copyResult);
+    $('resetBtn').addEventListener('click', resetAll);
+
+    renderEmpty();
+  </script>
+</body>
+</html>

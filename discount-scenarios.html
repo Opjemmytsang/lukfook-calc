@@ -265,7 +265,6 @@
       line-height:1.7;
       font-size:13px;
     }
-    .muted{color:var(--muted)}
   </style>
 </head>
 <body>
@@ -273,19 +272,19 @@
     <div class="hero">
       <h1>飾金折扣情景計算器</h1>
       <div class="sub">
-        此工具已直接讀取原本主工具使用的金價來源，會自動帶入今日飾金售出價。輸入金重與工費後，系統會以固定公式 <strong>（售出價 × 金重 + 工費）× 2%</strong> 計算全佣，並將結果集中在同一頁顯示。
+        此工具直接讀取主計算工具所使用的金價資料，會自動帶入今日飾金售出價。輸入金重及工費後，系統會按固定公式 <strong>（售出價 × 金重 + 工費）× 2%</strong> 計算全佣，並將不同情景集中於同一頁面顯示，方便比較與內部使用。
       </div>
       <div class="chipRow">
         <div class="chip">同步主工具金價</div>
-        <div class="chip">預設讀取今日飾金售出價</div>
-        <div class="chip">結果集中 1 頁顯示</div>
+        <div class="chip">今日飾金售出價</div>
+        <div class="chip">集中比較顯示</div>
       </div>
 
       <div class="layout">
         <div class="card">
           <div class="sectionTitle">
             <div class="t">輸入資料</div>
-            <div class="s">更改任何欄位會即時更新</div>
+            <div class="s">更改任何欄位後即時更新</div>
           </div>
 
           <div class="twoCol">
@@ -303,9 +302,9 @@
           </div>
 
           <div class="priceSync">
-            <label>今日飾金售出價（與主工具同步）</label>
+            <label>今日飾金售出價</label>
             <div class="syncValue" id="liveGoldPrice">—</div>
-            <div class="syncSub" id="goldPriceStatus">正在讀取主工具金價…</div>
+            <div class="syncSub" id="goldPriceStatus">正在讀取今日金價…</div>
             <div class="btnRow">
               <button class="primary" id="refreshPriceBtn" type="button">更新金價</button>
               <button class="secondary" id="applyPriceBtn" type="button">套用今日金價</button>
@@ -314,7 +313,7 @@
 
           <div class="field">
             <label>飾金售出價（每両 / 每克）</label>
-            <input id="sellPrice" type="number" step="0.01" inputmode="decimal" placeholder="會自動帶入今日金價，也可手動修改" />
+            <input id="sellPrice" type="number" step="0.01" inputmode="decimal" placeholder="系統會自動帶入，亦可按需要手動修改" />
           </div>
 
           <div class="field">
@@ -333,7 +332,7 @@
           </div>
 
           <div class="note">
-            <strong>計法定義：</strong><br>
+            <strong>計算方式：</strong><br>
             1. 金價金額 = 售出價 × 金重<br>
             2. 固定佣金 =（金價金額 + 工費）× 2%<br>
             3. 顯示排序：原價、半工全佣、免工全佣、全單95折、金價95折半工全佣、金價95折免工全佣
@@ -346,7 +345,7 @@
           <div class="card">
             <div class="sectionTitle">
               <div class="t">基礎拆解</div>
-              <div class="s">先看原價與固定佣金</div>
+              <div class="s">先檢視原價與固定佣金</div>
             </div>
 
             <div class="summaryGrid">
@@ -471,7 +470,7 @@
     }
 
     async function fetchGoldPrice(){
-      $('goldPriceStatus').textContent = '正在讀取主工具金價…';
+      $('goldPriceStatus').textContent = '正在讀取今日金價…';
       try{
         const res = await fetch(GOLDPRICE_PROXY, { method:'GET', mode:'cors', credentials:'omit', cache:'no-store' });
         if(!res.ok) throw new Error('HTTP ' + res.status);
@@ -499,13 +498,13 @@
       if(isNum(price)){
         $('liveGoldPrice').textContent = `HK$ ${price.toLocaleString('zh-HK')}`;
         const updatedAt = goldPriceData?.updatedAt ? `｜更新時間：${goldPriceData.updatedAt}` : '';
-        $('goldPriceStatus').textContent = `已同步主工具飾金售出價（每${unit}）${updatedAt}`;
+        $('goldPriceStatus').textContent = `已同步今日飾金售出價（每${unit}）${updatedAt}`;
         if(autoApply || !$('sellPrice').value){
           $('sellPrice').value = price;
         }
       } else {
         $('liveGoldPrice').textContent = '—';
-        $('goldPriceStatus').textContent = '暫時未有可用金價。';
+        $('goldPriceStatus').textContent = '暫未取得可用金價。';
       }
       render();
     }

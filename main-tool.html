@@ -1,0 +1,1571 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>六福珠寶｜貴金屬回收／兌換／賣出 計算工具（內部＋客人展示）</title>
+
+  <style>
+    :root{
+      --wine:#8B2A2E;
+      --wine2:#6F1E22;
+      --gold:#C8A55A;
+      --paper:#FBF7F0;
+      --card:rgba(255,255,255,.92);
+      --text:#1B1B1B;
+      --muted:#6A6156;
+      --border:rgba(200,165,90,.38);
+      --shadow:0 18px 50px rgba(20,10,5,.12);
+      --shadow2:0 10px 24px rgba(20,10,5,.08);
+      --r:22px;
+    }
+
+    body{
+      margin:0;
+      padding:18px;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","Microsoft JhengHei",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 520px at 15% -10%, rgba(200,165,90,.22), transparent 60%),
+        radial-gradient(900px 420px at 90% 0%, rgba(139,42,46,.12), transparent 55%),
+        linear-gradient(180deg,#FFFDF9,var(--paper) 40%,#FFFDF9);
+    }
+
+    .wrap{max-width:1120px;margin:0 auto}
+    .header{
+      background:linear-gradient(135deg, rgba(255,255,255,.96), rgba(200,165,90,.10));
+      border:1px solid var(--border);
+      border-radius:calc(var(--r) + 8px);
+      box-shadow:var(--shadow);
+      padding:16px;
+      display:flex;
+      gap:16px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:space-between;
+    }
+
+    .logo{
+      width:220px;
+      max-width:82vw;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.06);
+      border-radius:18px;
+      padding:10px 14px;
+      box-sizing:border-box;
+    }
+
+    .titleBlock{flex:1; min-width:260px;}
+    h1{
+      margin:0 0 8px 0;
+      font-size:20px;
+      letter-spacing:.4px;
+      color:var(--wine2);
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .sub{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.65;
+      max-width:900px;
+    }
+
+    .chip{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(200,165,90,.55);
+      background:rgba(200,165,90,.12);
+      color:var(--wine2);
+      font-size:11px;
+      font-weight:800;
+      vertical-align:middle;
+    }
+
+    .priceBadges{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:6px;
+    }
+    .badge{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+      box-shadow:var(--shadow2);
+      font-size:11px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .badge .k{font-weight:950;color:var(--wine2);letter-spacing:.2px;}
+    .badgeCol{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      line-height:1.25;
+    }
+    .badgeRow{
+      display:flex;
+      gap:8px;
+      align-items:baseline;
+    }
+    .badgeRow .lab{color:var(--muted);}
+    .badgeRow .num{font-weight:950;color:var(--text);}
+
+    .tabs{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .tabBtn{
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      font-size:13px;
+      box-shadow:var(--shadow2);
+      user-select:none;
+    }
+    .tabBtn.active{
+      border-color:rgba(139,42,46,.35);
+      background:linear-gradient(135deg, rgba(139,42,46,.10), rgba(200,165,90,.10));
+      color:var(--wine2);
+      font-weight:900;
+      box-shadow:0 14px 30px rgba(139,42,46,.12);
+    }
+
+    .card{
+      margin-top:14px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:calc(var(--r) + 8px);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+
+    .sectionTitle{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .sectionTitle .t{
+      font-weight:950;
+      color:var(--wine2);
+      letter-spacing:.2px;
+      font-size:13px;
+    }
+    .sectionTitle .s{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    @media(max-width:780px){ .grid{grid-template-columns:1fr} }
+
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 6px 2px;
+    }
+
+    select,input{
+      width:100%;
+      padding:11px 12px;
+      border-radius:16px;
+      border:1px solid rgba(0,0,0,.12);
+      background:#fff;
+      font-size:14px;
+      outline:none;
+      box-sizing:border-box;
+    }
+    select:focus,input:focus{
+      border-color:rgba(200,165,90,.8);
+      box-shadow:0 0 0 3px rgba(200,165,90,.18);
+    }
+
+    .tileGroup{display:flex;gap:10px;flex-wrap:wrap;}
+    .tile{
+      appearance:none;
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:16px;
+      cursor:pointer;
+      font-size:14px;
+      transition:all .12s ease;
+      box-shadow:var(--shadow2);
+      user-select:none;
+    }
+    .tile:hover{ transform:translateY(-1px); }
+    .tile[aria-pressed="true"]{
+      border-color:rgba(139,42,46,.40);
+      background:linear-gradient(135deg, rgba(139,42,46,.10), rgba(200,165,90,.10));
+      box-shadow:0 14px 30px rgba(139,42,46,.12);
+      color:var(--wine2);
+      font-weight:900;
+    }
+    .tile.small{ font-size:13px; padding:9px 10px; border-radius:14px; }
+    .tile.wide{ min-width:160px; }
+
+    .inlineHelp{
+      font-size:11px;
+      color:var(--muted);
+      margin-top:6px;
+      line-height:1.5;
+    }
+
+    .btns{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    button.action{
+      padding:12px 16px;
+      border-radius:18px;
+      border:1px solid rgba(0,0,0,.08);
+      background:linear-gradient(135deg,var(--wine),var(--wine2));
+      color:#fff;
+      font-size:14px;
+      cursor:pointer;
+      box-shadow:0 12px 28px rgba(139,42,46,.18);
+    }
+    button.secondary{
+      padding:12px 16px;
+      border-radius:18px;
+      background:#fff;
+      color:var(--text);
+      border:1px solid rgba(200,165,90,.55);
+      cursor:pointer;
+    }
+
+    .softNote{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:16px;
+      border:1px dashed rgba(200,165,90,.55);
+      background:rgba(200,165,90,.10);
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+    .warn{color:var(--wine);font-weight:900}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;}
+    .hidden{display:none !important;}
+
+    .pricePanel{
+      margin-top:10px;
+      border:1px solid rgba(200,165,90,.45);
+      border-radius:18px;
+      background:linear-gradient(135deg, rgba(200,165,90,.10), rgba(139,42,46,.06));
+      padding:12px;
+    }
+    .ppTop{
+      display:flex;
+      gap:10px;
+      justify-content:space-between;
+      align-items:flex-start;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .ppTitle{
+      font-weight:950;
+      color:var(--wine2);
+      font-size:13px;
+      letter-spacing:.2px;
+    }
+    .ppTime{
+      font-size:11px;
+      color:var(--muted);
+    }
+
+    .ppGrid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+    @media(max-width:980px){ .ppGrid{grid-template-columns:1fr} }
+
+    .ppItem{
+      background:#fff;
+      border:1px solid rgba(0,0,0,.08);
+      border-radius:16px;
+      padding:10px;
+      position:relative;
+      overflow:hidden;
+    }
+    .ppItem::after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -40px auto;
+      width:120px;height:120px;
+      background:radial-gradient(circle, rgba(200,165,90,.22), transparent 60%);
+      transform:rotate(12deg);
+    }
+    .ppItem.hi{
+      border-color: rgba(139,42,46,.28);
+      box-shadow: 0 10px 24px rgba(139,42,46,.10);
+      background: linear-gradient(135deg, rgba(139,42,46,.05), rgba(200,165,90,.08));
+    }
+    .ppLabel{
+      font-size:11px;
+      color:var(--muted);
+      margin-bottom:6px;
+      position:relative;
+      z-index:1;
+    }
+    .ppValue{
+      font-size:20px;
+      font-weight:980;
+      color:var(--wine2);
+      line-height:1.1;
+      position:relative;
+      z-index:1;
+    }
+    .ppSub{
+      position:relative;
+      z-index:1;
+    }
+    .ppBtns{
+      display:flex;
+      gap:8px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .ppMini{
+      padding:9px 12px;
+      border-radius:16px;
+      border:1px solid rgba(200,165,90,.55);
+      background:#fff;
+      cursor:pointer;
+      font-size:13px;
+      box-shadow:var(--shadow2);
+    }
+
+    .divider{
+      height:1px;
+      background:rgba(0,0,0,.06);
+      margin:12px 0;
+    }
+
+    .customerWrap{max-width:940px;margin:0 auto;}
+    .customerHero{
+      background:#fff;
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:18px 18px 16px;
+    }
+    .customerTitleRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .customerTitle{
+      font-size:18px;
+      font-weight:950;
+      color:var(--wine2);
+      letter-spacing:.3px;
+    }
+    .customerHint{font-size:12px;color:var(--muted);}
+
+    .bigGrid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+    @media(max-width:760px){ .bigGrid{grid-template-columns:1fr} }
+
+    .bigCard{
+      background:linear-gradient(135deg, rgba(200,165,90,.08), rgba(139,42,46,.06));
+      border:1px solid rgba(200,165,90,.35);
+      border-radius:24px;
+      padding:16px;
+    }
+    .bigLabel{
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:8px;
+      letter-spacing:.2px;
+    }
+    .bigValue{
+      font-size:40px;
+      font-weight:980;
+      color:var(--wine2);
+      line-height:1.05;
+      word-break:break-word;
+    }
+    .bigSub{
+      font-size:14px;
+      color:var(--muted);
+      margin-top:10px;
+      line-height:1.55;
+    }
+    .bigAmount{
+      background:linear-gradient(135deg, rgba(139,42,46,.10), rgba(200,165,90,.10));
+      border:1px solid rgba(139,42,46,.25);
+    }
+    .amountValue{font-size:54px;font-weight:990;}
+
+    .customerFooter{
+      margin-top:12px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .cleanMode .customerTitleRow,
+    .cleanMode .customerFooter,
+    .cleanMode #custTypeLine,
+    .cleanMode #custTopHint { display:none !important; }
+    .cleanMode .customerHero{ padding-top:16px; }
+
+    .fsHint{display:none;}
+    :fullscreen .fsHint{
+      display:block;
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+      box-shadow:var(--shadow2);
+      font-size:12px;
+      color:var(--muted);
+    }
+    .pill strong{color:var(--wine2)}
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <img class="logo" src="logo.png" alt="六福珠寶 LUKFOOK JEWELLERY"
+         onerror="this.style.display='none'; document.getElementById('logoError').style.display='block';" />
+    <div id="logoError" style="display:none; width:240px; max-width:82vw;">
+      <div class="card">
+        <div class="warn">⚠ Logo 未載入</div>
+        <div class="sub">請確保 <span class="mono">logo.png</span> 同 <span class="mono">index.html</span> 放喺同一個資料夾。</div>
+      </div>
+    </div>
+
+    <div class="titleBlock">
+      <h1>
+        貴金屬回收／兌換／賣出 計算工具
+        <span class="chip">內部＋客人展示</span>
+        <span class="chip" id="hdrTodayUnit">今日金價（—）</span>
+      </h1>
+
+      <div class="priceBadges">
+        <span class="badge">
+          <span class="k" id="hdrOneKey">—</span>
+          <span class="badgeCol">
+            <span class="badgeRow"><span class="lab">賣出</span><span class="num" id="hdrOneSell">—</span></span>
+            <span class="badgeRow"><span class="lab">買入</span><span class="num" id="hdrOneBuy">—</span></span>
+            <span class="badgeRow"><span class="lab">兌換</span><span class="num" id="hdrOneTrade">—</span></span>
+          </span>
+        </span>
+      </div>
+
+      <div class="sub">
+        內部版面：買入/兌換可用扣項規則；賣出可輸入工費與折扣（互斥）。客人版面只展示：重量／單價／金額。
+        <br/>
+        <span class="mono">提示：</span>金價每 5 分鐘自動刷新；如要帶入到「單價」，按「套用」。
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tabBtn active" id="tabInternal">內部使用版面</button>
+      <button class="tabBtn" id="tabCustomer">對客人展示版面</button>
+    </div>
+  </div>
+
+  <div class="card" id="internalView">
+
+    <div class="sectionTitle">
+      <div class="t">1) 基本設定</div>
+      <div class="s">用途會控制可見項目（賣出會隱藏回收設定）</div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <label>貨品類別</label>
+        <div class="tileGroup" id="tgCategory">
+          <button class="tile wide" data-field="category" data-value="gold_jewelry">飾金</button>
+          <button class="tile wide" data-field="category" data-value="fortune_bar">添富金</button>
+          <button class="tile wide" data-field="category" data-value="gold_grain">金粒/金條</button>
+          <button class="tile wide" data-field="category" data-value="platinum">鉑金</button>
+        </div>
+        <div class="inlineHelp">對應金價：飾金＝黃金；鉑金＝白金；添富金＝投資金；金粒/金條＝黃條。</div>
+      </div>
+
+      <div>
+        <label>用途（排位：賣出／買入／兌換）</label>
+        <div class="tileGroup" id="tgPurpose">
+          <button class="tile" data-field="purpose" data-value="sell">賣出</button>
+          <button class="tile" data-field="purpose" data-value="buy">買入（回收）</button>
+          <button class="tile" data-field="purpose" data-value="exchange">兌換</button>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <label>字號（取代本號）</label>
+        <div class="tileGroup" id="tgDealerFlag">
+          <button class="tile" data-field="dealerFlag" data-value="own">本號</button>
+          <button class="tile" data-field="dealerFlag" data-value="outside">外號</button>
+        </div>
+        <div class="inlineHelp" id="dealerHint">只適用於買入/兌換；賣出不需要字號。</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="sectionTitle">
+      <div class="t">2) 回收/兌換設定（賣出會自動隱藏）</div>
+      <div class="s">買入與兌換規則保持不變</div>
+    </div>
+
+    <div id="recycleSettings">
+      <div id="goldBlock">
+        <label>成色（黃金／添富金／金粒金條）</label>
+        <div class="tileGroup" id="tgGoldPurity">
+          <button class="tile" data-field="goldPurity" data-value="au9999">Au999.9</button>
+          <button class="tile" data-field="goldPurity" data-value="non_au9999">非 Au999.9（需評定成色）</button>
+        </div>
+        <div class="inlineHelp">外號非 Au999.9／無成色字印等：可輸入「成色扣除%」。</div>
+
+        <div style="height:12px"></div>
+
+        <div id="jewelryOnly">
+          <label>焊口（只限飾金）</label>
+          <div class="tileGroup" id="tgSolder">
+            <button class="tile" data-field="hasSolder" data-value="no">無焊口</button>
+            <button class="tile" data-field="hasSolder" data-value="yes">有焊口</button>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <label>指定品牌（只限 Au999.9 飾金）</label>
+          <div class="tileGroup" id="tgBrand">
+            <button class="tile" data-field="specialBrand" data-value="none">否</button>
+            <button class="tile" data-field="specialBrand" data-value="listed">是（周大福／周生生／英皇／謝瑞麟）</button>
+          </div>
+          <div class="inlineHelp">指定品牌 Au999.9：兌換 0%；買入 有焊8%／無焊4%（按審批）。</div>
+        </div>
+
+        <div id="dealerOnly" style="display:none; margin-top:12px;">
+          <label>字號（外號 Au999.9：添富金／金粒金條）</label>
+          <div class="tileGroup" id="tgDealer">
+            <button class="tile" data-field="dealerType" data-value="integrity">誠信字號（0%）</button>
+            <button class="tile" data-field="dealerType" data-value="general">一般字號（2–6%）</button>
+          </div>
+
+          <div id="firePickOnly" style="display:none; margin-top:12px;">
+            <label>一般字號火耗（%）</label>
+            <div class="tileGroup" id="tgFirePick">
+              <button class="tile small" data-field="firePick" data-value="2">2%</button>
+              <button class="tile small" data-field="firePick" data-value="3">3%</button>
+              <button class="tile small" data-field="firePick" data-value="4">4%</button>
+              <button class="tile small" data-field="firePick" data-value="5">5%</button>
+              <button class="tile small" data-field="firePick" data-value="6">6%</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="ptBlock" style="display:none;">
+        <label>成色（鉑金）</label>
+        <div class="tileGroup" id="tgPtPurity">
+          <button class="tile" data-field="ptPurity" data-value="pt9995">Pt999.5</button>
+          <button class="tile" data-field="ptPurity" data-value="pt950">Pt950</button>
+          <button class="tile" data-field="ptPurity" data-value="pt900">Pt900</button>
+        </div>
+        <div class="inlineHelp">外號鉑金：按指引不作回收/兌換。</div>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="grid">
+        <div id="colorDeductWrap">
+          <label>成色扣除（%）（外號非 Au999.9／無成色字印等）</label>
+          <input id="colorDeduct" type="number" step="0.01" inputmode="decimal" placeholder="例如：3（代表再扣 3%）" />
+        </div>
+
+        <div>
+          <label>單位 / 貨幣（只作顯示）</label>
+          <div style="display:flex; gap:10px;">
+            <select id="unit">
+              <option value="両">両</option>
+              <option value="克">克</option>
+            </select>
+            <select id="currency">
+              <option value="HK$">HK$</option>
+              <option value="MOP$">MOP$</option>
+              <option value="RM">RM</option>
+              <option value="$">$</option>
+            </select>
+          </div>
+          <div class="inlineHelp">可用「切換：両 ↔ 克」快速改單位。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="sectionTitle">
+      <div class="t">3) 輸入重量與單價（可套用即時金價）</div>
+      <div class="s">按計算後會自動跳到客人版面</div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <label>重量</label>
+        <input id="weight" type="number" step="0.001" inputmode="decimal" placeholder="例如：1.234" />
+      </div>
+
+      <div>
+        <label>單價（每両/每克）</label>
+        <input id="price" type="number" step="0.01" inputmode="decimal" placeholder="例如：23500（可手動輸入）" />
+
+        <div class="pricePanel">
+          <div class="ppTop">
+            <div>
+              <div class="ppTitle">六福網站金價（HK$｜賣出 / 買入 / 兌換）</div>
+              <div class="ppTime" id="gpTime">未更新</div>
+            </div>
+
+            <div class="tabs">
+              <button class="ppMini" id="btnToggleUnit" type="button">切換：両 ↔ 克</button>
+              <button class="tabBtn" id="fetchGoldBtn" type="button">更新金價</button>
+            </div>
+          </div>
+
+          <div class="ppGrid">
+            <div class="ppItem" id="ppSell">
+              <div class="ppLabel">建議「賣出」單價</div>
+              <div class="ppValue" id="gpSell">—</div>
+              <div class="inlineHelp ppSub" id="gpSellSub">—</div>
+            </div>
+
+            <div class="ppItem" id="ppBuy">
+              <div class="ppLabel">建議「買入」單價</div>
+              <div class="ppValue" id="gpBuy">—</div>
+              <div class="inlineHelp ppSub" id="gpBuySub">—</div>
+            </div>
+
+            <div class="ppItem" id="ppTrade">
+              <div class="ppLabel">建議「兌換」單價</div>
+              <div class="ppValue" id="gpTrade">—</div>
+              <div class="inlineHelp ppSub" id="gpTradeSub">—</div>
+            </div>
+          </div>
+
+          <div class="ppBtns">
+            <button class="ppMini" id="btnUseSell" type="button">套用賣出價</button>
+            <button class="ppMini" id="btnUseBuy" type="button">套用買入價</button>
+            <button class="ppMini" id="btnUseTrade" type="button">套用兌換價</button>
+            <button class="ppMini" id="btnClearPrice" type="button">清除單價</button>
+          </div>
+
+          <div class="ppBtns" style="margin-top:8px;">
+            <button class="ppMini" id="btnToggleManual" type="button">顯示手動金價（需要時先用）</button>
+          </div>
+
+          <div id="manualPanel" class="hidden" style="margin-top:10px;">
+            <label style="margin:0 0 6px 2px;">手動金價（覆蓋即時價｜留空=不用）</label>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <input id="manualSell"  type="number" step="0.01" inputmode="decimal" placeholder="賣出價（例如：56410）" style="flex:1; min-width:220px;" />
+              <input id="manualBuy"   type="number" step="0.01" inputmode="decimal" placeholder="買入價（例如：46140）" style="flex:1; min-width:220px;" />
+              <input id="manualTrade" type="number" step="0.01" inputmode="decimal" placeholder="兌換價（例如：47640）" style="flex:1; min-width:220px;" />
+            </div>
+            <div class="ppBtns" style="margin-top:10px;">
+              <button class="ppMini" id="btnUseManualSell" type="button">套用手動賣出價</button>
+              <button class="ppMini" id="btnUseManualBuy" type="button">套用手動買入價</button>
+              <button class="ppMini" id="btnUseManualTrade" type="button">套用手動兌換價</button>
+              <button class="ppMini" id="btnClearManual" type="button">清除手動金價</button>
+            </div>
+          </div>
+
+          <div class="inlineHelp" id="goldFetchHint" style="margin-top:8px;">
+            提示：本工具用 Proxy 讀取金價；如未成功，請檢查 Worker 是否正常。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sellBlock" style="display:none; margin-top:12px;">
+      <div class="sectionTitle" style="margin-top:4px;">
+        <div class="t">4) 賣出專用</div>
+        <div class="s">公式不會展示於客人版面</div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label>工費（只限賣出）</label>
+          <input id="laborFee" type="number" step="1" inputmode="numeric" placeholder="例如：500" />
+          <div class="inlineHelp">賣出： (金價×金重 + 工費) 先套折扣（如有），再加 2% 佣金，最後取整。</div>
+        </div>
+        <div>
+          <label>折扣（只可二選一，不能同時使用）</label>
+          <div class="tileGroup" id="tgDiscount">
+            <button class="tile" data-field="discountMode" data-value="none">不折扣</button>
+            <button class="tile" data-field="discountMode" data-value="all95">全單 95 折</button>
+            <button class="tile" data-field="discountMode" data-value="laborHalf">只工費半價</button>
+          </div>
+          <div class="inlineHelp">「全單 95 折」與「工費半價」互斥，只能選一個。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btns">
+      <button class="action" id="calcBtn">計算並展示（自動跳到客人頁面）</button>
+      <button class="secondary" id="resetBtn">清除重填</button>
+      <button class="secondary" id="copyBtn">複製結果（內部）</button>
+    </div>
+
+    <div class="softNote" id="noteBox">
+      提示：金價每 5 分鐘刷新；如要帶入單價按「套用」。按計算後會自動跳到客人版面。
+    </div>
+  </div>
+
+  <div class="card hidden" id="customerView">
+    <div class="customerWrap" id="customerContainer">
+      <div class="customerHero" id="customerHero">
+        <div class="customerTitleRow" id="customerTopRow">
+          <div>
+            <div class="customerTitle">即時計算結果</div>
+            <div class="customerHint" id="custTopHint">（展示：重量／單價／金額）</div>
+          </div>
+          <div class="tabs">
+            <button class="tabBtn active" id="custLiveBadge">展示中</button>
+            <button class="tabBtn" id="btnFullscreen">全螢幕</button>
+            <button class="tabBtn" id="btnClean">乾淨模式：關</button>
+            <button class="tabBtn" id="backInternalBtn">返回內部</button>
+          </div>
+        </div>
+
+        <div class="bigGrid">
+          <div class="bigCard">
+            <div class="bigLabel">重量</div>
+            <div class="bigValue" id="custWeight">—</div>
+            <div class="bigSub" id="custUnit">—</div>
+          </div>
+
+          <div class="bigCard">
+            <div class="bigLabel">單價</div>
+            <div class="bigValue" id="custPrice">—</div>
+            <div class="bigSub">（按當日價格計算）</div>
+          </div>
+
+          <div class="bigCard bigAmount" style="grid-column:1 / -1;">
+            <div class="bigLabel" id="custAmountLabel">金額（四捨五入取整數）</div>
+            <div class="bigValue amountValue" id="custAmount">—</div>
+            <div class="bigSub" id="custTypeLine">—</div>
+            <div class="fsHint">提示：按 ESC 或再按「全螢幕」可退出。</div>
+          </div>
+        </div>
+
+        <div class="customerFooter" id="custFooter">
+          ※ 本頁為對客人展示用途，只顯示重點資訊。實際處理以公司制度及當天價格為準。
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const $ = (id)=>document.getElementById(id);
+
+  const GOLDPRICE_PROXY = "https://lukfook-goldprice-proxy.arwing28.workers.dev";
+
+  const state = {
+    category: "gold_jewelry",
+    purpose: "sell",
+    dealerFlag: "own",
+    goldPurity: "au9999",
+    hasSolder: "no",
+    specialBrand: "none",
+    dealerType: "integrity",
+    firePick: "4",
+    ptPurity: "pt9995",
+    discountMode: "none",
+    cleanMode: false,
+    manualPanel: false
+  };
+
+  function isNum(x){ return Number.isFinite(x) && !Number.isNaN(x); }
+  function roundToInt(n){ return isNum(n) ? Math.round(n) : n; }
+  function fmtNum(n){ return isNum(n) ? n.toLocaleString("zh-HK") : "—"; }
+  function fmtMoneyInt(n, currency){
+    if(!isNum(n)) return "—";
+    return currency + " " + n.toLocaleString("zh-HK",{maximumFractionDigits:0});
+  }
+  function fmtMoney2(n, currency){
+    if(!isNum(n)) return "—";
+    return currency + " " + n.toLocaleString("zh-HK",{minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function getAmountLabelShort(){
+    if(state.purpose === "buy") return "買入金金額";
+    if(state.purpose === "exchange") return "兌換金額";
+    return "賣出金金額";
+  }
+  function getAmountLabelFull(){
+    return `${getAmountLabelShort()}（四捨五入取整數）`;
+  }
+
+  function setTilePressed(groupEl, field, value){
+    const btns = groupEl.querySelectorAll("button.tile");
+    btns.forEach(b=>{
+      const pressed = (b.dataset.field===field && b.dataset.value===String(value));
+      b.setAttribute("aria-pressed", pressed ? "true" : "false");
+    });
+  }
+
+  function initTileGroups(){
+    document.querySelectorAll("button.tile").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const field = btn.dataset.field;
+        const value = btn.dataset.value;
+        state[field] = value;
+
+        const group = btn.parentElement;
+        setTilePressed(group, field, value);
+
+        syncUI();
+        saveStateToLocal();
+        refreshHeaderBadgeOne();
+        refreshSuggestedGoldPriceDisplay();
+      });
+    });
+
+    document.querySelectorAll(".tileGroup").forEach(group=>{
+      const any = group.querySelector("button.tile");
+      if(!any) return;
+      const field = any.dataset.field;
+      if(!field) return;
+      setTilePressed(group, field, state[field]);
+    });
+  }
+
+  function shouldShowDealer(){
+    return (state.dealerFlag==="outside" && state.goldPurity==="au9999" &&
+      (state.category==="fortune_bar" || state.category==="gold_grain"));
+  }
+
+  async function fetchLukfookGoldPriceJSON(){
+    const useProxy = (GOLDPRICE_PROXY || "").trim();
+    if(!useProxy) throw new Error("GOLDPRICE_PROXY 未設定");
+    const res = await fetch(useProxy, { method:"GET", mode:"cors", credentials:"omit", cache:"no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    return await res.json();
+  }
+
+  function parsePricesFromJSON(jsonArr){
+    const row = Array.isArray(jsonArr) ? jsonArr[0] : jsonArr;
+    if(!row) throw new Error("JSON 無資料");
+
+    return {
+      updatedAt: row.record_date || null,
+      gold: {
+        tael: { buy: row["黃金購入"], trade: row["黃金兌換"], sell: row["黃金售出"] },
+        gram: { buy: row["克黃金購入"], trade: row["克黃金兌換"], sell: row["克黃金售出"] },
+      },
+      platinum: {
+        tael: { buy: row["白金購入"], trade: row["白金兌換"], sell: row["白金售出"] },
+        gram: { buy: row["克白金購入"], trade: row["克白金兌換"], sell: row["克白金售出"] },
+      },
+      fortune: {
+        tael: { buy: row["投資金購入"], trade: row["投資金兌換"], sell: row["投資金售出"] },
+        gram: { buy: row["克投資金購入"], trade: row["克投資金兌換"], sell: row["克投資金售出"] },
+      },
+      bar: {
+        tael: { buy: row["黃條購入"], trade: row["黃條兌換"], sell: row["黃條售出"] },
+        gram: { buy: row["克黃條購入"], trade: row["克黃條兌換"], sell: row["克黃條售出"] },
+      }
+    };
+  }
+
+  let gpParsed = null;
+  let gpLastOkAt = null;
+  const AUTO_REFRESH_MS = 5 * 60 * 1000;
+
+  function getUnitKey(unitVal){
+    const u = unitVal || $("unit").value;
+    return (u === "克") ? "gram" : "tael";
+  }
+
+  function getRowByCategory(category, unitKey){
+    if(!gpParsed) return null;
+    const u = unitKey;
+    if(category === "gold_jewelry") return gpParsed.gold[u];
+    if(category === "platinum")     return gpParsed.platinum[u];
+    if(category === "fortune_bar")  return gpParsed.fortune[u];
+    if(category === "gold_grain")   return gpParsed.bar[u];
+    return null;
+  }
+
+  function getCategoryLabel(){
+    return ({
+      gold_jewelry:"飾金",
+      fortune_bar:"添富金",
+      gold_grain:"金粒/金條",
+      platinum:"鉑金"
+    })[state.category] || "—";
+  }
+
+  function renderGoldTime(){
+    if(gpParsed?.updatedAt){
+      $("gpTime").textContent = `更新時間：${gpParsed.updatedAt}`;
+      return;
+    }
+    if(gpLastOkAt){
+      const d = new Date(gpLastOkAt);
+      $("gpTime").textContent = `已更新（本地時間：${d.toLocaleString("zh-HK") }）`;
+      return;
+    }
+    $("gpTime").textContent = "未更新";
+  }
+
+  function refreshPurposeHighlight(){
+    $("ppSell").classList.toggle("hi", state.purpose==="sell");
+    $("ppBuy").classList.toggle("hi", state.purpose==="buy");
+    $("ppTrade").classList.toggle("hi", state.purpose==="exchange");
+  }
+
+  function refreshSuggestedGoldPriceDisplay(){
+    const row = getRowByCategory(state.category, getUnitKey());
+    const u = $("unit").value;
+
+    const sell = row && isNum(row.sell) ? fmtNum(row.sell) : "—";
+    const buy  = row && isNum(row.buy)  ? fmtNum(row.buy)  : "—";
+    const trade= row && isNum(row.trade)? fmtNum(row.trade): "—";
+
+    $("gpSell").textContent = sell;
+    $("gpBuy").textContent = buy;
+    $("gpTrade").textContent = trade;
+
+    $("gpSellSub").textContent = `（${u}）`;
+    $("gpBuySub").textContent  = `（${u}）`;
+    $("gpTradeSub").textContent= `（${u}）`;
+
+    refreshPurposeHighlight();
+  }
+
+  function refreshHeaderBadgeOne(){
+    const catLabel = getCategoryLabel();
+    $("hdrOneKey").textContent = catLabel;
+    $("hdrTodayUnit").textContent = `今日金價（${$("unit").value}）`;
+
+    const row = getRowByCategory(state.category, getUnitKey());
+    $("hdrOneSell").textContent  = row && isNum(row.sell)  ? fmtNum(row.sell)  : "—";
+    $("hdrOneBuy").textContent   = row && isNum(row.buy)   ? fmtNum(row.buy)   : "—";
+    $("hdrOneTrade").textContent = row && isNum(row.trade) ? fmtNum(row.trade) : "—";
+  }
+
+  async function updateGoldPricesUI(auto=false){
+    const hint = $("goldFetchHint");
+    const btn = $("fetchGoldBtn");
+
+    btn.disabled = true;
+    btn.textContent = auto ? "自動更新中…" : "更新中…";
+    hint.textContent = "正在讀取六福網站金價…";
+
+    try{
+      const json = await fetchLukfookGoldPriceJSON();
+      const parsed = parsePricesFromJSON(json);
+
+      const row = parsed?.gold?.tael;
+      const ok = row && (isNum(row.buy) || isNum(row.trade) || isNum(row.sell));
+      if(!ok) throw new Error("未能抽取金價（JSON 欄位可能改名）");
+
+      gpParsed = parsed;
+      gpLastOkAt = Date.now();
+
+      renderGoldTime();
+      refreshSuggestedGoldPriceDisplay();
+      refreshHeaderBadgeOne();
+
+      hint.textContent = auto ? "✅ 已自動刷新金價。" : "✅ 已更新金價。你可按「套用」帶入單價。";
+    }catch(e){
+      console.error(e);
+      renderGoldTime();
+      $("gpSell").textContent = "—";
+      $("gpBuy").textContent = "—";
+      $("gpTrade").textContent = "—";
+      $("gpSellSub").textContent = "—";
+      $("gpBuySub").textContent = "—";
+      $("gpTradeSub").textContent = "—";
+      refreshHeaderBadgeOne();
+      hint.innerHTML = `<span class="warn">⚠ 讀取失敗</span>：請檢查 Worker 是否正常（${GOLDPRICE_PROXY}）。`;
+    }finally{
+      btn.disabled = false;
+      btn.textContent = "更新金價";
+      saveStateToLocal();
+    }
+  }
+
+  function startAutoRefresh(){
+    setInterval(()=>updateGoldPricesUI(true), AUTO_REFRESH_MS);
+  }
+
+  function getManualOverride(){
+    const ms = Number($("manualSell").value);
+    const mb = Number($("manualBuy").value);
+    const mt = Number($("manualTrade").value);
+    return {
+      sell: (isNum(ms) && ms>0) ? ms : null,
+      buy:  (isNum(mb) && mb>0) ? mb : null,
+      trade:(isNum(mt) && mt>0) ? mt : null
+    };
+  }
+
+  function syncUI(){
+    const isSell = (state.purpose === "sell");
+    $("recycleSettings").classList.toggle("hidden", isSell);
+    $("sellBlock").style.display = isSell ? "" : "none";
+
+    $("tgDealerFlag").classList.toggle("hidden", isSell);
+    $("dealerHint").textContent = isSell ? "賣出不需要字號。" : "只適用於買入/兌換。";
+
+    if(!isSell){
+      $("goldBlock").style.display = (state.category==="platinum") ? "none" : "";
+      $("ptBlock").style.display   = (state.category==="platinum") ? "" : "none";
+      $("jewelryOnly").style.display = (state.category==="gold_jewelry") ? "" : "none";
+
+      const showDealer = shouldShowDealer();
+      $("dealerOnly").style.display = showDealer ? "" : "none";
+      $("firePickOnly").style.display = (showDealer && state.dealerType==="general") ? "" : "none";
+
+      $("colorDeductWrap").style.display = (state.dealerFlag==="outside" && state.category!=="platinum") ? "" : "none";
+    }
+
+    $("custAmountLabel").textContent = getAmountLabelFull();
+    refreshPurposeHighlight();
+    refreshSuggestedGoldPriceDisplay();
+    refreshHeaderBadgeOne();
+
+    $("manualPanel").classList.toggle("hidden", !state.manualPanel);
+    $("btnToggleManual").textContent = state.manualPanel ? "隱藏手動金價" : "顯示手動金價（需要時先用）";
+
+    applyCleanModeUI();
+  }
+
+  function compute(){
+    const unit = $("unit").value;
+    const currency = $("currency").value;
+
+    const weight = Number($("weight").value);
+    const price  = Number($("price").value);
+
+    if(!isNum(weight) || weight<=0 || !isNum(price) || price<=0){
+      return { error: "請輸入有效的重量及單價。" };
+    }
+
+    const base = weight * price;
+
+    if(state.purpose === "sell"){
+      const laborFee = Number($("laborFee").value);
+      const fee = (isNum(laborFee) && laborFee>0) ? laborFee : 0;
+
+      let subTotal = base + fee;
+
+      if(state.discountMode === "all95"){
+        subTotal = subTotal * 0.95;
+      } else if(state.discountMode === "laborHalf"){
+        subTotal = base + fee * 0.5;
+      }
+
+      const total = subTotal * 1.02;
+      const netRounded = roundToInt(total);
+
+      return packResult({ unit, currency, weight, price, netRounded });
+    }
+
+    if(state.category==="platinum" && state.dealerFlag==="outside"){
+      return { blocked:true, message:"外號鉑金首飾：按指引不作回收及兌換。" };
+    }
+
+    let commission = 0;
+    let fireLoss = 0;
+    let colorDeduct = 0;
+
+    const colorInput = Number($("colorDeduct").value);
+    if(isNum(colorInput) && colorInput>0) colorDeduct = colorInput/100;
+
+    if(state.category==="gold_jewelry"){
+      commission = 0.02;
+
+      if(state.dealerFlag==="own"){
+        fireLoss = 0;
+        colorDeduct = 0;
+      } else {
+        if(state.goldPurity==="au9999"){
+          if(state.purpose==="exchange" && state.specialBrand==="listed"){
+            fireLoss = 0;
+          } else if(state.purpose==="buy" && state.specialBrand==="listed"){
+            fireLoss = (state.hasSolder==="yes") ? 0.08 : 0.04;
+          } else {
+            fireLoss = (state.hasSolder==="yes") ? 0.10 : 0.06;
+          }
+          colorDeduct = 0;
+        } else {
+          fireLoss = (state.hasSolder==="yes") ? 0.10 : 0.06;
+        }
+      }
+    }
+
+    if(state.category==="fortune_bar"){
+      commission = 0;
+
+      if(state.dealerFlag==="own"){
+        fireLoss = 0;
+        colorDeduct = 0;
+      } else {
+        if(state.goldPurity==="au9999"){
+          if(shouldShowDealer()){
+            fireLoss = (state.dealerType==="integrity") ? 0 : Number(state.firePick)/100;
+          } else {
+            fireLoss = 0;
+          }
+          colorDeduct = 0;
+        } else {
+          fireLoss = 0.10;
+        }
+      }
+    }
+
+    if(state.category==="gold_grain"){
+      commission = 0.02;
+
+      if(state.dealerFlag==="own"){
+        commission = 0;
+        fireLoss = 0;
+        colorDeduct = 0;
+      } else {
+        if(state.goldPurity==="au9999"){
+          if(shouldShowDealer()){
+            fireLoss = (state.dealerType==="integrity") ? 0 : Number(state.firePick)/100;
+          } else {
+            fireLoss = 0;
+          }
+          colorDeduct = 0;
+        } else {
+          if(isNum(colorInput) && colorInput>0){
+            fireLoss = Number(state.firePick)/100;
+          } else {
+            fireLoss = 0.10;
+          }
+        }
+      }
+    }
+
+    if(state.category==="platinum"){
+      commission = 0.02;
+      if(state.ptPurity==="pt9995") fireLoss = 0;
+      if(state.ptPurity==="pt950")  fireLoss = 0.05;
+      if(state.ptPurity==="pt900")  fireLoss = 0.10;
+      colorDeduct = 0;
+    }
+
+    const commAmt = base * commission;
+    const afterComm = base - commAmt;
+
+    const fireAmt = afterComm * fireLoss;
+    const afterFire = afterComm - fireAmt;
+
+    const colorAmt = afterFire * colorDeduct;
+    const net = afterFire - colorAmt;
+
+    const netRounded = roundToInt(net);
+    return packResult({ unit, currency, weight, price, netRounded });
+  }
+
+  function packResult({unit,currency,weight,price,netRounded}){
+    const catText = ({
+      gold_jewelry:"飾金",
+      fortune_bar:"添富金",
+      gold_grain:"金粒/金條",
+      platinum:"鉑金"
+    })[state.category] || "—";
+
+    const purposeText =
+      state.purpose==="sell" ? "賣出" :
+      state.purpose==="buy" ? "買入（回收）" : "兌換";
+
+    const dealerText =
+      (state.purpose==="sell") ? "" :
+      (state.dealerFlag==="own" ? "本號" : "外號");
+
+    return {
+      unit, currency, weight, price, netRounded,
+      catText, purposeText, dealerText,
+      amountLabelShort: getAmountLabelShort(),
+      amountLabelFull: getAmountLabelFull()
+    };
+  }
+
+  function renderCustomer(res){
+    $("custAmountLabel").textContent = getAmountLabelFull();
+
+    if(res.error){
+      $("custWeight").textContent = "—";
+      $("custUnit").textContent = "請先輸入重量及單價";
+      $("custPrice").textContent = "—";
+      $("custAmount").textContent = "—";
+      $("custTypeLine").textContent = "—";
+      return;
+    }
+    if(res.blocked){
+      $("custWeight").textContent = "—";
+      $("custUnit").textContent = "—";
+      $("custPrice").textContent = "—";
+      $("custAmount").textContent = "不適用";
+      $("custTypeLine").textContent = res.message || "不適用";
+      return;
+    }
+
+    $("custAmountLabel").textContent = res.amountLabelFull;
+    $("custWeight").textContent = String(res.weight);
+    $("custUnit").textContent = `單位：${res.unit}`;
+    $("custPrice").textContent = fmtMoney2(res.price, res.currency).replace(res.currency+" ","");
+    $("custAmount").textContent = fmtMoneyInt(res.netRounded, res.currency);
+
+    const tail = res.dealerText ? `｜${res.dealerText}` : "";
+    $("custTypeLine").textContent = `${res.catText}｜${res.purposeText}${tail}`;
+  }
+
+  function applyCleanModeUI(){
+    const hero = $("customerHero");
+    if(state.cleanMode){
+      hero.classList.add("cleanMode");
+      $("btnClean").textContent = "乾淨模式：開";
+      $("btnClean").classList.add("active");
+    }else{
+      hero.classList.remove("cleanMode");
+      $("btnClean").textContent = "乾淨模式：關";
+      $("btnClean").classList.remove("active");
+    }
+  }
+
+  async function toggleFullscreen(){
+    const el = $("customerContainer");
+    const isFs = document.fullscreenElement;
+    try{
+      if(!isFs){
+        await el.requestFullscreen();
+        $("btnFullscreen").textContent = "退出全螢幕";
+      }else{
+        await document.exitFullscreen();
+        $("btnFullscreen").textContent = "全螢幕";
+      }
+    }catch(e){
+      alert("此瀏覽器未支援全螢幕功能（iOS Safari 常見）。你可用「加入主畫面」或橫置放大使用。");
+    }
+  }
+  document.addEventListener("fullscreenchange", ()=>{
+    $("btnFullscreen").textContent = document.fullscreenElement ? "退出全螢幕" : "全螢幕";
+  });
+
+  const LS_KEY = "lukfook_calc_state_v11_split_purpose_dealer_hide_sell_settings";
+
+  function saveStateToLocal(){
+    const payload = {
+      state,
+      inputs:{
+        weight:$("weight").value,
+        price:$("price").value,
+        colorDeduct:$("colorDeduct")?.value || "",
+        unit:$("unit").value,
+        currency:$("currency").value,
+        laborFee:$("laborFee").value,
+        manualSell:$("manualSell").value,
+        manualBuy:$("manualBuy").value,
+        manualTrade:$("manualTrade").value
+      }
+    };
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(payload)); }catch(e){}
+  }
+
+  function loadStateFromLocal(){
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw) return;
+      const payload = JSON.parse(raw);
+
+      if(payload?.state) Object.assign(state, payload.state);
+
+      if(payload?.inputs){
+        $("weight").value = payload.inputs.weight ?? "";
+        $("price").value = payload.inputs.price ?? "";
+        if($("colorDeduct")) $("colorDeduct").value = payload.inputs.colorDeduct ?? "";
+        $("unit").value = payload.inputs.unit ?? "両";
+        $("currency").value = payload.inputs.currency ?? "HK$";
+        $("laborFee").value = payload.inputs.laborFee ?? "";
+        $("manualSell").value = payload.inputs.manualSell ?? "";
+        $("manualBuy").value = payload.inputs.manualBuy ?? "";
+        $("manualTrade").value = payload.inputs.manualTrade ?? "";
+      }
+    }catch(e){}
+  }
+
+  function showInternal(){
+    $("internalView").classList.remove("hidden");
+    $("customerView").classList.add("hidden");
+    $("tabInternal").classList.add("active");
+    $("tabCustomer").classList.remove("active");
+  }
+  function showCustomer(){
+    $("internalView").classList.add("hidden");
+    $("customerView").classList.remove("hidden");
+    $("tabInternal").classList.remove("active");
+    $("tabCustomer").classList.add("active");
+  }
+
+  function applyPressedAll(){
+    document.querySelectorAll(".tileGroup").forEach(group=>{
+      const any = group.querySelector("button.tile");
+      if(!any) return;
+      const field = any.dataset.field;
+      if(!field) return;
+      setTilePressed(group, field, state[field]);
+    });
+  }
+
+  function initAll(){
+    initTileGroups();
+
+    $("calcBtn").addEventListener("click", ()=>{
+      saveStateToLocal();
+      const res = compute();
+      renderCustomer(res);
+
+      if(res.error || res.blocked){
+        $("noteBox").innerHTML = `<span class="warn">⚠ </span>${res.error || res.message}`;
+        return;
+      }
+
+      $("noteBox").innerHTML = `✅ 已計算（${getAmountLabelShort()}）並已切換到客人版面。`;
+      showCustomer();
+    });
+
+    $("resetBtn").addEventListener("click", ()=>{
+      Object.assign(state, {
+        category:"gold_jewelry",
+        purpose:"sell",
+        dealerFlag:"own",
+        goldPurity:"au9999",
+        hasSolder:"no",
+        specialBrand:"none",
+        dealerType:"integrity",
+        firePick:"4",
+        ptPurity:"pt9995",
+        discountMode:"none",
+        cleanMode:false,
+        manualPanel:false
+      });
+
+      $("weight").value="";
+      $("price").value="";
+      if($("colorDeduct")) $("colorDeduct").value="";
+      $("unit").value="両";
+      $("currency").value="HK$";
+      $("laborFee").value="";
+      $("manualSell").value="";
+      $("manualBuy").value="";
+      $("manualTrade").value="";
+
+      applyPressedAll();
+      syncUI();
+      saveStateToLocal();
+      renderCustomer({error:true});
+      $("noteBox").innerHTML = "已清除。";
+      showInternal();
+    });
+
+    $("copyBtn").addEventListener("click", async ()=>{
+      const res = compute();
+      if(res.error || res.blocked){
+        $("noteBox").innerHTML = `<span class="warn">⚠ 未能複製：</span>${res.error || res.message}`;
+        return;
+      }
+
+      const lines = [
+        "六福｜計算結果（內部）",
+        `- 類別：${res.catText}`,
+        `- 用途：${res.purposeText}`,
+      ];
+
+      if(state.purpose!=="sell"){
+        lines.push(`- 字號：${res.dealerText || "—"}`);
+      } else {
+        const fee = Number($("laborFee").value);
+        if(isNum(fee) && fee>0) lines.push(`- 工費：${res.currency} ${fee.toLocaleString("zh-HK")}`);
+        lines.push(`- 折扣：${({none:"不折扣",all95:"全單95折",laborHalf:"只工費半價"})[state.discountMode] || "不折扣"}`);
+        lines.push(`- 佣金：2%`);
+      }
+
+      lines.push(`- 重量：${res.weight} ${res.unit}`);
+      lines.push(`- 單價：${res.currency} ${Number(res.price).toLocaleString("zh-HK")}`);
+      lines.push(`- ${res.amountLabelShort}（取整）：${fmtMoneyInt(res.netRounded, res.currency)}`);
+
+      try{
+        await navigator.clipboard.writeText(lines.join("\n"));
+        $("noteBox").innerHTML = "✅ 已複製結果，可貼到 WhatsApp / OA。";
+      }catch(e){
+        $("noteBox").innerHTML = "<span class='warn'>⚠ 無法自動複製</span>：請手動選取文字複製。";
+      }
+    });
+
+    $("tabInternal").addEventListener("click", showInternal);
+    $("tabCustomer").addEventListener("click", showCustomer);
+    $("backInternalBtn").addEventListener("click", showInternal);
+
+    $("btnClean").addEventListener("click", ()=>{
+      state.cleanMode = !state.cleanMode;
+      applyCleanModeUI();
+      saveStateToLocal();
+    });
+    $("btnFullscreen").addEventListener("click", toggleFullscreen);
+
+    $("fetchGoldBtn").addEventListener("click", async ()=>{ await updateGoldPricesUI(false); });
+
+    $("btnToggleUnit").addEventListener("click", ()=>{
+      $("unit").value = ($("unit").value === "両") ? "克" : "両";
+      saveStateToLocal();
+      refreshSuggestedGoldPriceDisplay();
+      refreshHeaderBadgeOne();
+    });
+
+    function pickPrice(kind){
+      const ov = getManualOverride();
+      if(ov[kind]) return ov[kind];
+      const row = getRowByCategory(state.category, getUnitKey());
+      if(!row) return null;
+      return row[kind];
+    }
+
+    $("btnUseSell").addEventListener("click", ()=>{
+      const v = pickPrice("sell");
+      if(!isNum(v)) return;
+      $("price").value = String(v);
+      saveStateToLocal();
+      $("noteBox").innerHTML = "✅ 已套用賣出價到「單價」。";
+    });
+
+    $("btnUseBuy").addEventListener("click", ()=>{
+      const v = pickPrice("buy");
+      if(!isNum(v)) return;
+      $("price").value = String(v);
+      saveStateToLocal();
+      $("noteBox").innerHTML = "✅ 已套用買入價到「單價」。";
+    });
+
+    $("btnUseTrade").addEventListener("click", ()=>{
+      const v = pickPrice("trade");
+      if(!isNum(v)) return;
+      $("price").value = String(v);
+      saveStateToLocal();
+      $("noteBox").innerHTML = "✅ 已套用兌換價到「單價」。";
+    });
+
+    $("btnClearPrice").addEventListener("click", ()=>{
+      $("price").value = "";
+      saveStateToLocal();
+      $("noteBox").innerHTML = "已清除單價。";
+    });
+
+    $("btnToggleManual").addEventListener("click", ()=>{
+      state.manualPanel = !state.manualPanel;
+      syncUI();
+      saveStateToLocal();
+    });
+
+    $("btnUseManualSell").addEventListener("click", ()=>{
+      const ov = getManualOverride();
+      if(!ov.sell) return;
+      $("price").value = String(ov.sell);
+      saveStateToLocal();
+      $("noteBox").innerHTML = "✅ 已套用手動賣出價到「單價」。";
+    });
+    $("btnUseManualBuy").addEventListener("click", ()=>{
+      const ov = getManualOverride();
+      if(!ov.buy) return;
+      $("price").value = String(ov.buy);
+      saveStateToLocal();
+      $("noteBox").innerHTML = "✅ 已套用手動買入價到「單價」。";
+    });
+    $("btnUseManualTrade").addEventListener("click", ()=>{
+      const ov = getManualOverride();
+      if(!ov.trade) return;
+      $("price").value = String(ov.trade);
+      saveStateToLocal();
+      $("noteBox").innerHTML = "✅ 已套用手動兌換價到「單價」。";
+    });
+    $("btnClearManual").addEventListener("click", ()=>{
+      $("manualSell").value="";
+      $("manualBuy").value="";
+      $("manualTrade").value="";
+      saveStateToLocal();
+      $("noteBox").innerHTML = "已清除手動金價。";
+    });
+
+    ["weight","price","unit","currency","laborFee","manualSell","manualBuy","manualTrade","colorDeduct"].forEach(id=>{
+      const el = $(id);
+      if(!el) return;
+      el.addEventListener("input", saveStateToLocal);
+      el.addEventListener("change", ()=>{
+        saveStateToLocal();
+        if(id==="unit"){
+          refreshSuggestedGoldPriceDisplay();
+          refreshHeaderBadgeOne();
+        }
+      });
+    });
+  }
+
+  loadStateFromLocal();
+  initAll();
+  applyPressedAll();
+  syncUI();
+
+  renderCustomer({error:true});
+  showInternal();
+
+  updateGoldPricesUI(true);
+  startAutoRefresh();
+</script>
+</body>
+</html>

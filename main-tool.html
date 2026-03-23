@@ -475,7 +475,7 @@
          onerror="this.style.display='none'; document.getElementById('logoError').style.display='block';" />
     <div id="logoError" style="display:none; width:240px; max-width:82vw;">
       <div class="card">
-        <div class="warn">⚠ Logo 未載入</div>
+        <div class="warn">標誌未載入</div>
         <div class="sub">請確保 <span class="mono">logo.png</span> 同 <span class="mono">index.html</span> 放喺同一個資料夾。</div>
       </div>
     </div>
@@ -483,7 +483,7 @@
     <div class="titleBlock">
       <h1>
         貴金屬回收／兌換／賣出 計算工具
-        <span class="chip">內部＋客人展示</span>
+        <span class="chip">內部作業 / 對客展示</span>
         <span class="chip" id="hdrTodayUnit">今日金價（—）</span>
       </h1>
 
@@ -499,15 +499,15 @@
       </div>
 
       <div class="sub">
-        內部版面：買入/兌換可用扣項規則；賣出可輸入工費與折扣（互斥）。客人版面只展示：重量／單價／金額。
+        內部作業版面支援買入及兌換扣項設定；賣出則可輸入工費與折扣。對客展示版面僅顯示重量、單價及金額。
         <br/>
-        <span class="mono">提示：</span>金價每 5 分鐘自動刷新；如要帶入到「單價」，按「套用」。
+        <span class="mono">說明：</span>金價每 5 分鐘更新；如需帶入「單價」，請按「引用」。
       </div>
     </div>
 
     <div class="tabs">
-      <button class="tabBtn active" id="tabInternal">內部使用版面</button>
-      <button class="tabBtn" id="tabCustomer">對客人展示版面</button>
+      <button class="tabBtn active" id="tabInternal">內部作業版面</button>
+      <button class="tabBtn" id="tabCustomer">對客展示版面</button>
     </div>
   </div>
 
@@ -644,8 +644,8 @@
     <div class="divider"></div>
 
     <div class="sectionTitle">
-      <div class="t">3) 輸入重量與單價（可套用即時金價）</div>
-      <div class="s">按計算後會自動跳到客人版面</div>
+      <div class="t">3) 輸入重量與單價（可引用即時金價）</div>
+      <div class="s">按計算後會自動切換到展示頁面</div>
     </div>
 
     <div class="grid">
@@ -667,7 +667,7 @@
 
             <div class="tabs">
               <button class="ppMini" id="btnToggleUnit" type="button">切換：両 ↔ 克</button>
-              <button class="tabBtn" id="fetchGoldBtn" type="button">更新金價</button>
+              <button class="tabBtn" id="fetchGoldBtn" type="button">刷新金價</button>
             </div>
           </div>
 
@@ -692,14 +692,14 @@
           </div>
 
           <div class="ppBtns">
-            <button class="ppMini" id="btnUseSell" type="button">套用賣出價</button>
-            <button class="ppMini" id="btnUseBuy" type="button">套用買入價</button>
-            <button class="ppMini" id="btnUseTrade" type="button">套用兌換價</button>
+            <button class="ppMini" id="btnUseSell" type="button">引用賣出價</button>
+            <button class="ppMini" id="btnUseBuy" type="button">引用買入價</button>
+            <button class="ppMini" id="btnUseTrade" type="button">引用兌換價</button>
             <button class="ppMini" id="btnClearPrice" type="button">清除單價</button>
           </div>
 
           <div class="ppBtns" style="margin-top:8px;">
-            <button class="ppMini" id="btnToggleManual" type="button">顯示手動金價（需要時先用）</button>
+            <button class="ppMini" id="btnToggleManual" type="button">顯示手動金價設定</button>
           </div>
 
           <div id="manualPanel" class="hidden" style="margin-top:10px;">
@@ -710,15 +710,15 @@
               <input id="manualTrade" type="number" step="0.01" inputmode="decimal" placeholder="兌換價（例如：47640）" style="flex:1; min-width:220px;" />
             </div>
             <div class="ppBtns" style="margin-top:10px;">
-              <button class="ppMini" id="btnUseManualSell" type="button">套用手動賣出價</button>
-              <button class="ppMini" id="btnUseManualBuy" type="button">套用手動買入價</button>
-              <button class="ppMini" id="btnUseManualTrade" type="button">套用手動兌換價</button>
+              <button class="ppMini" id="btnUseManualSell" type="button">引用手動賣出價</button>
+              <button class="ppMini" id="btnUseManualBuy" type="button">引用手動買入價</button>
+              <button class="ppMini" id="btnUseManualTrade" type="button">引用手動兌換價</button>
               <button class="ppMini" id="btnClearManual" type="button">清除手動金價</button>
             </div>
           </div>
 
           <div class="inlineHelp" id="goldFetchHint" style="margin-top:8px;">
-            提示：本工具用 Proxy 讀取金價；如未成功，請檢查 Worker 是否正常。
+            說明：本工具經由 Proxy 讀取金價；如未成功，請檢查相關設定是否正常。
           </div>
         </div>
       </div>
@@ -726,8 +726,8 @@
 
     <div id="sellBlock" style="display:none; margin-top:12px;">
       <div class="sectionTitle" style="margin-top:4px;">
-        <div class="t">4) 賣出專用</div>
-        <div class="s">公式不會展示於客人版面</div>
+        <div class="t">4) 賣出設定</div>
+        <div class="s">公式不會顯示於對客展示版面</div>
       </div>
 
       <div class="grid">
@@ -741,21 +741,21 @@
           <div class="tileGroup" id="tgDiscount">
             <button class="tile" data-field="discountMode" data-value="none">不折扣</button>
             <button class="tile" data-field="discountMode" data-value="all95">全單 95 折</button>
-            <button class="tile" data-field="discountMode" data-value="laborHalf">只工費半價</button>
+            <button class="tile" data-field="discountMode" data-value="laborHalf">半工</button>
           </div>
-          <div class="inlineHelp">「全單 95 折」與「工費半價」互斥，只能選一個。</div>
+          <div class="inlineHelp">「全單 95 折」與「半工」互斥，只能選一個。</div>
         </div>
       </div>
     </div>
 
     <div class="btns">
-      <button class="action" id="calcBtn">計算並展示（自動跳到客人頁面）</button>
-      <button class="secondary" id="resetBtn">清除重填</button>
-      <button class="secondary" id="copyBtn">複製結果（內部）</button>
+      <button class="action" id="calcBtn">計算並切換展示</button>
+      <button class="secondary" id="resetBtn">重新輸入</button>
+      <button class="secondary" id="copyBtn">複製摘要</button>
     </div>
 
     <div class="softNote" id="noteBox">
-      提示：金價每 5 分鐘刷新；如要帶入單價按「套用」。按計算後會自動跳到客人版面。
+      說明：金價每 5 分鐘更新；如需帶入單價，請按「引用」。完成計算後會自動切換到對客展示版面。
     </div>
   </div>
 
@@ -768,10 +768,10 @@
             <div class="customerHint" id="custTopHint">（展示：重量／單價／金額）</div>
           </div>
           <div class="tabs">
-            <button class="tabBtn active" id="custLiveBadge">展示中</button>
-            <button class="tabBtn" id="btnFullscreen">全螢幕</button>
-            <button class="tabBtn" id="btnClean">乾淨模式：關</button>
-            <button class="tabBtn" id="backInternalBtn">返回內部</button>
+            <button class="tabBtn active" id="custLiveBadge">對客展示中</button>
+            <button class="tabBtn" id="btnFullscreen">全螢幕展示</button>
+            <button class="tabBtn" id="btnClean">簡潔模式：關</button>
+            <button class="tabBtn" id="backInternalBtn">返回作業版面</button>
           </div>
         </div>
 
@@ -792,12 +792,12 @@
             <div class="bigLabel" id="custAmountLabel">金額（四捨五入取整數）</div>
             <div class="bigValue amountValue" id="custAmount">—</div>
             <div class="bigSub" id="custTypeLine">—</div>
-            <div class="fsHint">提示：按 ESC 或再按「全螢幕」可退出。</div>
+            <div class="fsHint">提示：按 ESC 或再按「全螢幕展示」可退出。</div>
           </div>
         </div>
 
         <div class="customerFooter" id="custFooter">
-          ※ 本頁為對客人展示用途，只顯示重點資訊。實際處理以公司制度及當天價格為準。
+          ※ 本頁為對客展示用途，只顯示重點資訊。實際處理以公司制度及當天價格為準。
         </div>
       </div>
     </div>
@@ -1000,7 +1000,7 @@
     const btn = $("fetchGoldBtn");
 
     btn.disabled = true;
-    btn.textContent = auto ? "自動更新中…" : "更新中…";
+    btn.textContent = auto ? "更新中…" : "刷新中…";
     hint.textContent = "正在讀取六福網站金價…";
 
     try{
@@ -1018,7 +1018,7 @@
       refreshSuggestedGoldPriceDisplay();
       refreshHeaderBadgeOne();
 
-      hint.textContent = auto ? "✅ 已自動刷新金價。" : "✅ 已更新金價。你可按「套用」帶入單價。";
+      hint.textContent = auto ? "金價已完成更新。" : "金價已更新，可按「引用」帶入單價。";
     }catch(e){
       console.error(e);
       renderGoldTime();
@@ -1029,10 +1029,10 @@
       $("gpBuySub").textContent = "—";
       $("gpTradeSub").textContent = "—";
       refreshHeaderBadgeOne();
-      hint.innerHTML = `<span class="warn">⚠ 讀取失敗</span>：請檢查 Worker 是否正常（${GOLDPRICE_PROXY}）。`;
+      hint.innerHTML = `<span class="warn">讀取失敗：</span>請檢查相關設定是否正常（${GOLDPRICE_PROXY}）。`;
     }finally{
       btn.disabled = false;
-      btn.textContent = "更新金價";
+      btn.textContent = "刷新金價";
       saveStateToLocal();
     }
   }
@@ -1078,7 +1078,7 @@
     refreshHeaderBadgeOne();
 
     $("manualPanel").classList.toggle("hidden", !state.manualPanel);
-    $("btnToggleManual").textContent = state.manualPanel ? "隱藏手動金價" : "顯示手動金價（需要時先用）";
+    $("btnToggleManual").textContent = state.manualPanel ? "隱藏手動金價設定" : "顯示手動金價設定";
 
     applyCleanModeUI();
   }
@@ -1271,11 +1271,11 @@
     const hero = $("customerHero");
     if(state.cleanMode){
       hero.classList.add("cleanMode");
-      $("btnClean").textContent = "乾淨模式：開";
+      $("btnClean").textContent = "簡潔模式：開";
       $("btnClean").classList.add("active");
     }else{
       hero.classList.remove("cleanMode");
-      $("btnClean").textContent = "乾淨模式：關";
+      $("btnClean").textContent = "簡潔模式：關";
       $("btnClean").classList.remove("active");
     }
   }
@@ -1289,14 +1289,14 @@
         $("btnFullscreen").textContent = "退出全螢幕";
       }else{
         await document.exitFullscreen();
-        $("btnFullscreen").textContent = "全螢幕";
+        $("btnFullscreen").textContent = "全螢幕展示";
       }
     }catch(e){
-      alert("此瀏覽器未支援全螢幕功能（iOS Safari 常見）。你可用「加入主畫面」或橫置放大使用。");
+      alert("此瀏覽器未支援全螢幕功能（iOS Safari 常見）。你可使用「加入主畫面」或橫向顯示方式放大使用。");
     }
   }
   document.addEventListener("fullscreenchange", ()=>{
-    $("btnFullscreen").textContent = document.fullscreenElement ? "退出全螢幕" : "全螢幕";
+    $("btnFullscreen").textContent = document.fullscreenElement ? "退出全螢幕" : "全螢幕展示";
   });
 
   const LS_KEY = "lukfook_calc_state_v11_split_purpose_dealer_hide_sell_settings";
@@ -1373,11 +1373,11 @@
       renderCustomer(res);
 
       if(res.error || res.blocked){
-        $("noteBox").innerHTML = `<span class="warn">⚠ </span>${res.error || res.message}`;
+        $("noteBox").innerHTML = `<span class="warn">請留意：</span>${res.error || res.message}`;
         return;
       }
 
-      $("noteBox").innerHTML = `✅ 已計算（${getAmountLabelShort()}）並已切換到客人版面。`;
+      $("noteBox").innerHTML = `${getAmountLabelShort()}已完成計算，並已切換至對客展示版面。`;
       showCustomer();
     });
 
@@ -1411,19 +1411,19 @@
       syncUI();
       saveStateToLocal();
       renderCustomer({error:true});
-      $("noteBox").innerHTML = "已清除。";
+      $("noteBox").innerHTML = "資料已清除。";
       showInternal();
     });
 
     $("copyBtn").addEventListener("click", async ()=>{
       const res = compute();
       if(res.error || res.blocked){
-        $("noteBox").innerHTML = `<span class="warn">⚠ 未能複製：</span>${res.error || res.message}`;
+        $("noteBox").innerHTML = `<span class="warn">未能複製：</span>${res.error || res.message}`;
         return;
       }
 
       const lines = [
-        "六福｜計算結果（內部）",
+        "六福｜計算摘要",
         `- 類別：${res.catText}`,
         `- 用途：${res.purposeText}`,
       ];
@@ -1433,7 +1433,7 @@
       } else {
         const fee = Number($("laborFee").value);
         if(isNum(fee) && fee>0) lines.push(`- 工費：${res.currency} ${fee.toLocaleString("zh-HK")}`);
-        lines.push(`- 折扣：${({none:"不折扣",all95:"全單95折",laborHalf:"只工費半價"})[state.discountMode] || "不折扣"}`);
+        lines.push(`- 折扣：${({none:"不折扣",all95:"全單95折",laborHalf:"半工"})[state.discountMode] || "不折扣"}`);
         lines.push(`- 佣金：2%`);
       }
 
@@ -1443,9 +1443,9 @@
 
       try{
         await navigator.clipboard.writeText(lines.join("\n"));
-        $("noteBox").innerHTML = "✅ 已複製結果，可貼到 WhatsApp / OA。";
+        $("noteBox").innerHTML = "摘要已複製，可直接用於內部溝通。";
       }catch(e){
-        $("noteBox").innerHTML = "<span class='warn'>⚠ 無法自動複製</span>：請手動選取文字複製。";
+        $("noteBox").innerHTML = "<span class='warn'>無法自動複製：</span>請手動選取文字後複製。";
       }
     });
 
@@ -1482,7 +1482,7 @@
       if(!isNum(v)) return;
       $("price").value = String(v);
       saveStateToLocal();
-      $("noteBox").innerHTML = "✅ 已套用賣出價到「單價」。";
+      $("noteBox").innerHTML = "賣出價已引用至單價。";
     });
 
     $("btnUseBuy").addEventListener("click", ()=>{
@@ -1490,7 +1490,7 @@
       if(!isNum(v)) return;
       $("price").value = String(v);
       saveStateToLocal();
-      $("noteBox").innerHTML = "✅ 已套用買入價到「單價」。";
+      $("noteBox").innerHTML = "買入價已引用至單價。";
     });
 
     $("btnUseTrade").addEventListener("click", ()=>{
@@ -1498,13 +1498,13 @@
       if(!isNum(v)) return;
       $("price").value = String(v);
       saveStateToLocal();
-      $("noteBox").innerHTML = "✅ 已套用兌換價到「單價」。";
+      $("noteBox").innerHTML = "兌換價已引用至單價。";
     });
 
     $("btnClearPrice").addEventListener("click", ()=>{
       $("price").value = "";
       saveStateToLocal();
-      $("noteBox").innerHTML = "已清除單價。";
+      $("noteBox").innerHTML = "單價已清除。";
     });
 
     $("btnToggleManual").addEventListener("click", ()=>{
@@ -1518,28 +1518,28 @@
       if(!ov.sell) return;
       $("price").value = String(ov.sell);
       saveStateToLocal();
-      $("noteBox").innerHTML = "✅ 已套用手動賣出價到「單價」。";
+      $("noteBox").innerHTML = "手動賣出價已引用至單價。";
     });
     $("btnUseManualBuy").addEventListener("click", ()=>{
       const ov = getManualOverride();
       if(!ov.buy) return;
       $("price").value = String(ov.buy);
       saveStateToLocal();
-      $("noteBox").innerHTML = "✅ 已套用手動買入價到「單價」。";
+      $("noteBox").innerHTML = "手動買入價已引用至單價。";
     });
     $("btnUseManualTrade").addEventListener("click", ()=>{
       const ov = getManualOverride();
       if(!ov.trade) return;
       $("price").value = String(ov.trade);
       saveStateToLocal();
-      $("noteBox").innerHTML = "✅ 已套用手動兌換價到「單價」。";
+      $("noteBox").innerHTML = "手動兌換價已引用至單價。";
     });
     $("btnClearManual").addEventListener("click", ()=>{
       $("manualSell").value="";
       $("manualBuy").value="";
       $("manualTrade").value="";
       saveStateToLocal();
-      $("noteBox").innerHTML = "已清除手動金價。";
+      $("noteBox").innerHTML = "手動金價已清除。";
     });
 
     ["weight","price","unit","currency","laborFee","manualSell","manualBuy","manualTrade","colorDeduct"].forEach(id=>{

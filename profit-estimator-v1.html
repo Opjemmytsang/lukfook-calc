@@ -280,7 +280,6 @@
       font-size:13px;
       line-height:1.7;
     }
-    .muted{color:var(--muted)}
     .mono{font-variant-numeric:tabular-nums}
   </style>
 </head>
@@ -295,7 +294,7 @@
       <div class="chips">
         <span class="chip">單件利潤推算</span>
         <span class="chip">支援両 / 克</span>
-        <span class="chip">佣金估算</span>
+        <span class="chip">佣金固定選項</span>
         <span class="chip">風險提示</span>
       </div>
     </div>
@@ -387,21 +386,16 @@
         </div>
 
         <div class="section">
-          <div class="section-title">佣金估算</div>
+          <div class="section-title">佣金設定</div>
           <div class="form-grid">
             <div class="field">
-              <label for="commissionMode">佣金模式</label>
-              <select id="commissionMode">
-                <option value="none">不計佣 / 只看生意利潤</option>
-                <option value="sales_percent">按實收金額百分比</option>
-                <option value="gross_percent">按毛利百分比</option>
-                <option value="fixed">固定佣金金額</option>
+              <label for="commissionRate">佣金比率</label>
+              <select id="commissionRate">
+                <option value="0">免佣</option>
+                <option value="1">1%</option>
+                <option value="2" selected>2%</option>
               </select>
-            </div>
-            <div class="field">
-              <label for="commissionValue">佣金數值</label>
-              <input id="commissionValue" type="number" step="0.01" value="0" />
-              <small>例如：2 = 2%；固定模式則輸入金額。</small>
+              <small>佣金按實收金額計算。</small>
             </div>
           </div>
         </div>
@@ -450,7 +444,7 @@
           <div class="kpi">
             <div class="label">估算佣金</div>
             <div id="commissionAmount" class="value mono">0</div>
-            <div class="subvalue">按選定模式計算</div>
+            <div class="subvalue">按實收金額 × 佣金比率</div>
           </div>
           <div class="kpi" style="grid-column:1 / -1">
             <div class="label">淨賺</div>
@@ -466,6 +460,7 @@
             <li>金料成本 = 金重（両）× 當日金價（每両）</li>
             <li>總成本 = 金料成本 + 石 / 配件成本 + 其他成本</li>
             <li>毛利額 = 實收金額 − 總成本</li>
+            <li>估算佣金 = 實收金額 × 佣金比率</li>
             <li>淨賺 = 毛利額 − 估算佣金</li>
           </ul>
         </div>
@@ -515,27 +510,16 @@
       const stoneCost = num('stoneCost');
       const otherCost = num('otherCost');
       const waiveLabor = $('waiveLabor').checked;
-      const commissionMode = $('commissionMode').value;
-      const commissionValue = num('commissionValue');
+      const commissionRate = num('commissionRate');
 
       const weightTael = unit === 'gram' ? (weight / taelToGram) : weight;
-      const weightGram = unit === 'gram' ? weight : (weight * taelToGram);
       const laborRevenue = waiveLabor ? 0 : laborCharge;
       const actualRevenue = salesAmount + laborRevenue - extraDiscount;
       const goldCost = weightTael * goldPricePerTael;
       const totalCost = goldCost + stoneCost + otherCost;
       const grossProfit = actualRevenue - totalCost;
       const grossMargin = actualRevenue !== 0 ? (grossProfit / actualRevenue) * 100 : 0;
-
-      let commissionAmount = 0;
-      if (commissionMode === 'sales_percent') {
-        commissionAmount = actualRevenue * (commissionValue / 100);
-      } else if (commissionMode === 'gross_percent') {
-        commissionAmount = grossProfit > 0 ? grossProfit * (commissionValue / 100) : 0;
-      } else if (commissionMode === 'fixed') {
-        commissionAmount = commissionValue;
-      }
-
+      const commissionAmount = actualRevenue > 0 ? actualRevenue * (commissionRate / 100) : 0;
       const netProfit = grossProfit - commissionAmount;
 
       $('actualRevenue').textContent = fmtMoney(actualRevenue);
@@ -562,7 +546,8 @@
         當日金價 <strong>${fmtMoney(goldPricePerTael)}</strong> / 両、
         單據金額 <strong>${fmtMoney(salesAmount)}</strong>、
         額外減價 <strong>${fmtMoney(extraDiscount)}</strong>
-        ${waiveLabor ? '及 <strong>免工</strong>' : `，另收工費 <strong>${fmtMoney(laborCharge)}</strong>`} 計算，
+        ${waiveLabor ? '及 <strong>免工</strong>' : `，另收工費 <strong>${fmtMoney(laborCharge)}</strong>`}、
+        佣金比率 <strong>${fmtPct(commissionRate)}</strong> 計算，
         今次推算的 <strong>淨賺為 ${fmtMoney(netProfit)}</strong>。
       `;
 
@@ -571,7 +556,7 @@
       if (actualRevenue < goldCost) risks.push('實收金額已低於金料成本，單看金料層面已出現倒掛。');
       if (grossProfit < 0) risks.push('毛利為負數，代表該單生意未覆蓋總成本。');
       if (grossProfit >= 0 && grossMargin < 8) risks.push('雖然仍有毛利，但毛利率偏低，建議覆核折扣、優惠或工費安排。');
-      if (commissionMode !== 'none' && netProfit < 0) risks.push('扣除估算佣金後變成負數，需評估是否屬可接受交易。');
+      if (commissionRate > 0 && netProfit < 0) risks.push('扣除佣金後變成負數，需評估是否屬可接受交易。');
       if (weight <= 0 || taelToGram <= 0) risks.push('金重或換算設定無效，請重新檢查輸入資料。');
       if (!risks.length) risks.push('目前未見明顯風險，此單推算屬正常利潤範圍。');
 
@@ -584,6 +569,7 @@
         grossProfit,
         grossMargin,
         commissionAmount,
+        commissionRate,
         netProfit,
         weight,
         unit,
@@ -607,9 +593,8 @@
       $('goldPricePerTael').value = '54410';
       $('stoneCost').value = '0';
       $('otherCost').value = '0';
-      $('commissionMode').value = 'none';
-      $('commissionValue').value = '0';
-      $('remarks').value = '示例：1 両、金價 54,410、單據 42,800、額外減 2,000、免工。';
+      $('commissionRate').value = '2';
+      $('remarks').value = '示例：1 両、金價 54,410、單據 42,800、額外減 2,000、免工、佣金 2%。';
       calculate();
     }
 
@@ -625,8 +610,7 @@
       $('goldPricePerTael').value = '0';
       $('stoneCost').value = '0';
       $('otherCost').value = '0';
-      $('commissionMode').value = 'none';
-      $('commissionValue').value = '0';
+      $('commissionRate').value = '2';
       $('remarks').value = '';
       $('actualRevenue').textContent = '0';
       $('goldCost').textContent = '0';
@@ -649,6 +633,7 @@
         `銷售單金額：${fmtMoney(result.salesAmount)}`,
         `額外減價：${fmtMoney(result.extraDiscount)}`,
         `工費：${result.waiveLabor ? '免工' : fmtMoney(result.laborCharge)}`,
+        `佣金比率：${fmtPct(result.commissionRate)}`,
         `實收金額：${fmtMoney(result.actualRevenue)}`,
         `金料成本：${fmtMoney(result.goldCost)}`,
         `總成本：${fmtMoney(result.totalCost)}`,
@@ -671,10 +656,10 @@
     $('resetBtn').addEventListener('click', resetForm);
     $('copyBtn').addEventListener('click', copySummary);
 
-    ['weight','taelToGram','salesAmount','extraDiscount','laborCharge','goldPricePerTael','stoneCost','otherCost','commissionValue'].forEach(id => {
+    ['weight','taelToGram','salesAmount','extraDiscount','laborCharge','goldPricePerTael','stoneCost','otherCost'].forEach(id => {
       $(id).addEventListener('input', calculate);
     });
-    ['unit','commissionMode','itemType'].forEach(id => {
+    ['unit','itemType','commissionRate'].forEach(id => {
       $(id).addEventListener('change', calculate);
     });
     $('waiveLabor').addEventListener('change', calculate);

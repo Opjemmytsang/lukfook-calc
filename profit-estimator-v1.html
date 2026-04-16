@@ -289,12 +289,12 @@
       <a class="back" href="./index.html">← 返回計算工具首頁</a>
       <h1>利潤推算器 v1</h1>
       <div class="sub">
-        用於快速推算單件貨品的實收金額、金料成本、總成本、毛利、毛利率、佣金估算及淨賺情況。V1 先聚焦單件計算，方便營運或前線即時判斷該單生意是否有賺、有幾多風險，以及免工或額外減價後的影響。
+        用於快速推算單件貨品的基礎收入、佣金收入、實收總額、金料成本、總成本及最終利潤情況。現版本已按最新邏輯修正為：<strong>佣金屬於收入的一部分，會加到實收內</strong>，而不是在最後再由利潤扣減一次。
       </div>
       <div class="chips">
         <span class="chip">單件利潤推算</span>
         <span class="chip">支援両 / 克</span>
-        <span class="chip">佣金固定選項</span>
+        <span class="chip">佣金加到實收</span>
         <span class="chip">風險提示</span>
       </div>
     </div>
@@ -340,7 +340,7 @@
             <div class="field">
               <label for="salesAmount">銷售單金額</label>
               <input id="salesAmount" type="number" step="0.01" value="42800" />
-              <small>以單據上的金額為主。</small>
+              <small>以單據上的基本金額為主，未包含佣金收入。</small>
             </div>
             <div class="field">
               <label for="extraDiscount">額外減價</label>
@@ -357,7 +357,7 @@
                 <input id="waiveLabor" type="checkbox" checked />
                 <span>免工</span>
               </div>
-              <small>已勾選免工時，工費收入不會計入實收。</small>
+              <small>已勾選免工時，工費收入不會計入基礎收入。</small>
             </div>
           </div>
         </div>
@@ -395,7 +395,7 @@
                 <option value="1">1%</option>
                 <option value="2" selected>2%</option>
               </select>
-              <small>佣金按實收金額計算。</small>
+              <small>佣金按基礎收入計算，並會加到實收總額之內。</small>
             </div>
           </div>
         </div>
@@ -413,13 +413,23 @@
         <div class="result-top">
           <span id="statusBadge" class="badge amber">等待計算</span>
         </div>
-        <div id="summary" class="summary">輸入資料後，系統會顯示該單生意的實收金額、成本、毛利、毛利率、佣金估算及淨賺情況。</div>
+        <div id="summary" class="summary">輸入資料後，系統會顯示基礎收入、佣金收入、實收總額、成本及最終利潤情況。</div>
 
         <div class="kpi-grid">
           <div class="kpi">
-            <div class="label">實收金額</div>
-            <div id="actualRevenue" class="value mono">0</div>
+            <div class="label">基礎收入</div>
+            <div id="baseRevenue" class="value mono">0</div>
             <div class="subvalue">銷售單金額 + 工費收入 − 額外減價</div>
+          </div>
+          <div class="kpi">
+            <div class="label">佣金收入</div>
+            <div id="commissionAmount" class="value mono">0</div>
+            <div class="subvalue">基礎收入 × 佣金比率</div>
+          </div>
+          <div class="kpi">
+            <div class="label">實收總額</div>
+            <div id="actualRevenue" class="value mono">0</div>
+            <div class="subvalue">基礎收入 + 佣金收入</div>
           </div>
           <div class="kpi">
             <div class="label">金料成本</div>
@@ -432,36 +442,26 @@
             <div class="subvalue">金料成本 + 石 / 配件成本 + 其他成本</div>
           </div>
           <div class="kpi">
-            <div class="label">毛利額</div>
-            <div id="grossProfit" class="value mono">0</div>
-            <div class="subvalue">實收金額 − 總成本</div>
-          </div>
-          <div class="kpi">
             <div class="label">毛利率</div>
             <div id="grossMargin" class="value mono">0%</div>
-            <div class="subvalue">毛利額 ÷ 實收金額</div>
-          </div>
-          <div class="kpi">
-            <div class="label">估算佣金</div>
-            <div id="commissionAmount" class="value mono">0</div>
-            <div class="subvalue">按實收金額 × 佣金比率</div>
+            <div class="subvalue">最終利潤 ÷ 實收總額</div>
           </div>
           <div class="kpi" style="grid-column:1 / -1">
-            <div class="label">淨賺</div>
-            <div id="netProfit" class="value mono">0</div>
-            <div class="subvalue">毛利額 − 估算佣金</div>
+            <div class="label">最終利潤</div>
+            <div id="finalProfit" class="value mono">0</div>
+            <div class="subvalue">實收總額 − 總成本</div>
           </div>
         </div>
 
         <div class="note-box">
-          <strong>V1 計算邏輯：</strong>
+          <strong>現行計算邏輯：</strong>
           <ul class="formula-list">
-            <li>實收金額 = 銷售單金額 + 工費收入（如非免工）− 額外減價</li>
+            <li>基礎收入 = 銷售單金額 + 工費收入（如非免工）− 額外減價</li>
+            <li>佣金收入 = 基礎收入 × 佣金比率</li>
+            <li>實收總額 = 基礎收入 + 佣金收入</li>
             <li>金料成本 = 金重（両）× 當日金價（每両）</li>
             <li>總成本 = 金料成本 + 石 / 配件成本 + 其他成本</li>
-            <li>毛利額 = 實收金額 − 總成本</li>
-            <li>估算佣金 = 實收金額 × 佣金比率</li>
-            <li>淨賺 = 毛利額 − 估算佣金</li>
+            <li>最終利潤 = 實收總額 − 總成本</li>
           </ul>
         </div>
 
@@ -514,25 +514,25 @@
 
       const weightTael = unit === 'gram' ? (weight / taelToGram) : weight;
       const laborRevenue = waiveLabor ? 0 : laborCharge;
-      const actualRevenue = salesAmount + laborRevenue - extraDiscount;
+      const baseRevenue = salesAmount + laborRevenue - extraDiscount;
+      const commissionAmount = baseRevenue > 0 ? baseRevenue * (commissionRate / 100) : 0;
+      const actualRevenue = baseRevenue + commissionAmount;
       const goldCost = weightTael * goldPricePerTael;
       const totalCost = goldCost + stoneCost + otherCost;
-      const grossProfit = actualRevenue - totalCost;
-      const grossMargin = actualRevenue !== 0 ? (grossProfit / actualRevenue) * 100 : 0;
-      const commissionAmount = actualRevenue > 0 ? actualRevenue * (commissionRate / 100) : 0;
-      const netProfit = grossProfit - commissionAmount;
+      const finalProfit = actualRevenue - totalCost;
+      const grossMargin = actualRevenue !== 0 ? (finalProfit / actualRevenue) * 100 : 0;
 
+      $('baseRevenue').textContent = fmtMoney(baseRevenue);
+      $('commissionAmount').textContent = fmtMoney(commissionAmount);
       $('actualRevenue').textContent = fmtMoney(actualRevenue);
       $('goldCost').textContent = fmtMoney(goldCost);
       $('totalCost').textContent = fmtMoney(totalCost);
-      $('grossProfit').textContent = fmtMoney(grossProfit);
       $('grossMargin').textContent = fmtPct(grossMargin);
-      $('commissionAmount').textContent = fmtMoney(commissionAmount);
-      $('netProfit').textContent = fmtMoney(netProfit);
+      $('finalProfit').textContent = fmtMoney(finalProfit);
 
       let statusText = '低毛利，需留意';
       let statusClass = 'amber';
-      if (netProfit < 0 || grossProfit < 0) {
+      if (finalProfit < 0) {
         statusText = '此單推算為蝕';
         statusClass = 'red';
       } else if (grossMargin >= 12) {
@@ -548,29 +548,30 @@
         額外減價 <strong>${fmtMoney(extraDiscount)}</strong>
         ${waiveLabor ? '及 <strong>免工</strong>' : `，另收工費 <strong>${fmtMoney(laborCharge)}</strong>`}、
         佣金比率 <strong>${fmtPct(commissionRate)}</strong> 計算，
-        今次推算的 <strong>淨賺為 ${fmtMoney(netProfit)}</strong>。
+        佣金收入為 <strong>${fmtMoney(commissionAmount)}</strong>，
+        最終實收總額為 <strong>${fmtMoney(actualRevenue)}</strong>，
+        今次推算的 <strong>最終利潤為 ${fmtMoney(finalProfit)}</strong>。
       `;
 
       const risks = [];
-      if (waiveLabor) risks.push('此單已設定為免工，工費收入不計入實收，需留意毛利被進一步壓縮。');
-      if (actualRevenue < goldCost) risks.push('實收金額已低於金料成本，單看金料層面已出現倒掛。');
-      if (grossProfit < 0) risks.push('毛利為負數，代表該單生意未覆蓋總成本。');
-      if (grossProfit >= 0 && grossMargin < 8) risks.push('雖然仍有毛利，但毛利率偏低，建議覆核折扣、優惠或工費安排。');
-      if (commissionRate > 0 && netProfit < 0) risks.push('扣除佣金後變成負數，需評估是否屬可接受交易。');
+      if (waiveLabor) risks.push('此單已設定為免工，工費收入不計入基礎收入，需留意收入被壓縮。');
+      if (actualRevenue < goldCost) risks.push('即使計入佣金後，實收總額仍低於金料成本，單看金料層面已出現倒掛。');
+      if (finalProfit < 0) risks.push('最終利潤為負數，代表該單生意未覆蓋總成本。');
+      if (finalProfit >= 0 && grossMargin < 8) risks.push('雖然仍有利潤，但毛利率偏低，建議覆核折扣、優惠或工費安排。');
       if (weight <= 0 || taelToGram <= 0) risks.push('金重或換算設定無效，請重新檢查輸入資料。');
       if (!risks.length) risks.push('目前未見明顯風險，此單推算屬正常利潤範圍。');
 
       $('riskList').innerHTML = risks.map(item => `<li>${item}</li>`).join('');
 
       return {
+        baseRevenue,
+        commissionAmount,
         actualRevenue,
         goldCost,
         totalCost,
-        grossProfit,
         grossMargin,
-        commissionAmount,
+        finalProfit,
         commissionRate,
-        netProfit,
         weight,
         unit,
         goldPricePerTael,
@@ -594,7 +595,7 @@
       $('stoneCost').value = '0';
       $('otherCost').value = '0';
       $('commissionRate').value = '2';
-      $('remarks').value = '示例：1 両、金價 54,410、單據 42,800、額外減 2,000、免工、佣金 2%。';
+      $('remarks').value = '示例：1 両、金價 54,410、單據 42,800、額外減 2,000、免工、佣金 2% 並加到實收。';
       calculate();
     }
 
@@ -612,14 +613,14 @@
       $('otherCost').value = '0';
       $('commissionRate').value = '2';
       $('remarks').value = '';
+      $('baseRevenue').textContent = '0';
+      $('commissionAmount').textContent = '0';
       $('actualRevenue').textContent = '0';
       $('goldCost').textContent = '0';
       $('totalCost').textContent = '0';
-      $('grossProfit').textContent = '0';
       $('grossMargin').textContent = '0%';
-      $('commissionAmount').textContent = '0';
-      $('netProfit').textContent = '0';
-      $('summary').textContent = '輸入資料後，系統會顯示該單生意的實收金額、成本、毛利、毛利率、佣金估算及淨賺情況。';
+      $('finalProfit').textContent = '0';
+      $('summary').textContent = '輸入資料後，系統會顯示基礎收入、佣金收入、實收總額、成本及最終利潤情況。';
       $('riskList').innerHTML = '<li>尚未有計算結果。</li>';
       setBadge('amber', '等待計算');
     }
@@ -634,13 +635,13 @@
         `額外減價：${fmtMoney(result.extraDiscount)}`,
         `工費：${result.waiveLabor ? '免工' : fmtMoney(result.laborCharge)}`,
         `佣金比率：${fmtPct(result.commissionRate)}`,
-        `實收金額：${fmtMoney(result.actualRevenue)}`,
+        `基礎收入：${fmtMoney(result.baseRevenue)}`,
+        `佣金收入：${fmtMoney(result.commissionAmount)}`,
+        `實收總額：${fmtMoney(result.actualRevenue)}`,
         `金料成本：${fmtMoney(result.goldCost)}`,
         `總成本：${fmtMoney(result.totalCost)}`,
-        `毛利額：${fmtMoney(result.grossProfit)}`,
         `毛利率：${fmtPct(result.grossMargin)}`,
-        `估算佣金：${fmtMoney(result.commissionAmount)}`,
-        `淨賺：${fmtMoney(result.netProfit)}`
+        `最終利潤：${fmtMoney(result.finalProfit)}`
       ].join('\n');
 
       try {

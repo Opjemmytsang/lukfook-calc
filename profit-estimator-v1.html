@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>利潤推算器 v1</title>
+  <style>
+    :root{
+      --wine:#8B2A2E;
+      --wine-dark:#6F1E22;
+      --gold:#C8A55A;
+      --bg:#FBF7F0;
+      --card:rgba(255,255,255,.96);
+      --text:#1B1B1B;
+      --muted:#6A6156;
+      --border:rgba(200,165,90,.38);
+      --shadow:0 22px 54px rgba(20,10,5,.10);
+      --shadow-soft:0 12px 28px rgba(20,10,5,.06);
+      --radius:24px;
+      --green:#1F7A4D;
+      --red:#B42318;
+      --amber:#B26A00;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","Microsoft JhengHei",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 520px at 10% -10%, rgba(200,165,90,.20), transparent 60%),
+        radial-gradient(900px 440px at 100% 0%, rgba(139,42,46,.10), transparent 58%),
+        linear-gradient(180deg,#FFFDF9,var(--bg) 42%,#FFFDF9);
+      padding:20px;
+    }
+    .wrap{max-width:1280px;margin:0 auto}
+    .hero,.panel{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:calc(var(--radius) + 6px);
+      box-shadow:var(--shadow);
+    }
+    .hero{
+      padding:24px;
+      margin-bottom:18px;
+      background:linear-gradient(135deg, rgba(255,255,255,.98), rgba(200,165,90,.10));
+    }
+    .back{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(200,165,90,.55);
+      background:rgba(200,165,90,.10);
+      color:var(--wine-dark);
+      text-decoration:none;
+      font-size:13px;
+      font-weight:900;
+      margin-bottom:12px;
+    }
+    h1{
+      margin:0 0 10px;
+      color:var(--wine-dark);
+      font-size:30px;
+      line-height:1.12;
+      letter-spacing:.2px;
+    }
+    .sub{
+      max-width:960px;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:14px;
+    }
+    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(200,165,90,.56);
+      background:rgba(200,165,90,.12);
+      color:var(--wine-dark);
+      font-size:12px;
+      font-weight:850;
+    }
+    .layout{
+      display:grid;
+      grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);
+      gap:18px;
+    }
+    @media (max-width:1080px){
+      .layout{grid-template-columns:1fr}
+    }
+    .panel{padding:20px}
+    .panel h2{
+      margin:0 0 14px;
+      font-size:20px;
+      color:var(--wine-dark);
+    }
+    .section{margin-top:18px}
+    .section:first-child{margin-top:0}
+    .section-title{
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.65px;
+      color:var(--wine-dark);
+      margin:0 0 10px;
+    }
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+    @media (max-width:760px){
+      .form-grid{grid-template-columns:1fr}
+    }
+    .field label{
+      display:block;
+      margin-bottom:7px;
+      font-size:13px;
+      font-weight:800;
+      color:#2f2924;
+    }
+    .field small{
+      display:block;
+      color:var(--muted);
+      font-size:11px;
+      line-height:1.6;
+      margin-top:6px;
+    }
+    input,select,textarea{
+      width:100%;
+      min-height:46px;
+      border-radius:14px;
+      border:1px solid rgba(0,0,0,.08);
+      background:#fff;
+      padding:11px 13px;
+      font:inherit;
+      color:var(--text);
+      outline:none;
+    }
+    textarea{min-height:92px;resize:vertical}
+    input:focus,select:focus,textarea:focus{
+      border-color:rgba(139,42,46,.45);
+      box-shadow:0 0 0 4px rgba(139,42,46,.08);
+    }
+    .inline{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-height:46px;
+      padding:0 14px;
+      border-radius:14px;
+      border:1px solid rgba(0,0,0,.08);
+      background:#fff;
+    }
+    .inline input[type="checkbox"]{
+      width:18px;
+      min-height:18px;
+      margin:0;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+    button{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      min-height:46px;
+      padding:12px 16px;
+      border-radius:16px;
+      font:inherit;
+      font-size:14px;
+      font-weight:900;
+      transition:transform .12s ease, opacity .12s ease;
+    }
+    button:hover{transform:translateY(-1px)}
+    .btn-primary{
+      color:#fff;
+      background:linear-gradient(135deg,var(--wine),var(--wine-dark));
+      box-shadow:0 12px 24px rgba(139,42,46,.18);
+    }
+    .btn-secondary{
+      color:var(--wine-dark);
+      background:rgba(200,165,90,.15);
+      border:1px solid rgba(200,165,90,.56);
+    }
+    .result-top{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:9px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:950;
+    }
+    .badge.green{background:rgba(31,122,77,.10);color:var(--green);border:1px solid rgba(31,122,77,.18)}
+    .badge.red{background:rgba(180,35,24,.10);color:var(--red);border:1px solid rgba(180,35,24,.18)}
+    .badge.amber{background:rgba(178,106,0,.10);color:var(--amber);border:1px solid rgba(178,106,0,.18)}
+    .summary{
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.75;
+      margin-bottom:16px;
+    }
+    .kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .kpi{
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:linear-gradient(180deg,#fff,rgba(200,165,90,.08));
+      padding:14px;
+      box-shadow:var(--shadow-soft);
+    }
+    .kpi .label{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+      font-weight:800;
+    }
+    .kpi .value{
+      font-size:28px;
+      line-height:1.05;
+      font-weight:980;
+      color:var(--wine-dark);
+      letter-spacing:.2px;
+      word-break:break-word;
+    }
+    .kpi .subvalue{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+      line-height:1.65;
+    }
+    @media (max-width:620px){
+      .kpi-grid{grid-template-columns:1fr}
+      .kpi .value{font-size:24px}
+    }
+    .note-box{
+      margin-top:16px;
+      border-radius:18px;
+      border:1px dashed rgba(200,165,90,.72);
+      background:rgba(200,165,90,.10);
+      padding:14px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.8;
+    }
+    .formula-list{
+      margin:12px 0 0;
+      padding-left:18px;
+      color:var(--muted);
+      line-height:1.8;
+      font-size:12px;
+    }
+    .risk-list{
+      margin:12px 0 0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:10px;
+    }
+    .risk-list li{
+      border-radius:14px;
+      border:1px solid rgba(0,0,0,.06);
+      background:#fff;
+      padding:11px 12px;
+      font-size:13px;
+      line-height:1.7;
+    }
+    .muted{color:var(--muted)}
+    .mono{font-variant-numeric:tabular-nums}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <a class="back" href="./index.html">← 返回計算工具首頁</a>
+      <h1>利潤推算器 v1</h1>
+      <div class="sub">
+        用於快速推算單件貨品的實收金額、金料成本、總成本、毛利、毛利率、佣金估算及淨賺情況。V1 先聚焦單件計算，方便營運或前線即時判斷該單生意是否有賺、有幾多風險，以及免工或額外減價後的影響。
+      </div>
+      <div class="chips">
+        <span class="chip">單件利潤推算</span>
+        <span class="chip">支援両 / 克</span>
+        <span class="chip">佣金估算</span>
+        <span class="chip">風險提示</span>
+      </div>
+    </div>
+
+    <div class="layout">
+      <div class="panel">
+        <h2>輸入資料</h2>
+
+        <div class="section">
+          <div class="section-title">基本資料</div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="itemType">貨類</label>
+              <select id="itemType">
+                <option value="A1">A1 / 黃金類</option>
+                <option value="G">G 類 / 計重黃金</option>
+                <option value="J1">J1 / 鑽石</option>
+                <option value="OTHER">其他</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="unit">重量單位</label>
+              <select id="unit">
+                <option value="tael">両</option>
+                <option value="gram">克</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="weight">金重</label>
+              <input id="weight" type="number" step="0.001" value="1" />
+            </div>
+            <div class="field">
+              <label for="taelToGram">1 両 = 幾多克</label>
+              <input id="taelToGram" type="number" step="0.001" value="37.429" />
+              <small>如需調整換算，可直接修改。</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">收入資料</div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="salesAmount">銷售單金額</label>
+              <input id="salesAmount" type="number" step="0.01" value="42800" />
+              <small>以單據上的金額為主。</small>
+            </div>
+            <div class="field">
+              <label for="extraDiscount">額外減價</label>
+              <input id="extraDiscount" type="number" step="0.01" value="2000" />
+            </div>
+            <div class="field">
+              <label for="laborCharge">工費收入</label>
+              <input id="laborCharge" type="number" step="0.01" value="0" />
+              <small>如張單另收工費可填寫；如免工可保持 0 或勾選下方。</small>
+            </div>
+            <div class="field">
+              <label for="laborIncluded">工費處理</label>
+              <div class="inline">
+                <input id="waiveLabor" type="checkbox" checked />
+                <span>免工</span>
+              </div>
+              <small>已勾選免工時，工費收入不會計入實收。</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">成本資料</div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="goldPricePerTael">當日金價（每両）</label>
+              <input id="goldPricePerTael" type="number" step="0.01" value="54410" />
+              <small>系統會自動按金重換算金料成本。</small>
+            </div>
+            <div class="field">
+              <label for="stoneCost">石 / 配件成本</label>
+              <input id="stoneCost" type="number" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label for="otherCost">其他成本</label>
+              <input id="otherCost" type="number" step="0.01" value="0" />
+            </div>
+            <div class="field">
+              <label for="remarks">備註</label>
+              <textarea id="remarks" placeholder="可輸入例外情況，例如：特價貨、清貨單、推廣單。"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">佣金估算</div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="commissionMode">佣金模式</label>
+              <select id="commissionMode">
+                <option value="none">不計佣 / 只看生意利潤</option>
+                <option value="sales_percent">按實收金額百分比</option>
+                <option value="gross_percent">按毛利百分比</option>
+                <option value="fixed">固定佣金金額</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="commissionValue">佣金數值</label>
+              <input id="commissionValue" type="number" step="0.01" value="0" />
+              <small>例如：2 = 2%；固定模式則輸入金額。</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" id="calcBtn" type="button">立即計算</button>
+          <button class="btn-secondary" id="sampleBtn" type="button">套用示例</button>
+          <button class="btn-secondary" id="resetBtn" type="button">清空重設</button>
+          <button class="btn-secondary" id="copyBtn" type="button">複製摘要</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>推算結果</h2>
+        <div class="result-top">
+          <span id="statusBadge" class="badge amber">等待計算</span>
+        </div>
+        <div id="summary" class="summary">輸入資料後，系統會顯示該單生意的實收金額、成本、毛利、毛利率、佣金估算及淨賺情況。</div>
+
+        <div class="kpi-grid">
+          <div class="kpi">
+            <div class="label">實收金額</div>
+            <div id="actualRevenue" class="value mono">0</div>
+            <div class="subvalue">銷售單金額 + 工費收入 − 額外減價</div>
+          </div>
+          <div class="kpi">
+            <div class="label">金料成本</div>
+            <div id="goldCost" class="value mono">0</div>
+            <div class="subvalue">按金重及當日每両金價推算</div>
+          </div>
+          <div class="kpi">
+            <div class="label">總成本</div>
+            <div id="totalCost" class="value mono">0</div>
+            <div class="subvalue">金料成本 + 石 / 配件成本 + 其他成本</div>
+          </div>
+          <div class="kpi">
+            <div class="label">毛利額</div>
+            <div id="grossProfit" class="value mono">0</div>
+            <div class="subvalue">實收金額 − 總成本</div>
+          </div>
+          <div class="kpi">
+            <div class="label">毛利率</div>
+            <div id="grossMargin" class="value mono">0%</div>
+            <div class="subvalue">毛利額 ÷ 實收金額</div>
+          </div>
+          <div class="kpi">
+            <div class="label">估算佣金</div>
+            <div id="commissionAmount" class="value mono">0</div>
+            <div class="subvalue">按選定模式計算</div>
+          </div>
+          <div class="kpi" style="grid-column:1 / -1">
+            <div class="label">淨賺</div>
+            <div id="netProfit" class="value mono">0</div>
+            <div class="subvalue">毛利額 − 估算佣金</div>
+          </div>
+        </div>
+
+        <div class="note-box">
+          <strong>V1 計算邏輯：</strong>
+          <ul class="formula-list">
+            <li>實收金額 = 銷售單金額 + 工費收入（如非免工）− 額外減價</li>
+            <li>金料成本 = 金重（両）× 當日金價（每両）</li>
+            <li>總成本 = 金料成本 + 石 / 配件成本 + 其他成本</li>
+            <li>毛利額 = 實收金額 − 總成本</li>
+            <li>淨賺 = 毛利額 − 估算佣金</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <div class="section-title">風險提示</div>
+          <ul id="riskList" class="risk-list">
+            <li>尚未有計算結果。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function num(id){
+      const raw = parseFloat($(id).value);
+      return Number.isFinite(raw) ? raw : 0;
+    }
+
+    function fmtMoney(value){
+      const sign = value < 0 ? '-' : '';
+      const abs = Math.abs(value);
+      return sign + abs.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function fmtPct(value){
+      return `${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+    }
+
+    function setBadge(type, text){
+      const badge = $('statusBadge');
+      badge.className = `badge ${type}`;
+      badge.textContent = text;
+    }
+
+    function calculate(){
+      const unit = $('unit').value;
+      const weight = num('weight');
+      const taelToGram = num('taelToGram') || 37.429;
+      const salesAmount = num('salesAmount');
+      const extraDiscount = num('extraDiscount');
+      const laborCharge = num('laborCharge');
+      const goldPricePerTael = num('goldPricePerTael');
+      const stoneCost = num('stoneCost');
+      const otherCost = num('otherCost');
+      const waiveLabor = $('waiveLabor').checked;
+      const commissionMode = $('commissionMode').value;
+      const commissionValue = num('commissionValue');
+
+      const weightTael = unit === 'gram' ? (weight / taelToGram) : weight;
+      const weightGram = unit === 'gram' ? weight : (weight * taelToGram);
+      const laborRevenue = waiveLabor ? 0 : laborCharge;
+      const actualRevenue = salesAmount + laborRevenue - extraDiscount;
+      const goldCost = weightTael * goldPricePerTael;
+      const totalCost = goldCost + stoneCost + otherCost;
+      const grossProfit = actualRevenue - totalCost;
+      const grossMargin = actualRevenue !== 0 ? (grossProfit / actualRevenue) * 100 : 0;
+
+      let commissionAmount = 0;
+      if (commissionMode === 'sales_percent') {
+        commissionAmount = actualRevenue * (commissionValue / 100);
+      } else if (commissionMode === 'gross_percent') {
+        commissionAmount = grossProfit > 0 ? grossProfit * (commissionValue / 100) : 0;
+      } else if (commissionMode === 'fixed') {
+        commissionAmount = commissionValue;
+      }
+
+      const netProfit = grossProfit - commissionAmount;
+
+      $('actualRevenue').textContent = fmtMoney(actualRevenue);
+      $('goldCost').textContent = fmtMoney(goldCost);
+      $('totalCost').textContent = fmtMoney(totalCost);
+      $('grossProfit').textContent = fmtMoney(grossProfit);
+      $('grossMargin').textContent = fmtPct(grossMargin);
+      $('commissionAmount').textContent = fmtMoney(commissionAmount);
+      $('netProfit').textContent = fmtMoney(netProfit);
+
+      let statusText = '低毛利，需留意';
+      let statusClass = 'amber';
+      if (netProfit < 0 || grossProfit < 0) {
+        statusText = '此單推算為蝕';
+        statusClass = 'red';
+      } else if (grossMargin >= 12) {
+        statusText = '此單有賺，表現健康';
+        statusClass = 'green';
+      }
+      setBadge(statusClass, statusText);
+
+      $('summary').innerHTML = `
+        以 <strong>${weight.toLocaleString('en-US', { maximumFractionDigits: 3 })} ${unit === 'gram' ? '克' : '両'}</strong>、
+        當日金價 <strong>${fmtMoney(goldPricePerTael)}</strong> / 両、
+        單據金額 <strong>${fmtMoney(salesAmount)}</strong>、
+        額外減價 <strong>${fmtMoney(extraDiscount)}</strong>
+        ${waiveLabor ? '及 <strong>免工</strong>' : `，另收工費 <strong>${fmtMoney(laborCharge)}</strong>`} 計算，
+        今次推算的 <strong>淨賺為 ${fmtMoney(netProfit)}</strong>。
+      `;
+
+      const risks = [];
+      if (waiveLabor) risks.push('此單已設定為免工，工費收入不計入實收，需留意毛利被進一步壓縮。');
+      if (actualRevenue < goldCost) risks.push('實收金額已低於金料成本，單看金料層面已出現倒掛。');
+      if (grossProfit < 0) risks.push('毛利為負數，代表該單生意未覆蓋總成本。');
+      if (grossProfit >= 0 && grossMargin < 8) risks.push('雖然仍有毛利，但毛利率偏低，建議覆核折扣、優惠或工費安排。');
+      if (commissionMode !== 'none' && netProfit < 0) risks.push('扣除估算佣金後變成負數，需評估是否屬可接受交易。');
+      if (weight <= 0 || taelToGram <= 0) risks.push('金重或換算設定無效，請重新檢查輸入資料。');
+      if (!risks.length) risks.push('目前未見明顯風險，此單推算屬正常利潤範圍。');
+
+      $('riskList').innerHTML = risks.map(item => `<li>${item}</li>`).join('');
+
+      return {
+        actualRevenue,
+        goldCost,
+        totalCost,
+        grossProfit,
+        grossMargin,
+        commissionAmount,
+        netProfit,
+        weight,
+        unit,
+        goldPricePerTael,
+        salesAmount,
+        extraDiscount,
+        laborCharge,
+        waiveLabor
+      };
+    }
+
+    function applySample(){
+      $('itemType').value = 'A1';
+      $('unit').value = 'tael';
+      $('weight').value = '1';
+      $('taelToGram').value = '37.429';
+      $('salesAmount').value = '42800';
+      $('extraDiscount').value = '2000';
+      $('laborCharge').value = '0';
+      $('waiveLabor').checked = true;
+      $('goldPricePerTael').value = '54410';
+      $('stoneCost').value = '0';
+      $('otherCost').value = '0';
+      $('commissionMode').value = 'none';
+      $('commissionValue').value = '0';
+      $('remarks').value = '示例：1 両、金價 54,410、單據 42,800、額外減 2,000、免工。';
+      calculate();
+    }
+
+    function resetForm(){
+      $('itemType').value = 'A1';
+      $('unit').value = 'tael';
+      $('weight').value = '1';
+      $('taelToGram').value = '37.429';
+      $('salesAmount').value = '0';
+      $('extraDiscount').value = '0';
+      $('laborCharge').value = '0';
+      $('waiveLabor').checked = false;
+      $('goldPricePerTael').value = '0';
+      $('stoneCost').value = '0';
+      $('otherCost').value = '0';
+      $('commissionMode').value = 'none';
+      $('commissionValue').value = '0';
+      $('remarks').value = '';
+      $('actualRevenue').textContent = '0';
+      $('goldCost').textContent = '0';
+      $('totalCost').textContent = '0';
+      $('grossProfit').textContent = '0';
+      $('grossMargin').textContent = '0%';
+      $('commissionAmount').textContent = '0';
+      $('netProfit').textContent = '0';
+      $('summary').textContent = '輸入資料後，系統會顯示該單生意的實收金額、成本、毛利、毛利率、佣金估算及淨賺情況。';
+      $('riskList').innerHTML = '<li>尚未有計算結果。</li>';
+      setBadge('amber', '等待計算');
+    }
+
+    async function copySummary(){
+      const result = calculate();
+      const lines = [
+        '利潤推算器 v1 摘要',
+        `金重：${result.weight} ${result.unit === 'gram' ? '克' : '両'}`,
+        `當日金價（每両）：${fmtMoney(result.goldPricePerTael)}`,
+        `銷售單金額：${fmtMoney(result.salesAmount)}`,
+        `額外減價：${fmtMoney(result.extraDiscount)}`,
+        `工費：${result.waiveLabor ? '免工' : fmtMoney(result.laborCharge)}`,
+        `實收金額：${fmtMoney(result.actualRevenue)}`,
+        `金料成本：${fmtMoney(result.goldCost)}`,
+        `總成本：${fmtMoney(result.totalCost)}`,
+        `毛利額：${fmtMoney(result.grossProfit)}`,
+        `毛利率：${fmtPct(result.grossMargin)}`,
+        `估算佣金：${fmtMoney(result.commissionAmount)}`,
+        `淨賺：${fmtMoney(result.netProfit)}`
+      ].join('\n');
+
+      try {
+        await navigator.clipboard.writeText(lines);
+        alert('已複製摘要，可直接貼去企微或匯報。');
+      } catch (err) {
+        alert('未能自動複製，請手動複製。');
+      }
+    }
+
+    $('calcBtn').addEventListener('click', calculate);
+    $('sampleBtn').addEventListener('click', applySample);
+    $('resetBtn').addEventListener('click', resetForm);
+    $('copyBtn').addEventListener('click', copySummary);
+
+    ['weight','taelToGram','salesAmount','extraDiscount','laborCharge','goldPricePerTael','stoneCost','otherCost','commissionValue'].forEach(id => {
+      $(id).addEventListener('input', calculate);
+    });
+    ['unit','commissionMode','itemType'].forEach(id => {
+      $(id).addEventListener('change', calculate);
+    });
+    $('waiveLabor').addEventListener('change', calculate);
+
+    applySample();
+  </script>
+</body>
+</html>

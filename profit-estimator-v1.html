@@ -88,9 +88,7 @@
       grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);
       gap:18px;
     }
-    @media (max-width:1080px){
-      .layout{grid-template-columns:1fr}
-    }
+    @media (max-width:1080px){.layout{grid-template-columns:1fr}}
     .panel{padding:20px}
     .panel h2{
       margin:0 0 14px;
@@ -111,9 +109,7 @@
       grid-template-columns:repeat(2,minmax(0,1fr));
       gap:14px;
     }
-    @media (max-width:760px){
-      .form-grid{grid-template-columns:1fr}
-    }
+    @media (max-width:760px){.form-grid{grid-template-columns:1fr}}
     .field label{
       display:block;
       margin-bottom:7px;
@@ -154,133 +150,40 @@
       border:1px solid rgba(0,0,0,.08);
       background:#fff;
     }
-    .inline input[type="checkbox"]{
-      width:18px;
-      min-height:18px;
-      margin:0;
-    }
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:18px;
-    }
+    .inline input[type="checkbox"]{width:18px;min-height:18px;margin:0}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
     button{
-      appearance:none;
-      border:none;
-      cursor:pointer;
-      min-height:46px;
-      padding:12px 16px;
-      border-radius:16px;
-      font:inherit;
-      font-size:14px;
-      font-weight:900;
+      appearance:none;border:none;cursor:pointer;min-height:46px;padding:12px 16px;
+      border-radius:16px;font:inherit;font-size:14px;font-weight:900;
       transition:transform .12s ease, opacity .12s ease;
     }
     button:hover{transform:translateY(-1px)}
-    .btn-primary{
-      color:#fff;
-      background:linear-gradient(135deg,var(--wine),var(--wine-dark));
-      box-shadow:0 12px 24px rgba(139,42,46,.18);
-    }
-    .btn-secondary{
-      color:var(--wine-dark);
-      background:rgba(200,165,90,.15);
-      border:1px solid rgba(200,165,90,.56);
-    }
-    .result-top{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-bottom:14px;
-    }
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      padding:9px 12px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:950;
-    }
+    .btn-primary{color:#fff;background:linear-gradient(135deg,var(--wine),var(--wine-dark));box-shadow:0 12px 24px rgba(139,42,46,.18)}
+    .btn-secondary{color:var(--wine-dark);background:rgba(200,165,90,.15);border:1px solid rgba(200,165,90,.56)}
+    .result-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+    .badge{display:inline-flex;align-items:center;padding:9px 12px;border-radius:999px;font-size:12px;font-weight:950}
     .badge.green{background:rgba(31,122,77,.10);color:var(--green);border:1px solid rgba(31,122,77,.18)}
     .badge.red{background:rgba(180,35,24,.10);color:var(--red);border:1px solid rgba(180,35,24,.18)}
     .badge.amber{background:rgba(178,106,0,.10);color:var(--amber);border:1px solid rgba(178,106,0,.18)}
-    .summary{
-      font-size:14px;
-      color:var(--muted);
-      line-height:1.75;
-      margin-bottom:16px;
-    }
-    .kpi-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
+    .summary{font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:16px}
+    .kpi-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
     .kpi{
-      border:1px solid var(--border);
-      border-radius:18px;
-      background:linear-gradient(180deg,#fff,rgba(200,165,90,.08));
-      padding:14px;
-      box-shadow:var(--shadow-soft);
+      border:1px solid var(--border);border-radius:18px;background:linear-gradient(180deg,#fff,rgba(200,165,90,.08));
+      padding:14px;box-shadow:var(--shadow-soft)
     }
-    .kpi .label{
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:6px;
-      font-weight:800;
-    }
-    .kpi .value{
-      font-size:28px;
-      line-height:1.05;
-      font-weight:980;
-      color:var(--wine-dark);
-      letter-spacing:.2px;
-      word-break:break-word;
-    }
-    .kpi .subvalue{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:6px;
-      line-height:1.65;
-    }
-    @media (max-width:620px){
-      .kpi-grid{grid-template-columns:1fr}
-      .kpi .value{font-size:24px}
-    }
+    .kpi .label{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:800}
+    .kpi .value{font-size:28px;line-height:1.05;font-weight:980;color:var(--wine-dark);letter-spacing:.2px;word-break:break-word}
+    .kpi .subvalue{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.65}
+    @media (max-width:620px){.kpi-grid{grid-template-columns:1fr}.kpi .value{font-size:24px}}
     .note-box{
-      margin-top:16px;
-      border-radius:18px;
-      border:1px dashed rgba(200,165,90,.72);
-      background:rgba(200,165,90,.10);
-      padding:14px;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.8;
+      margin-top:16px;border-radius:18px;border:1px dashed rgba(200,165,90,.72);
+      background:rgba(200,165,90,.10);padding:14px;color:var(--muted);font-size:12px;line-height:1.8
     }
-    .formula-list{
-      margin:12px 0 0;
-      padding-left:18px;
-      color:var(--muted);
-      line-height:1.8;
-      font-size:12px;
-    }
-    .risk-list{
-      margin:12px 0 0;
-      padding:0;
-      list-style:none;
-      display:grid;
-      gap:10px;
-    }
-    .risk-list li{
-      border-radius:14px;
-      border:1px solid rgba(0,0,0,.06);
-      background:#fff;
-      padding:11px 12px;
-      font-size:13px;
-      line-height:1.7;
-    }
+    .formula-list{margin:12px 0 0;padding-left:18px;color:var(--muted);line-height:1.8;font-size:12px}
+    .risk-list{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+    .risk-list li{border-radius:14px;border:1px solid rgba(0,0,0,.06);background:#fff;padding:11px 12px;font-size:13px;line-height:1.7}
     .mono{font-variant-numeric:tabular-nums}
+    .hidden{display:none !important}
   </style>
 </head>
 <body>
@@ -289,11 +192,11 @@
       <a class="back" href="./index.html">← 返回計算工具首頁</a>
       <h1>利潤推算器 v1</h1>
       <div class="sub">
-        用於快速推算單件貨品的基礎收入、佣金收入、實收總額、金料成本、總成本及最終利潤情況。現版本已按最新邏輯修正為：<strong>佣金屬於收入的一部分，會加到實收內</strong>，而不是在最後再由利潤扣減一次。
+        用於快速推算單件貨品的基礎收入、佣金收入、實收總額、成本基準及最終利潤。現版本已加入兩套邏輯：<strong>A1 會改用市價模式倒推出毛利</strong>；<strong>G 類 / 計重黃金</strong> 則保留以金重及金價計算成本。
       </div>
       <div class="chips">
-        <span class="chip">單件利潤推算</span>
-        <span class="chip">支援両 / 克</span>
+        <span class="chip">A1 市價模式</span>
+        <span class="chip">G 類金價模式</span>
         <span class="chip">佣金加到實收</span>
         <span class="chip">風險提示</span>
       </div>
@@ -309,27 +212,32 @@
             <div class="field">
               <label for="itemType">貨類</label>
               <select id="itemType">
-                <option value="A1">A1 / 黃金類</option>
+                <option value="A1">A1 / 定價黃金</option>
                 <option value="G">G 類 / 計重黃金</option>
                 <option value="J1">J1 / 鑽石</option>
                 <option value="OTHER">其他</option>
               </select>
             </div>
-            <div class="field">
+            <div id="weightUnitField" class="field">
               <label for="unit">重量單位</label>
               <select id="unit">
                 <option value="tael">両</option>
                 <option value="gram">克</option>
               </select>
             </div>
-            <div class="field">
+            <div id="weightField" class="field">
               <label for="weight">金重</label>
               <input id="weight" type="number" step="0.001" value="1" />
             </div>
-            <div class="field">
+            <div id="taelToGramField" class="field">
               <label for="taelToGram">1 両 = 幾多克</label>
               <input id="taelToGram" type="number" step="0.001" value="37.429" />
               <small>如需調整換算，可直接修改。</small>
+            </div>
+            <div id="marketBasisField" class="field hidden">
+              <label for="marketBasis">A1 市價成本基準</label>
+              <input id="marketBasis" type="number" step="0.01" value="0" />
+              <small>假設：A1 以市價作成本基準，系統會用「實收總額 − 市價成本基準」倒推出毛利。</small>
             </div>
           </div>
         </div>
@@ -365,10 +273,10 @@
         <div class="section">
           <div class="section-title">成本資料</div>
           <div class="form-grid">
-            <div class="field">
+            <div id="goldPriceField" class="field">
               <label for="goldPricePerTael">當日金價（每両）</label>
               <input id="goldPricePerTael" type="number" step="0.01" value="54410" />
-              <small>系統會自動按金重換算金料成本。</small>
+              <small>G 類 / 計重黃金會按金重換算金料成本。</small>
             </div>
             <div class="field">
               <label for="stoneCost">石 / 配件成本</label>
@@ -413,7 +321,7 @@
         <div class="result-top">
           <span id="statusBadge" class="badge amber">等待計算</span>
         </div>
-        <div id="summary" class="summary">輸入資料後，系統會顯示基礎收入、佣金收入、實收總額、成本及最終利潤情況。</div>
+        <div id="summary" class="summary">輸入資料後，系統會顯示基礎收入、佣金收入、實收總額、成本基準及最終利潤情況。</div>
 
         <div class="kpi-grid">
           <div class="kpi">
@@ -432,14 +340,14 @@
             <div class="subvalue">基礎收入 + 佣金收入</div>
           </div>
           <div class="kpi">
-            <div class="label">金料成本</div>
-            <div id="goldCost" class="value mono">0</div>
-            <div class="subvalue">按金重及當日每両金價推算</div>
+            <div id="mainCostLabel" class="label">成本基準</div>
+            <div id="mainCostValue" class="value mono">0</div>
+            <div id="mainCostSub" class="subvalue">按貨類切換計法</div>
           </div>
           <div class="kpi">
             <div class="label">總成本</div>
             <div id="totalCost" class="value mono">0</div>
-            <div class="subvalue">金料成本 + 石 / 配件成本 + 其他成本</div>
+            <div class="subvalue">成本基準 + 石 / 配件成本 + 其他成本</div>
           </div>
           <div class="kpi">
             <div class="label">毛利率</div>
@@ -455,13 +363,10 @@
 
         <div class="note-box">
           <strong>現行計算邏輯：</strong>
-          <ul class="formula-list">
-            <li>基礎收入 = 銷售單金額 + 工費收入（如非免工）− 額外減價</li>
-            <li>佣金收入 = 基礎收入 × 佣金比率</li>
-            <li>實收總額 = 基礎收入 + 佣金收入</li>
-            <li>金料成本 = 金重（両）× 當日金價（每両）</li>
-            <li>總成本 = 金料成本 + 石 / 配件成本 + 其他成本</li>
-            <li>最終利潤 = 實收總額 − 總成本</li>
+          <ul class="formula-list" id="formulaList">
+            <li>A1：成本基準 = 市價成本基準；最終利潤 = 實收總額 −（市價成本基準 + 石 / 配件成本 + 其他成本）</li>
+            <li>G 類：成本基準 = 金重（両）× 當日金價（每両）；最終利潤 = 實收總額 −（金料成本 + 石 / 配件成本 + 其他成本）</li>
+            <li>佣金收入 = 基礎收入 × 佣金比率，並加到實收總額之內。</li>
           </ul>
         </div>
 
@@ -499,7 +404,26 @@
       badge.textContent = text;
     }
 
+    function toggleCostMode(){
+      const itemType = $('itemType').value;
+      const isA1 = itemType === 'A1';
+      $('marketBasisField').classList.toggle('hidden', !isA1);
+      $('weightUnitField').classList.toggle('hidden', isA1);
+      $('weightField').classList.toggle('hidden', isA1);
+      $('taelToGramField').classList.toggle('hidden', isA1);
+      $('goldPriceField').classList.toggle('hidden', isA1);
+
+      if (isA1) {
+        $('mainCostLabel').textContent = 'A1 市價成本基準';
+        $('mainCostSub').textContent = 'A1 不計金價，改用市價倒推出毛利';
+      } else {
+        $('mainCostLabel').textContent = '金料成本';
+        $('mainCostSub').textContent = '按金重及當日每両金價推算';
+      }
+    }
+
     function calculate(){
+      const itemType = $('itemType').value;
       const unit = $('unit').value;
       const weight = num('weight');
       const taelToGram = num('taelToGram') || 37.429;
@@ -507,6 +431,7 @@
       const extraDiscount = num('extraDiscount');
       const laborCharge = num('laborCharge');
       const goldPricePerTael = num('goldPricePerTael');
+      const marketBasis = num('marketBasis');
       const stoneCost = num('stoneCost');
       const otherCost = num('otherCost');
       const waiveLabor = $('waiveLabor').checked;
@@ -517,15 +442,25 @@
       const baseRevenue = salesAmount + laborRevenue - extraDiscount;
       const commissionAmount = baseRevenue > 0 ? baseRevenue * (commissionRate / 100) : 0;
       const actualRevenue = baseRevenue + commissionAmount;
-      const goldCost = weightTael * goldPricePerTael;
-      const totalCost = goldCost + stoneCost + otherCost;
+
+      let mainCost = 0;
+      let mainCostName = '金料成本';
+      if (itemType === 'A1') {
+        mainCost = marketBasis;
+        mainCostName = 'A1 市價成本基準';
+      } else {
+        mainCost = weightTael * goldPricePerTael;
+        mainCostName = '金料成本';
+      }
+
+      const totalCost = mainCost + stoneCost + otherCost;
       const finalProfit = actualRevenue - totalCost;
       const grossMargin = actualRevenue !== 0 ? (finalProfit / actualRevenue) * 100 : 0;
 
       $('baseRevenue').textContent = fmtMoney(baseRevenue);
       $('commissionAmount').textContent = fmtMoney(commissionAmount);
       $('actualRevenue').textContent = fmtMoney(actualRevenue);
-      $('goldCost').textContent = fmtMoney(goldCost);
+      $('mainCostValue').textContent = fmtMoney(mainCost);
       $('totalCost').textContent = fmtMoney(totalCost);
       $('grossMargin').textContent = fmtPct(grossMargin);
       $('finalProfit').textContent = fmtMoney(finalProfit);
@@ -541,33 +476,40 @@
       }
       setBadge(statusClass, statusText);
 
+      const detailText = itemType === 'A1'
+        ? `A1 市價成本基準 <strong>${fmtMoney(marketBasis)}</strong>`
+        : `${weight.toLocaleString('en-US', { maximumFractionDigits: 3 })} ${unit === 'gram' ? '克' : '両'}，當日金價 <strong>${fmtMoney(goldPricePerTael)}</strong> / 両`;
+
       $('summary').innerHTML = `
-        以 <strong>${weight.toLocaleString('en-US', { maximumFractionDigits: 3 })} ${unit === 'gram' ? '克' : '両'}</strong>、
-        當日金價 <strong>${fmtMoney(goldPricePerTael)}</strong> / 両、
+        以 <strong>${detailText}</strong>、
         單據金額 <strong>${fmtMoney(salesAmount)}</strong>、
         額外減價 <strong>${fmtMoney(extraDiscount)}</strong>
         ${waiveLabor ? '及 <strong>免工</strong>' : `，另收工費 <strong>${fmtMoney(laborCharge)}</strong>`}、
         佣金比率 <strong>${fmtPct(commissionRate)}</strong> 計算，
         佣金收入為 <strong>${fmtMoney(commissionAmount)}</strong>，
         最終實收總額為 <strong>${fmtMoney(actualRevenue)}</strong>，
+        以 <strong>${mainCostName} ${fmtMoney(mainCost)}</strong> 倒推，
         今次推算的 <strong>最終利潤為 ${fmtMoney(finalProfit)}</strong>。
       `;
 
       const risks = [];
       if (waiveLabor) risks.push('此單已設定為免工，工費收入不計入基礎收入，需留意收入被壓縮。');
-      if (actualRevenue < goldCost) risks.push('即使計入佣金後，實收總額仍低於金料成本，單看金料層面已出現倒掛。');
+      if (actualRevenue < mainCost) risks.push(`即使計入佣金後，實收總額仍低於${mainCostName}，需要留意是否倒掛。`);
       if (finalProfit < 0) risks.push('最終利潤為負數，代表該單生意未覆蓋總成本。');
       if (finalProfit >= 0 && grossMargin < 8) risks.push('雖然仍有利潤，但毛利率偏低，建議覆核折扣、優惠或工費安排。');
-      if (weight <= 0 || taelToGram <= 0) risks.push('金重或換算設定無效，請重新檢查輸入資料。');
+      if (itemType === 'A1' && marketBasis <= 0) risks.push('A1 已切換到市價模式，但尚未輸入有效的市價成本基準。');
+      if (itemType !== 'A1' && (weight <= 0 || taelToGram <= 0)) risks.push('金重或換算設定無效，請重新檢查輸入資料。');
       if (!risks.length) risks.push('目前未見明顯風險，此單推算屬正常利潤範圍。');
 
       $('riskList').innerHTML = risks.map(item => `<li>${item}</li>`).join('');
 
       return {
+        itemType,
         baseRevenue,
         commissionAmount,
         actualRevenue,
-        goldCost,
+        mainCost,
+        mainCostName,
         totalCost,
         grossMargin,
         finalProfit,
@@ -575,6 +517,7 @@
         weight,
         unit,
         goldPricePerTael,
+        marketBasis,
         salesAmount,
         extraDiscount,
         laborCharge,
@@ -587,6 +530,7 @@
       $('unit').value = 'tael';
       $('weight').value = '1';
       $('taelToGram').value = '37.429';
+      $('marketBasis').value = '36000';
       $('salesAmount').value = '42800';
       $('extraDiscount').value = '2000';
       $('laborCharge').value = '0';
@@ -595,7 +539,8 @@
       $('stoneCost').value = '0';
       $('otherCost').value = '0';
       $('commissionRate').value = '2';
-      $('remarks').value = '示例：1 両、金價 54,410、單據 42,800、額外減 2,000、免工、佣金 2% 並加到實收。';
+      $('remarks').value = '示例：A1 用市價成本基準 36,000 倒推毛利；佣金 2% 加到實收。';
+      toggleCostMode();
       calculate();
     }
 
@@ -604,6 +549,7 @@
       $('unit').value = 'tael';
       $('weight').value = '1';
       $('taelToGram').value = '37.429';
+      $('marketBasis').value = '0';
       $('salesAmount').value = '0';
       $('extraDiscount').value = '0';
       $('laborCharge').value = '0';
@@ -616,21 +562,27 @@
       $('baseRevenue').textContent = '0';
       $('commissionAmount').textContent = '0';
       $('actualRevenue').textContent = '0';
-      $('goldCost').textContent = '0';
+      $('mainCostValue').textContent = '0';
       $('totalCost').textContent = '0';
       $('grossMargin').textContent = '0%';
       $('finalProfit').textContent = '0';
-      $('summary').textContent = '輸入資料後，系統會顯示基礎收入、佣金收入、實收總額、成本及最終利潤情況。';
+      $('summary').textContent = '輸入資料後，系統會顯示基礎收入、佣金收入、實收總額、成本基準及最終利潤情況。';
       $('riskList').innerHTML = '<li>尚未有計算結果。</li>';
       setBadge('amber', '等待計算');
+      toggleCostMode();
     }
 
     async function copySummary(){
       const result = calculate();
       const lines = [
         '利潤推算器 v1 摘要',
-        `金重：${result.weight} ${result.unit === 'gram' ? '克' : '両'}`,
-        `當日金價（每両）：${fmtMoney(result.goldPricePerTael)}`,
+        `貨類：${result.itemType}`,
+        result.itemType === 'A1'
+          ? `A1 市價成本基準：${fmtMoney(result.marketBasis)}`
+          : `金重：${result.weight} ${result.unit === 'gram' ? '克' : '両'}`,
+        result.itemType === 'A1'
+          ? 'A1 不計金價，改用市價倒推'
+          : `當日金價（每両）：${fmtMoney(result.goldPricePerTael)}`,
         `銷售單金額：${fmtMoney(result.salesAmount)}`,
         `額外減價：${fmtMoney(result.extraDiscount)}`,
         `工費：${result.waiveLabor ? '免工' : fmtMoney(result.laborCharge)}`,
@@ -638,7 +590,7 @@
         `基礎收入：${fmtMoney(result.baseRevenue)}`,
         `佣金收入：${fmtMoney(result.commissionAmount)}`,
         `實收總額：${fmtMoney(result.actualRevenue)}`,
-        `金料成本：${fmtMoney(result.goldCost)}`,
+        `${result.mainCostName}：${fmtMoney(result.mainCost)}`,
         `總成本：${fmtMoney(result.totalCost)}`,
         `毛利率：${fmtPct(result.grossMargin)}`,
         `最終利潤：${fmtMoney(result.finalProfit)}`
@@ -657,14 +609,15 @@
     $('resetBtn').addEventListener('click', resetForm);
     $('copyBtn').addEventListener('click', copySummary);
 
-    ['weight','taelToGram','salesAmount','extraDiscount','laborCharge','goldPricePerTael','stoneCost','otherCost'].forEach(id => {
+    ['weight','taelToGram','salesAmount','extraDiscount','laborCharge','goldPricePerTael','marketBasis','stoneCost','otherCost'].forEach(id => {
       $(id).addEventListener('input', calculate);
     });
     ['unit','itemType','commissionRate'].forEach(id => {
-      $(id).addEventListener('change', calculate);
+      $(id).addEventListener('change', () => { toggleCostMode(); calculate(); });
     });
     $('waiveLabor').addEventListener('change', calculate);
 
+    toggleCostMode();
     applySample();
   </script>
 </body>

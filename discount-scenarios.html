@@ -5,634 +5,143 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>飾金折扣計算器</title>
   <style>
-    :root{
-      --wine:#8B2A2E;
-      --wine-dark:#6F1E22;
-      --gold:#C8A55A;
-      --bg:#FCF8F2;
-      --card:#ffffff;
-      --text:#1B1B1B;
-      --muted:#6A6156;
-      --border:rgba(200,165,90,.36);
-      --shadow:0 18px 42px rgba(20,10,5,.10);
-      --shadow-soft:0 10px 22px rgba(20,10,5,.06);
-      --radius:22px;
-    }
-
+    :root{--wine:#8B2A2E;--wine-dark:#6F1E22;--gold:#C8A55A;--bg:#FCF8F2;--card:#fff;--text:#1B1B1B;--muted:#6A6156;--border:rgba(200,165,90,.36);--shadow:0 18px 42px rgba(20,10,5,.10);--shadow-soft:0 10px 22px rgba(20,10,5,.06);--radius:22px}
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","Microsoft JhengHei",sans-serif;
-      color:var(--text);
-      background:
-        radial-gradient(900px 400px at 0% 0%, rgba(200,165,90,.18), transparent 55%),
-        radial-gradient(900px 400px at 100% 0%, rgba(139,42,46,.10), transparent 55%),
-        linear-gradient(180deg,#fff,var(--bg));
-      padding:20px;
-    }
-
-    .wrap{max-width:1240px;margin:0 auto}
-    .hero{
-      background:linear-gradient(135deg, rgba(255,255,255,.98), rgba(200,165,90,.08));
-      border:1px solid var(--border);
-      border-radius:calc(var(--radius) + 8px);
-      box-shadow:var(--shadow);
-      padding:20px;
-    }
-    h1{
-      margin:0 0 8px;
-      color:var(--wine-dark);
-      font-size:30px;
-      line-height:1.15;
-      letter-spacing:.3px;
-    }
-    .sub{
-      font-size:14px;
-      color:var(--muted);
-      line-height:1.8;
-      max-width:980px;
-    }
-    .chipRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(200,165,90,.5);
-      background:rgba(200,165,90,.12);
-      color:var(--wine-dark);
-      font-size:12px;
-      font-weight:800;
-    }
-
-    .layout{
-      display:grid;
-      grid-template-columns:360px 1fr;
-      gap:16px;
-      margin-top:16px;
-    }
-    @media(max-width:980px){ .layout{grid-template-columns:1fr;} }
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow-soft);
-      padding:16px;
-    }
-    .sectionTitle{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:flex-end;
-      margin-bottom:12px;
-      flex-wrap:wrap;
-    }
-    .sectionTitle .t{
-      color:var(--wine-dark);
-      font-weight:950;
-      font-size:14px;
-      letter-spacing:.25px;
-    }
-    .sectionTitle .s{
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .field{margin-bottom:12px}
-    label{
-      display:block;
-      font-size:12px;
-      color:var(--muted);
-      margin:0 0 6px 2px;
-    }
-    input,select{
-      width:100%;
-      padding:12px 13px;
-      border-radius:16px;
-      border:1px solid rgba(0,0,0,.12);
-      background:#fff;
-      font-size:15px;
-      outline:none;
-    }
-    input:focus,select:focus{
-      border-color:rgba(200,165,90,.8);
-      box-shadow:0 0 0 3px rgba(200,165,90,.16);
-    }
-
-    .twoCol{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
-    .priceSync{
-      border:1px solid rgba(200,165,90,.42);
-      background:linear-gradient(135deg, rgba(200,165,90,.10), rgba(139,42,46,.05));
-      border-radius:18px;
-      padding:12px;
-      margin-bottom:12px;
-    }
-    .syncValue{
-      font-size:30px;
-      font-weight:980;
-      color:var(--wine-dark);
-      line-height:1.05;
-      word-break:break-word;
-    }
-    .syncSub{
-      margin-top:8px;
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.65;
-    }
-
-    .btnRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
-    button{
-      border:none;
-      border-radius:16px;
-      padding:12px 16px;
-      font-size:14px;
-      cursor:pointer;
-    }
-    .primary{
-      color:#fff;
-      background:linear-gradient(135deg,var(--wine),var(--wine-dark));
-      box-shadow:0 12px 24px rgba(139,42,46,.18);
-    }
-    .secondary{
-      background:#fff;
-      border:1px solid rgba(200,165,90,.58);
-      color:var(--text);
-    }
-
-    .summaryGrid{
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:12px;
-    }
-    @media(max-width:900px){ .summaryGrid{grid-template-columns:repeat(2,minmax(0,1fr));} }
-    @media(max-width:560px){ .summaryGrid{grid-template-columns:1fr;} }
-
-    .metric{
-      border:1px solid rgba(0,0,0,.08);
-      border-radius:18px;
-      background:linear-gradient(135deg, rgba(200,165,90,.08), rgba(139,42,46,.04));
-      padding:14px;
-      min-height:108px;
-    }
-    .metric .k{font-size:12px;color:var(--muted);margin-bottom:8px}
-    .metric .v{font-size:28px;font-weight:980;color:var(--wine-dark);line-height:1.05}
-    .metric .x{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.55}
-
-    .tableWrap{
-      margin-top:14px;
-      overflow:auto;
-      border:1px solid rgba(200,165,90,.32);
-      border-radius:20px;
-      background:#fff;
-      box-shadow:var(--shadow-soft);
-    }
-    table{
-      width:100%;
-      border-collapse:collapse;
-      min-width:820px;
-    }
-    thead th{
-      text-align:left;
-      background:linear-gradient(135deg, rgba(139,42,46,.08), rgba(200,165,90,.10));
-      color:var(--wine-dark);
-      font-size:12px;
-      letter-spacing:.3px;
-      padding:14px 14px;
-      border-bottom:1px solid rgba(200,165,90,.28);
-      white-space:nowrap;
-    }
-    tbody td{
-      padding:14px;
-      border-bottom:1px solid rgba(0,0,0,.06);
-      font-size:14px;
-      vertical-align:top;
-    }
-    tbody tr:last-child td{border-bottom:none}
-    .rank{
-      width:54px;
-      font-weight:950;
-      color:var(--wine-dark);
-      white-space:nowrap;
-    }
-    .scenarioName{
-      font-weight:900;
-      color:var(--wine-dark);
-      white-space:nowrap;
-    }
-    .formula{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.7;
-      min-width:260px;
-    }
-    .amount{
-      font-size:20px;
-      font-weight:980;
-      color:var(--wine-dark);
-      white-space:nowrap;
-    }
-    .rounded{
-      white-space:nowrap;
-      font-weight:900;
-    }
-
-    .note{
-      margin-top:14px;
-      padding:12px 14px;
-      border:1px dashed rgba(200,165,90,.58);
-      background:rgba(200,165,90,.10);
-      border-radius:18px;
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.7;
-    }
-    .copyBox{
-      margin-top:14px;
-      padding:14px;
-      border:1px solid rgba(0,0,0,.08);
-      border-radius:18px;
-      background:#fff;
-      min-height:120px;
-      white-space:pre-wrap;
-      line-height:1.7;
-      font-size:13px;
-    }
+    body{margin:0;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","Microsoft JhengHei",sans-serif;color:var(--text);background:radial-gradient(900px 400px at 0 0,rgba(200,165,90,.18),transparent 55%),radial-gradient(900px 400px at 100% 0,rgba(139,42,46,.10),transparent 55%),linear-gradient(180deg,#fff,var(--bg))}
+    .wrap{max-width:1240px;margin:0 auto}.hero{padding:20px;border:1px solid var(--border);border-radius:calc(var(--radius) + 8px);background:linear-gradient(135deg,rgba(255,255,255,.98),rgba(200,165,90,.08));box-shadow:var(--shadow)}
+    h1{margin:0 0 8px;color:var(--wine-dark);font-size:30px}.sub{max-width:980px;color:var(--muted);font-size:14px;line-height:1.8}.chipRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.chip{padding:8px 12px;border:1px solid rgba(200,165,90,.5);border-radius:999px;background:rgba(200,165,90,.12);color:var(--wine-dark);font-size:12px;font-weight:800}
+    .layout{display:grid;grid-template-columns:360px 1fr;gap:16px;margin-top:16px}@media(max-width:980px){.layout{grid-template-columns:1fr}}.card{padding:16px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow-soft)}
+    .sectionTitle{display:flex;justify-content:space-between;gap:12px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap}.sectionTitle .t{color:var(--wine-dark);font-size:14px;font-weight:950}.sectionTitle .s,label{color:var(--muted);font-size:12px}.field{margin-bottom:12px}label{display:block;margin:0 0 6px 2px}input,select{width:100%;padding:12px 13px;border:1px solid rgba(0,0,0,.12);border-radius:16px;background:#fff;font-size:15px;outline:none}input:focus,select:focus{border-color:rgba(200,165,90,.8);box-shadow:0 0 0 3px rgba(200,165,90,.16)}.twoCol{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .priceSync{padding:12px;margin-bottom:12px;border:1px solid rgba(200,165,90,.42);border-radius:18px;background:linear-gradient(135deg,rgba(200,165,90,.10),rgba(139,42,46,.05))}.syncValue{color:var(--wine-dark);font-size:30px;font-weight:980;line-height:1.05}.syncSub{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.65}.btnRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}button{padding:12px 16px;border:0;border-radius:16px;font-size:14px;cursor:pointer}.primary{color:#fff;background:linear-gradient(135deg,var(--wine),var(--wine-dark));box-shadow:0 12px 24px rgba(139,42,46,.18)}.secondary{border:1px solid rgba(200,165,90,.58);background:#fff;color:var(--text)}button:disabled{opacity:.55;cursor:wait}
+    .summaryGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}@media(max-width:900px){.summaryGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.summaryGrid{grid-template-columns:1fr}}.metric{min-height:108px;padding:14px;border:1px solid rgba(0,0,0,.08);border-radius:18px;background:linear-gradient(135deg,rgba(200,165,90,.08),rgba(139,42,46,.04))}.metric .k{margin-bottom:8px;color:var(--muted);font-size:12px}.metric .v{color:var(--wine-dark);font-size:28px;font-weight:980}.metric .x{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.55}
+    .tableWrap{margin-top:14px;overflow:auto;border:1px solid rgba(200,165,90,.32);border-radius:20px;background:#fff;box-shadow:var(--shadow-soft)}table{width:100%;min-width:820px;border-collapse:collapse}th{padding:14px;text-align:left;white-space:nowrap;border-bottom:1px solid rgba(200,165,90,.28);background:linear-gradient(135deg,rgba(139,42,46,.08),rgba(200,165,90,.10));color:var(--wine-dark);font-size:12px}td{padding:14px;border-bottom:1px solid rgba(0,0,0,.06);font-size:14px;vertical-align:top}.rank,.scenarioName,.rounded{font-weight:900}.rank,.scenarioName,.amount{color:var(--wine-dark)}.formula{min-width:260px;color:var(--muted);font-size:13px;line-height:1.7}.amount{font-size:20px;font-weight:980;white-space:nowrap}
+    .note,.copyBox{margin-top:14px;padding:12px 14px;border-radius:18px;font-size:12px;line-height:1.7}.note{border:1px dashed rgba(200,165,90,.58);background:rgba(200,165,90,.10);color:var(--muted)}.copyBox{min-height:120px;border:1px solid rgba(0,0,0,.08);background:#fff;white-space:pre-wrap;font-size:13px}.status-ok{color:#1F7A4D}.status-warn{color:#9A6400}.status-error{color:#B42318}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="hero">
-      <h1>飾金折扣計算器</h1>
-      <div class="sub">
-        此工具直接讀取主計算工具所使用的金價資料，會自動帶入今日飾金售出價。輸入金重及工費後，系統會按固定公式 <strong>（售出價 × 金重 + 工費）× 2%</strong> 計算全佣，並將不同情景集中於同一頁面顯示，方便比較與內部使用。
+  <div class="wrap"><div class="hero">
+    <h1>飾金折扣計算器</h1>
+    <div class="sub">此工具會自動讀取今日飾金售出價。輸入金重及工費後，系統會按固定公式 <strong>（售出價 × 金重 + 工費）× 2%</strong> 計算全佣，並集中比較不同折扣情景。</div>
+    <div class="chipRow"><div class="chip">同步今日金價</div><div class="chip">支援両／克</div><div class="chip">失敗時使用上次金價</div></div>
+    <div class="layout">
+      <div class="card">
+        <div class="sectionTitle"><div class="t">輸入資料</div><div class="s">更改欄位後即時更新</div></div>
+        <div class="twoCol"><div class="field"><label>金重單位</label><select id="unit"><option value="両">両</option><option value="克">克</option></select></div><div class="field"><label>貨幣</label><input value="HK$" readonly /></div></div>
+        <div class="priceSync"><label>今日飾金售出價</label><div class="syncValue" id="liveGoldPrice">—</div><div class="syncSub" id="goldPriceStatus">正在讀取今日金價…</div><div class="btnRow"><button class="primary" id="refreshPriceBtn" type="button">刷新金價</button><button class="secondary" id="applyPriceBtn" type="button">引用今日金價</button></div></div>
+        <div class="field"><label>飾金售出價（每両／每克）</label><input id="sellPrice" type="number" step="0.01" inputmode="decimal" placeholder="系統會自動帶入，亦可手動修改" /></div>
+        <div class="field"><label>金重</label><input id="weight" type="number" step="0.001" inputmode="decimal" placeholder="例如：1.234" /></div>
+        <div class="field"><label>工費</label><input id="laborFee" type="number" step="0.01" inputmode="decimal" placeholder="例如：2000" /></div>
+        <div class="btnRow"><button class="primary" id="copyBtn" type="button">複製摘要</button><button class="secondary" id="resetBtn" type="button">重新輸入</button></div>
+        <div class="note"><strong>計算方式：</strong><br>1. 金價金額 = 售出價 × 金重<br>2. 固定佣金 =（金價金額 + 工費）× 2%<br>3. 金價讀取失敗時，可繼續使用上次成功同步的資料或手動輸入。</div>
+        <div class="copyBox" id="copyText">請先輸入資料，系統會自動生成可複製內容。</div>
       </div>
-      <div class="chipRow">
-        <div class="chip">同步主工具金價</div>
-        <div class="chip">今日飾金售出價</div>
-        <div class="chip">集中比較顯示</div>
-      </div>
-
-      <div class="layout">
-        <div class="card">
-          <div class="sectionTitle">
-            <div class="t">輸入資料</div>
-            <div class="s">更改任何欄位後即時更新</div>
-          </div>
-
-          <div class="twoCol">
-            <div class="field">
-              <label>金重單位</label>
-              <select id="unit">
-                <option value="両">両</option>
-                <option value="克">克</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>貨幣</label>
-              <input id="currency" type="text" value="HK$" readonly />
-            </div>
-          </div>
-
-          <div class="priceSync">
-            <label>今日飾金售出價</label>
-            <div class="syncValue" id="liveGoldPrice">—</div>
-            <div class="syncSub" id="goldPriceStatus">正在讀取今日金價…</div>
-            <div class="btnRow">
-              <button class="primary" id="refreshPriceBtn" type="button">刷新金價</button>
-              <button class="secondary" id="applyPriceBtn" type="button">引用今日金價</button>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>飾金售出價（每両 / 每克）</label>
-            <input id="sellPrice" type="number" step="0.01" inputmode="decimal" placeholder="系統會自動帶入，亦可按需要手動修改" />
-          </div>
-
-          <div class="field">
-            <label>金重</label>
-            <input id="weight" type="number" step="0.001" inputmode="decimal" placeholder="例如：1.234" />
-          </div>
-
-          <div class="field">
-            <label>工費</label>
-            <input id="laborFee" type="number" step="0.01" inputmode="decimal" placeholder="例如：2000" />
-          </div>
-
-          <div class="btnRow">
-            <button class="primary" id="copyBtn" type="button">複製摘要</button>
-            <button class="secondary" id="resetBtn" type="button">重新輸入</button>
-          </div>
-
-          <div class="note">
-            <strong>計算方式：</strong><br>
-            1. 金價金額 = 售出價 × 金重<br>
-            2. 固定佣金 =（金價金額 + 工費）× 2%<br>
-            3. 顯示排序：原價、半工全佣、免工全佣、全單95折、金價95折半工全佣、金價95折免工全佣
-          </div>
-
-          <div class="copyBox" id="copyText">請先輸入資料，系統會自動生成可複製內容。</div>
-        </div>
-
-        <div>
-          <div class="card">
-            <div class="sectionTitle">
-              <div class="t">基礎拆解</div>
-              <div class="s">先檢視原價與固定佣金</div>
-            </div>
-
-            <div class="summaryGrid">
-              <div class="metric">
-                <div class="k">金價金額</div>
-                <div class="v" id="goldAmount">—</div>
-                <div class="x">售出價 × 金重</div>
-              </div>
-              <div class="metric">
-                <div class="k">工費</div>
-                <div class="v" id="laborAmount">—</div>
-                <div class="x">由你手動輸入</div>
-              </div>
-              <div class="metric">
-                <div class="k">固定佣金（2%）</div>
-                <div class="v" id="commissionAmount">—</div>
-                <div class="x">（金價金額 + 工費）× 2%</div>
-              </div>
-              <div class="metric">
-                <div class="k">原價</div>
-                <div class="v" id="originalAmount">—</div>
-                <div class="x">金價金額 + 工費 + 固定佣金</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="tableWrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>排序</th>
-                  <th>情景</th>
-                  <th>公式</th>
-                  <th>金額</th>
-                  <th>取整參考</th>
-                </tr>
-              </thead>
-              <tbody id="resultsBody">
-                <tr>
-                  <td class="rank">1</td>
-                  <td class="scenarioName">原價</td>
-                  <td class="formula">請先輸入資料</td>
-                  <td class="amount">—</td>
-                  <td class="rounded">—</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      <div><div class="card"><div class="sectionTitle"><div class="t">基礎拆解</div><div class="s">原價與固定佣金</div></div><div class="summaryGrid">
+        <div class="metric"><div class="k">金價金額</div><div class="v" id="goldAmount">—</div><div class="x">售出價 × 金重</div></div>
+        <div class="metric"><div class="k">工費</div><div class="v" id="laborAmount">—</div><div class="x">手動輸入</div></div>
+        <div class="metric"><div class="k">固定佣金（2%）</div><div class="v" id="commissionAmount">—</div><div class="x">（金價金額 + 工費）× 2%</div></div>
+        <div class="metric"><div class="k">原價</div><div class="v" id="originalAmount">—</div><div class="x">金價金額 + 工費 + 固定佣金</div></div>
+      </div></div><div class="tableWrap"><table><thead><tr><th>排序</th><th>情景</th><th>公式</th><th>金額</th><th>取整參考</th></tr></thead><tbody id="resultsBody"></tbody></table></div></div>
     </div>
-  </div>
+  </div></div>
+<script>
+  const $ = id => document.getElementById(id);
+  const GOLDPRICE_PROXY = 'https://lukfook-goldprice-proxy.arwing28.workers.dev';
+  const AUTO_REFRESH_MS = 5 * 60 * 1000;
+  const CACHE_KEY = 'lukfook-discount-gold-price-v2';
+  let goldPriceData = null;
 
-  <script>
-    const $ = (id) => document.getElementById(id);
-    const GOLDPRICE_PROXY = 'https://lukfook-goldprice-proxy.arwing28.workers.dev';
-    const AUTO_REFRESH_MS = 5 * 60 * 1000;
+  const scenarios = [
+    ['原價','金價金額 + 工費 + 固定佣金',(g,l,c)=>g+l+c],
+    ['半工全佣','金價金額 +（工費 × 50%）+ 固定佣金',(g,l,c)=>g+l*.5+c],
+    ['免工全佣','金價金額 + 固定佣金',(g,l,c)=>g+c],
+    ['全單95折','（金價金額 + 工費）× 95% + 固定佣金',(g,l,c)=>(g+l)*.95+c],
+    ['金價95折半工全佣','（金價金額 × 95%）+（工費 × 50%）+ 固定佣金',(g,l,c)=>g*.95+l*.5+c],
+    ['金價95折免工全佣','（金價金額 × 95%）+ 固定佣金',(g,l,c)=>g*.95+c]
+  ];
 
-    let goldPriceData = null;
-
-    const scenarios = [
-      {
-        key:'original',
-        name:'原價',
-        formula:'金價金額 + 工費 + 固定佣金',
-        calc:(gold,labor,commission)=> gold + labor + commission
-      },
-      {
-        key:'halfLabor',
-        name:'半工全佣',
-        formula:'金價金額 +（工費 × 50%）+ 固定佣金',
-        calc:(gold,labor,commission)=> gold + (labor * 0.5) + commission
-      },
-      {
-        key:'noLabor',
-        name:'免工全佣',
-        formula:'金價金額 + 固定佣金',
-        calc:(gold,labor,commission)=> gold + commission
-      },
-      {
-        key:'all95',
-        name:'全單95折',
-        formula:'（金價金額 + 工費）× 95% + 固定佣金',
-        calc:(gold,labor,commission)=> ((gold + labor) * 0.95) + commission
-      },
-      {
-        key:'gold95HalfLabor',
-        name:'金價95折半工全佣',
-        formula:'（金價金額 × 95%）+（工費 × 50%）+ 固定佣金',
-        calc:(gold,labor,commission)=> (gold * 0.95) + (labor * 0.5) + commission
-      },
-      {
-        key:'gold95NoLabor',
-        name:'金價95折免工全佣',
-        formula:'（金價金額 × 95%）+ 固定佣金',
-        calc:(gold,labor,commission)=> (gold * 0.95) + commission
-      }
-    ];
-
-    function isNum(x){
-      return Number.isFinite(x) && !Number.isNaN(x);
+  const isNum = x => Number.isFinite(x) && !Number.isNaN(x);
+  function toNumber(value){
+    if(typeof value === 'number') return isNum(value) ? value : null;
+    if(typeof value !== 'string') return null;
+    const cleaned = value.replace(/[,$HK\s]/gi,'').replace(/[^0-9.\-]/g,'');
+    if(!cleaned) return null;
+    const n = Number(cleaned);
+    return isNum(n) ? n : null;
+  }
+  function firstNumber(obj, keys){
+    for(const key of keys){
+      const n = toNumber(obj?.[key]);
+      if(n !== null) return n;
     }
-
-    function fmtMoney(n){
-      if(!isNum(n)) return '—';
-      return `HK$ ${n.toLocaleString('zh-HK', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    return null;
+  }
+  function findPriceRow(payload){
+    if(Array.isArray(payload)) return payload.find(v=>v && typeof v==='object') || null;
+    if(!payload || typeof payload!=='object') return null;
+    for(const key of ['data','result','results','records','items']){
+      const found = findPriceRow(payload[key]);
+      if(found) return found;
     }
+    return payload;
+  }
+  function normalisePricePayload(payload){
+    const row = findPriceRow(payload);
+    if(!row) throw new Error('API 沒有回傳金價資料');
+    const tael = firstNumber(row,['黃金售出','飾金售出','飾金售出價','gold_sell','goldSell','sell_price','sellPrice']);
+    let gram = firstNumber(row,['克黃金售出','克飾金售出','飾金每克售出','gold_sell_gram','gram_sell','gramSell']);
+    if(gram === null && tael !== null) gram = tael / 37.429;
+    if(tael === null && gram === null) throw new Error('找不到可用的飾金售出價欄位');
+    return {updatedAt:row.record_date||row.updated_at||row.updatedAt||row.date||'',tael:{sell:tael},gram:{sell:gram}};
+  }
+  function saveCache(data){try{localStorage.setItem(CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),data}))}catch(e){}}
+  function loadCache(){try{const cached=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');return cached?.data?cached:null}catch(e){return null}}
+  function getUnitKey(){return $('unit').value==='克'?'gram':'tael'}
+  function getCurrentLivePrice(){const n=goldPriceData?.[getUnitKey()]?.sell;return isNum(n)?n:null}
+  function setStatus(text,type=''){const el=$('goldPriceStatus');el.textContent=text;el.className='syncSub'+(type?' status-'+type:'')}
 
-    function fmtMoneyInt(n){
-      if(!isNum(n)) return '—';
-      return `HK$ ${Math.round(n).toLocaleString('zh-HK')}`;
-    }
-
-    function getUnitKey(){
-      return $('unit').value === '克' ? 'gram' : 'tael';
-    }
-
-    function getCurrentLivePrice(){
-      if(!goldPriceData) return null;
-      const row = goldPriceData[getUnitKey()];
-      return row && isNum(row.sell) ? row.sell : null;
-    }
-
-    async function fetchGoldPrice(){
-      $('goldPriceStatus').textContent = '正在讀取今日金價…';
-      try{
-        const res = await fetch(GOLDPRICE_PROXY, { method:'GET', mode:'cors', credentials:'omit', cache:'no-store' });
-        if(!res.ok) throw new Error('HTTP ' + res.status);
-        const json = await res.json();
-        const row = Array.isArray(json) ? json[0] : json;
-        if(!row) throw new Error('無資料');
-
-        goldPriceData = {
-          updatedAt: row.record_date || '',
-          tael: { sell: row['黃金售出'] },
-          gram: { sell: row['克黃金售出'] }
-        };
-
-        renderLivePrice(true);
-      } catch(e){
-        console.error(e);
-        $('liveGoldPrice').textContent = '—';
-        $('goldPriceStatus').textContent = '讀取失敗，請稍後再試或手動輸入售出價。';
-      }
-    }
-
-    function renderLivePrice(autoApply=false){
-      const price = getCurrentLivePrice();
-      const unit = $('unit').value;
-      if(isNum(price)){
-        $('liveGoldPrice').textContent = `HK$ ${price.toLocaleString('zh-HK')}`;
-        const updatedAt = goldPriceData?.updatedAt ? `｜更新時間：${goldPriceData.updatedAt}` : '';
-        $('goldPriceStatus').textContent = `已同步今日飾金售出價（每${unit}）${updatedAt}`;
-        if(autoApply || !$('sellPrice').value){
-          $('sellPrice').value = price;
-        }
-      } else {
-        $('liveGoldPrice').textContent = '—';
-        $('goldPriceStatus').textContent = '暫未取得可用金價。';
-      }
-      render();
-    }
-
-    function applyLivePrice(){
-      const price = getCurrentLivePrice();
-      if(isNum(price)){
-        $('sellPrice').value = price;
-        render();
-      }
-    }
-
-    function getValues(){
-      const sellPrice = Number($('sellPrice').value);
-      const weight = Number($('weight').value);
-      const labor = Number($('laborFee').value);
-      return {
-        sellPrice: isNum(sellPrice) && sellPrice >= 0 ? sellPrice : NaN,
-        weight: isNum(weight) && weight >= 0 ? weight : NaN,
-        labor: isNum(labor) && labor >= 0 ? labor : NaN
-      };
-    }
-
-    function renderEmpty(){
-      $('goldAmount').textContent = '—';
-      $('laborAmount').textContent = '—';
-      $('commissionAmount').textContent = '—';
-      $('originalAmount').textContent = '—';
-      $('resultsBody').innerHTML = scenarios.map((s, i) => `
-        <tr>
-          <td class="rank">${i + 1}</td>
-          <td class="scenarioName">${s.name}</td>
-          <td class="formula">${s.formula}</td>
-          <td class="amount">—</td>
-          <td class="rounded">—</td>
-        </tr>
-      `).join('');
-      $('copyText').textContent = '請先輸入資料，系統會自動生成可複製內容。';
-    }
-
-    function render(){
-      const { sellPrice, weight, labor } = getValues();
-
-      if(!(isNum(sellPrice) && isNum(weight) && isNum(labor) && sellPrice > 0 && weight > 0)){
-        renderEmpty();
-        return;
-      }
-
-      const gold = sellPrice * weight;
-      const commission = (gold + labor) * 0.02;
-      const original = gold + labor + commission;
-
-      $('goldAmount').textContent = fmtMoney(gold);
-      $('laborAmount').textContent = fmtMoney(labor);
-      $('commissionAmount').textContent = fmtMoney(commission);
-      $('originalAmount').textContent = fmtMoney(original);
-
-      $('resultsBody').innerHTML = scenarios.map((s, i) => {
-        const total = s.calc(gold, labor, commission);
-        return `
-          <tr>
-            <td class="rank">${i + 1}</td>
-            <td class="scenarioName">${s.name}</td>
-            <td class="formula">${s.formula}</td>
-            <td class="amount">${fmtMoney(total)}</td>
-            <td class="rounded">${fmtMoneyInt(total)}</td>
-          </tr>
-        `;
-      }).join('');
-
-      const unit = $('unit').value;
-      const lines = [
-        '飾金折扣情景計算結果',
-        `- 今日售出價：HK$ ${sellPrice.toLocaleString('zh-HK')} / 每${unit}`,
-        `- 金重：${weight.toLocaleString('zh-HK', {maximumFractionDigits:3})} ${unit}`,
-        `- 工費：${fmtMoney(labor)}`,
-        `- 金價金額：${fmtMoney(gold)}`,
-        `- 固定佣金（2%）：${fmtMoney(commission)}`,
-        '',
-        ...scenarios.map((s) => {
-          const total = s.calc(gold, labor, commission);
-          return `【${s.name}】${fmtMoney(total)}（取整：${fmtMoneyInt(total)}）`;
-        })
-      ];
-      $('copyText').textContent = lines.join('\n');
-    }
-
-    async function copyResult(){
-      const text = $('copyText').textContent.trim();
-      if(!text || text.includes('請先輸入資料')) return;
-      try{
-        await navigator.clipboard.writeText(text);
-        $('copyBtn').textContent = '已複製';
-        setTimeout(() => $('copyBtn').textContent = '複製摘要', 1200);
-      } catch(e){
-        alert('未能自動複製，請手動複製下方內容。');
-      }
-    }
-
-    function resetAll(){
-      $('unit').value = '両';
-      $('weight').value = '';
-      $('laborFee').value = '';
-      if(getCurrentLivePrice()){
-        $('sellPrice').value = getCurrentLivePrice();
-      } else {
-        $('sellPrice').value = '';
-      }
-      renderLivePrice(false);
-      render();
-    }
-
-    ['unit','weight','sellPrice','laborFee'].forEach(id => {
-      $(id).addEventListener('input', render);
-      $(id).addEventListener('change', () => {
-        if(id === 'unit') renderLivePrice(false);
-        render();
-      });
-    });
-
-    $('refreshPriceBtn').addEventListener('click', () => fetchGoldPrice());
-    $('applyPriceBtn').addEventListener('click', applyLivePrice);
-    $('copyBtn').addEventListener('click', copyResult);
-    $('resetBtn').addEventListener('click', resetAll);
-
-    fetchGoldPrice();
-    setInterval(fetchGoldPrice, AUTO_REFRESH_MS);
-    renderEmpty();
-  </script>
+  async function fetchGoldPrice(){
+    const btn=$('refreshPriceBtn');btn.disabled=true;setStatus('正在讀取今日金價…');
+    try{
+      const res=await fetch(GOLDPRICE_PROXY,{method:'GET',mode:'cors',credentials:'omit',cache:'no-store',headers:{Accept:'application/json'}});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const text=await res.text();
+      let json;try{json=JSON.parse(text)}catch(e){throw new Error('API 回傳內容不是有效 JSON')}
+      goldPriceData=normalisePricePayload(json);saveCache(goldPriceData);renderLivePrice(true,'live');
+    }catch(e){
+      console.error('Gold price error:',e);
+      const cached=loadCache();
+      if(cached){goldPriceData=cached.data;renderLivePrice(false,'cache',cached.savedAt);}
+      else{$('liveGoldPrice').textContent='—';setStatus(`讀取失敗：${e.message}。請手動輸入售出價。`,'error');render();}
+    }finally{btn.disabled=false}
+  }
+  function renderLivePrice(autoApply=false,source='live',cachedAt=''){
+    const price=getCurrentLivePrice(),unit=$('unit').value;
+    if(isNum(price)){
+      $('liveGoldPrice').textContent=`HK$ ${price.toLocaleString('zh-HK',{maximumFractionDigits:2})}`;
+      const apiTime=goldPriceData?.updatedAt?`｜更新時間：${goldPriceData.updatedAt}`:'';
+      if(source==='cache') setStatus(`未能連線，現使用上次成功金價（每${unit}）${cachedAt?`｜儲存時間：${new Date(cachedAt).toLocaleString('zh-HK')}`:''}`,'warn');
+      else setStatus(`已同步今日飾金售出價（每${unit}）${apiTime}`,'ok');
+      if(autoApply||!$('sellPrice').value) $('sellPrice').value=price.toFixed(2).replace(/\.00$/,'');
+    }else{$('liveGoldPrice').textContent='—';setStatus('暫未取得此單位的可用金價。','error')}
+    render();
+  }
+  function applyLivePrice(){const p=getCurrentLivePrice();if(isNum(p)){$('sellPrice').value=p;render()}}
+  function fmtMoney(n){return isNum(n)?`HK$ ${n.toLocaleString('zh-HK',{minimumFractionDigits:2,maximumFractionDigits:2})}`:'—'}
+  function fmtMoneyInt(n){return isNum(n)?`HK$ ${Math.round(n).toLocaleString('zh-HK')}`:'—'}
+  function getValues(){const s=Number($('sellPrice').value),w=Number($('weight').value),l=Number($('laborFee').value);return{sellPrice:isNum(s)&&s>=0?s:NaN,weight:isNum(w)&&w>=0?w:NaN,labor:isNum(l)&&l>=0?l:NaN}}
+  function renderEmpty(){['goldAmount','laborAmount','commissionAmount','originalAmount'].forEach(id=>$(id).textContent='—');$('resultsBody').innerHTML=scenarios.map((s,i)=>`<tr><td class="rank">${i+1}</td><td class="scenarioName">${s[0]}</td><td class="formula">${s[1]}</td><td class="amount">—</td><td class="rounded">—</td></tr>`).join('');$('copyText').textContent='請先輸入資料，系統會自動生成可複製內容。'}
+  function render(){
+    const {sellPrice,weight,labor}=getValues();if(!(sellPrice>0&&weight>0&&isNum(labor))){renderEmpty();return}
+    const gold=sellPrice*weight,commission=(gold+labor)*.02,original=gold+labor+commission;
+    $('goldAmount').textContent=fmtMoney(gold);$('laborAmount').textContent=fmtMoney(labor);$('commissionAmount').textContent=fmtMoney(commission);$('originalAmount').textContent=fmtMoney(original);
+    $('resultsBody').innerHTML=scenarios.map((s,i)=>{const total=s[2](gold,labor,commission);return `<tr><td class="rank">${i+1}</td><td class="scenarioName">${s[0]}</td><td class="formula">${s[1]}</td><td class="amount">${fmtMoney(total)}</td><td class="rounded">${fmtMoneyInt(total)}</td></tr>`}).join('');
+    const unit=$('unit').value;$('copyText').textContent=['飾金折扣情景計算結果',`- 今日售出價：HK$ ${sellPrice.toLocaleString('zh-HK')} / 每${unit}`,`- 金重：${weight.toLocaleString('zh-HK',{maximumFractionDigits:3})} ${unit}`,`- 工費：${fmtMoney(labor)}`,`- 金價金額：${fmtMoney(gold)}`,`- 固定佣金（2%）：${fmtMoney(commission)}`,'',...scenarios.map(s=>{const total=s[2](gold,labor,commission);return `【${s[0]}】${fmtMoney(total)}（取整：${fmtMoneyInt(total)}）`})].join('\n');
+  }
+  async function copyResult(){const text=$('copyText').textContent.trim();if(!text||text.includes('請先輸入資料'))return;try{await navigator.clipboard.writeText(text);$('copyBtn').textContent='已複製';setTimeout(()=>$('copyBtn').textContent='複製摘要',1200)}catch(e){alert('未能自動複製，請手動複製下方內容。')}}
+  function resetAll(){$('unit').value='両';$('weight').value='';$('laborFee').value='';$('sellPrice').value=getCurrentLivePrice()??'';renderLivePrice(false)}
+  ['unit','weight','sellPrice','laborFee'].forEach(id=>{$(id).addEventListener('input',render);$(id).addEventListener('change',()=>{if(id==='unit')renderLivePrice(false);render()})});
+  $('refreshPriceBtn').addEventListener('click',fetchGoldPrice);$('applyPriceBtn').addEventListener('click',applyLivePrice);$('copyBtn').addEventListener('click',copyResult);$('resetBtn').addEventListener('click',resetAll);
+  const cached=loadCache();if(cached){goldPriceData=cached.data;renderLivePrice(true,'cache',cached.savedAt)}else renderEmpty();fetchGoldPrice();setInterval(fetchGoldPrice,AUTO_REFRESH_MS);
+</script>
 </body>
 </html>

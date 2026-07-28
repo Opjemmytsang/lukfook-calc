@@ -22,6 +22,7 @@ for (const page of pages) {
 const smartHtml = read('smart-quote.html');
 const smartJs = read('assets/js/smart-quote.js');
 const discountHtml = read('discount-scenarios.html');
+const discountScenarioBlock = discountHtml.match(/const scenarios = \[([\s\S]*?)\n  \];/)?.[1] || '';
 for (const forbidden of ['原價', '金價95折半工', '金價95折免工', 'QR 原始內容']) {
   assert.ok(!smartHtml.includes(forbidden), `smart-quote.html contains forbidden text: ${forbidden}`);
   assert.ok(!smartJs.includes(forbidden), `smart-quote.js contains forbidden text: ${forbidden}`);
@@ -30,8 +31,13 @@ for (const hiddenLabel of ['款式碼', '供應商代碼', '編入日期']) {
   assert.ok(!smartHtml.includes(hiddenLabel), `smart-quote.html displays hidden field: ${hiddenLabel}`);
 }
 assert.equal((smartJs.match(/label: '/g) || []).length, 4, 'smart quote must define exactly four schemes');
+assert.equal((smartJs.match(/DOMContentLoaded/g) || []).length, 1, 'smart quote may bind DOM events more than once');
+assert.equal((discountScenarioBlock.match(/^\s*\['/gm) || []).length, 4, 'discount tool must define exactly four schemes');
 assert.ok(!discountHtml.includes('原價'), 'discount-scenarios.html still contains 原價');
 assert.ok(!discountHtml.includes('金價95折'), 'discount-scenarios.html still contains unconfirmed gold-price discount');
+assert.ok(!discountHtml.includes('localStorage'), 'discount tool must not persist live gold prices');
+assert.match(discountHtml, /if\(tael === null && gram !== null\) tael = gram \* 37\.429;/, 'discount tool must derive tael price from gram price');
+assert.match(discountHtml, /\$\('unit'\)\.addEventListener\('change'/, 'unit change handler is missing');
 assert.ok(pages.every((page) => read(page).includes('以上數據只作參考，一切以金星系統數據為準。')), 'a main page is missing the required disclaimer');
 
 const manifest = JSON.parse(read('manifest.webmanifest'));
@@ -41,5 +47,11 @@ assert.match(manifest.name, /DEMO/);
 for (const icon of manifest.icons) {
   assert.ok(fs.existsSync(path.join(root, icon.src)), `manifest icon missing: ${icon.src}`);
 }
+
+const serviceWorker = read('service-worker.js');
+assert.match(serviceWorker, /lukfook-smart-quote-demo-v3/, 'service worker cache version was not updated');
+assert.match(serviceWorker, /url\.hostname === 'lukfook-goldprice-proxy\.arwing28\.workers\.dev'[\s\S]*cache: 'no-store'/, 'gold price API must use no-store');
+const apiFetchBlock = serviceWorker.match(/if \(url\.hostname === 'lukfook-goldprice-proxy\.arwing28\.workers\.dev'\) \{([\s\S]*?)\n  \}/)?.[1] || '';
+assert.ok(!apiFetchBlock.includes('cache.put'), 'gold price API must not be written to cache');
 
 console.log('static audit passed');

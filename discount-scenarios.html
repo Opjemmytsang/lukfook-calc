@@ -21,7 +21,7 @@
 <body>
   <div class="wrap"><div class="hero">
     <h1>飾金折扣計算器</h1>
-    <div class="sub">此工具會自動讀取今日飾金售出價。輸入金重及工費後，系統會按固定公式 <strong>（售出價 × 金重 + 工費）× 2%</strong> 計算全佣，並集中比較不同折扣情景。</div>
+    <div class="sub">此工具會自動讀取今日飾金售出價。輸入金重及工費後，可比較四個已確認的報價方案。</div>
     <div class="chipRow"><div class="chip">同步今日金價</div><div class="chip">支援両／克</div><div class="chip">失敗時使用上次金價</div></div>
     <div class="layout">
       <div class="card">
@@ -32,14 +32,13 @@
         <div class="field"><label>金重</label><input id="weight" type="number" step="0.001" inputmode="decimal" placeholder="例如：1.234" /></div>
         <div class="field"><label>工費</label><input id="laborFee" type="number" step="0.01" inputmode="decimal" placeholder="例如：2000" /></div>
         <div class="btnRow"><button class="primary" id="copyBtn" type="button">複製摘要</button><button class="secondary" id="resetBtn" type="button">重新輸入</button></div>
-        <div class="note"><strong>計算方式：</strong><br>1. 金價金額 = 售出價 × 金重<br>2. 固定佣金 =（金價金額 + 工費）× 2%<br>3. 金價讀取失敗時，可繼續使用上次成功同步的資料或手動輸入。</div>
+        <div class="note"><strong>計算方式：</strong><br>1. 金價金額 = 售出價 × 金重<br>2. 金價讀取失敗時，可繼續使用上次成功同步的資料或手動輸入。</div>
         <div class="copyBox" id="copyText">請先輸入資料，系統會自動生成可複製內容。</div>
       </div>
-      <div><div class="card"><div class="sectionTitle"><div class="t">基礎拆解</div><div class="s">原價與固定佣金</div></div><div class="summaryGrid">
+      <div><div class="card"><div class="sectionTitle"><div class="t">基礎拆解</div><div class="s">金價金額與正價</div></div><div class="summaryGrid">
         <div class="metric"><div class="k">金價金額</div><div class="v" id="goldAmount">—</div><div class="x">售出價 × 金重</div></div>
         <div class="metric"><div class="k">工費</div><div class="v" id="laborAmount">—</div><div class="x">手動輸入</div></div>
-        <div class="metric"><div class="k">固定佣金（2%）</div><div class="v" id="commissionAmount">—</div><div class="x">（金價金額 + 工費）× 2%</div></div>
-        <div class="metric"><div class="k">原價</div><div class="v" id="originalAmount">—</div><div class="x">金價金額 + 工費 + 固定佣金</div></div>
+        <div class="metric"><div class="k">正價</div><div class="v" id="regularAmount">—</div><div class="x">金價金額 + 工費</div></div>
       </div></div><div class="tableWrap"><table><thead><tr><th>排序</th><th>情景</th><th>公式</th><th>金額</th><th>取整參考</th></tr></thead><tbody id="resultsBody"></tbody></table></div></div>
     </div>
   </div></div>
@@ -51,12 +50,10 @@
   let goldPriceData = null;
 
   const scenarios = [
-    ['原價','金價金額 + 工費 + 固定佣金',(g,l,c)=>g+l+c],
-    ['半工全佣','金價金額 +（工費 × 50%）+ 固定佣金',(g,l,c)=>g+l*.5+c],
-    ['免工全佣','金價金額 + 固定佣金',(g,l,c)=>g+c],
-    ['全單95折','（金價金額 + 工費）× 95% + 固定佣金',(g,l,c)=>(g+l)*.95+c],
-    ['金價95折半工全佣','（金價金額 × 95%）+（工費 × 50%）+ 固定佣金',(g,l,c)=>g*.95+l*.5+c],
-    ['金價95折免工全佣','（金價金額 × 95%）+ 固定佣金',(g,l,c)=>g*.95+c]
+    ['正價','金價金額 + 工費',(g,l)=>g+l],
+    ['半工','金價金額 +（工費 × 50%）',(g,l)=>g+l*.5],
+    ['免工','金價金額',g=>g],
+    ['全單 95 折','（金價金額 + 工費）× 95%',(g,l)=>(g+l)*.95]
   ];
 
   const isNum = x => Number.isFinite(x) && !Number.isNaN(x);
@@ -129,13 +126,13 @@
   function fmtMoney(n){return isNum(n)?`HK$ ${n.toLocaleString('zh-HK',{minimumFractionDigits:2,maximumFractionDigits:2})}`:'—'}
   function fmtMoneyInt(n){return isNum(n)?`HK$ ${Math.round(n).toLocaleString('zh-HK')}`:'—'}
   function getValues(){const s=Number($('sellPrice').value),w=Number($('weight').value),l=Number($('laborFee').value);return{sellPrice:isNum(s)&&s>=0?s:NaN,weight:isNum(w)&&w>=0?w:NaN,labor:isNum(l)&&l>=0?l:NaN}}
-  function renderEmpty(){['goldAmount','laborAmount','commissionAmount','originalAmount'].forEach(id=>$(id).textContent='—');$('resultsBody').innerHTML=scenarios.map((s,i)=>`<tr><td class="rank">${i+1}</td><td class="scenarioName">${s[0]}</td><td class="formula">${s[1]}</td><td class="amount">—</td><td class="rounded">—</td></tr>`).join('');$('copyText').textContent='請先輸入資料，系統會自動生成可複製內容。'}
+  function renderEmpty(){['goldAmount','laborAmount','regularAmount'].forEach(id=>$(id).textContent='—');$('resultsBody').innerHTML=scenarios.map((s,i)=>`<tr><td class="rank">${i+1}</td><td class="scenarioName">${s[0]}</td><td class="formula">${s[1]}</td><td class="amount">—</td><td class="rounded">—</td></tr>`).join('');$('copyText').textContent='請先輸入資料，系統會自動生成可複製內容。'}
   function render(){
     const {sellPrice,weight,labor}=getValues();if(!(sellPrice>0&&weight>0&&isNum(labor))){renderEmpty();return}
-    const gold=sellPrice*weight,commission=(gold+labor)*.02,original=gold+labor+commission;
-    $('goldAmount').textContent=fmtMoney(gold);$('laborAmount').textContent=fmtMoney(labor);$('commissionAmount').textContent=fmtMoney(commission);$('originalAmount').textContent=fmtMoney(original);
-    $('resultsBody').innerHTML=scenarios.map((s,i)=>{const total=s[2](gold,labor,commission);return `<tr><td class="rank">${i+1}</td><td class="scenarioName">${s[0]}</td><td class="formula">${s[1]}</td><td class="amount">${fmtMoney(total)}</td><td class="rounded">${fmtMoneyInt(total)}</td></tr>`}).join('');
-    const unit=$('unit').value;$('copyText').textContent=['飾金折扣情景計算結果',`- 今日售出價：HK$ ${sellPrice.toLocaleString('zh-HK')} / 每${unit}`,`- 金重：${weight.toLocaleString('zh-HK',{maximumFractionDigits:3})} ${unit}`,`- 工費：${fmtMoney(labor)}`,`- 金價金額：${fmtMoney(gold)}`,`- 固定佣金（2%）：${fmtMoney(commission)}`,'',...scenarios.map(s=>{const total=s[2](gold,labor,commission);return `【${s[0]}】${fmtMoney(total)}（取整：${fmtMoneyInt(total)}）`})].join('\n');
+    const gold=sellPrice*weight,regular=gold+labor;
+    $('goldAmount').textContent=fmtMoney(gold);$('laborAmount').textContent=fmtMoney(labor);$('regularAmount').textContent=fmtMoney(regular);
+    $('resultsBody').innerHTML=scenarios.map((s,i)=>{const total=s[2](gold,labor);return `<tr><td class="rank">${i+1}</td><td class="scenarioName">${s[0]}</td><td class="formula">${s[1]}</td><td class="amount">${fmtMoney(total)}</td><td class="rounded">${fmtMoneyInt(total)}</td></tr>`}).join('');
+    const unit=$('unit').value;$('copyText').textContent=['飾金折扣情景計算結果',`- 今日售出價：HK$ ${sellPrice.toLocaleString('zh-HK')} / 每${unit}`,`- 金重：${weight.toLocaleString('zh-HK',{maximumFractionDigits:3})} ${unit}`,`- 工費：${fmtMoney(labor)}`,`- 金價金額：${fmtMoney(gold)}`,'',...scenarios.map(s=>{const total=s[2](gold,labor);return `【${s[0]}】${fmtMoney(total)}（取整：${fmtMoneyInt(total)}）`}), '', '以上數據只作參考，一切以金星系統數據為準。'].join('\n');
   }
   async function copyResult(){const text=$('copyText').textContent.trim();if(!text||text.includes('請先輸入資料'))return;try{await navigator.clipboard.writeText(text);$('copyBtn').textContent='已複製';setTimeout(()=>$('copyBtn').textContent='複製摘要',1200)}catch(e){alert('未能自動複製，請手動複製下方內容。')}}
   function resetAll(){$('unit').value='両';$('weight').value='';$('laborFee').value='';$('sellPrice').value=getCurrentLivePrice()??'';renderLivePrice(false)}
@@ -143,5 +140,8 @@
   $('refreshPriceBtn').addEventListener('click',fetchGoldPrice);$('applyPriceBtn').addEventListener('click',applyLivePrice);$('copyBtn').addEventListener('click',copyResult);$('resetBtn').addEventListener('click',resetAll);
   const cached=loadCache();if(cached){goldPriceData=cached.data;renderLivePrice(true,'cache',cached.savedAt)}else renderEmpty();fetchGoldPrice();setInterval(fetchGoldPrice,AUTO_REFRESH_MS);
 </script>
+<footer style="max-width:1180px;margin:18px auto 0;padding:14px 4px;color:#554a51;font-size:12px;text-align:center;">
+  以上數據只作參考，一切以金星系統數據為準。
+</footer>
 </body>
 </html>

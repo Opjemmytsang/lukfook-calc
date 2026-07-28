@@ -4,67 +4,101 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#7C2855">
-  <link rel="manifest" href="manifest.webmanifest">
-  <title>六福珠寶智能報價</title>
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  <style>
-    :root{--wine:#7C2855;--wine-dark:#5d183f;--gold:#BC975A;--bg:#f8f4ef;--card:#fff;--text:#24201d;--muted:#736b64;--border:rgba(188,151,90,.36);--ok:#147a4b;--warn:#9a6400;--err:#b42318}
-    *{box-sizing:border-box}body{margin:0;padding:18px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","Microsoft JhengHei",sans-serif;color:var(--text);background:linear-gradient(180deg,#fff,var(--bg));min-height:100vh}.wrap{max-width:1120px;margin:auto}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.back{color:var(--wine);text-decoration:none;font-weight:800}.title{margin:0;color:var(--wine);font-size:28px}.layout{display:grid;grid-template-columns:370px 1fr;gap:16px}@media(max-width:900px){.layout{grid-template-columns:1fr}}.card{padding:18px;border:1px solid var(--border);border-radius:23px;background:var(--card);box-shadow:0 10px 25px rgba(44,20,28,.06)}.section{margin:0 0 12px;color:var(--wine);font-size:17px}.reader{overflow:hidden;border:1px solid var(--border);border-radius:18px;background:#fafafa}.status{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.6}.status.ok{color:var(--ok)}.status.warn{color:var(--warn)}.status.err{color:var(--err)}.btnrow{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.btn{border:0;border-radius:14px;padding:11px 14px;font-weight:800;cursor:pointer}.primary{background:linear-gradient(135deg,var(--wine),var(--wine-dark));color:#fff}.secondary{background:#fff;color:var(--wine);border:1px solid var(--border)}.field{margin-bottom:11px}label{display:block;margin:0 0 5px 2px;color:var(--muted);font-size:12px}input,select,textarea{width:100%;padding:11px 12px;border:1px solid rgba(0,0,0,.13);border-radius:14px;background:#fff;font-size:15px;outline:none}input:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(188,151,90,.15)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}@media(max-width:560px){.grid{grid-template-columns:1fr}}.pricebox{padding:14px;border:1px solid var(--border);border-radius:17px;background:linear-gradient(135deg,rgba(188,151,90,.10),rgba(124,40,85,.05));margin-bottom:12px}.price{font-size:27px;font-weight:900;color:var(--wine)}.tablewrap{overflow:auto;border:1px solid var(--border);border-radius:18px}table{width:100%;border-collapse:collapse;min-width:630px}th,td{padding:12px;border-bottom:1px solid rgba(0,0,0,.06);text-align:left}th{background:rgba(188,151,90,.1);color:var(--wine);font-size:12px}.amount{font-weight:900;color:var(--wine)}.raw{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}.note{margin-top:12px;color:var(--muted);font-size:12px;line-height:1.65}
-  </style>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="stylesheet" href="./assets/css/app.css">
+  <title>智能報價 DEMO｜六福珠寶</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
+  <script src="./assets/js/common.js" defer></script>
+  <script src="./assets/js/smart-quote.js" defer></script>
 </head>
 <body>
-<main class="wrap">
-  <div class="top"><a class="back" href="index.html">← 返回首頁</a><h1 class="title">智能報價</h1></div>
-  <div class="layout">
-    <section class="card">
-      <h2 class="section">1. 掃描 QR Code</h2>
-      <div id="reader" class="reader"></div>
-      <div class="btnrow"><button class="btn primary" id="startBtn">開啟相機掃描</button><button class="btn secondary" id="stopBtn">停止掃描</button></div>
-      <div class="field"><label>或上傳 QR Code 圖片</label><input id="qrFile" type="file" accept="image/*" capture="environment"></div>
-      <div id="scanStatus" class="status">尚未掃描。可使用相機或上傳圖片。</div>
-      <div class="field"><label>QR 原始內容</label><textarea id="rawQr" class="raw" rows="4" placeholder="亦可手動貼上 QR Code 內容"></textarea></div>
-      <button class="btn secondary" id="parseBtn">讀取文字並填入</button>
-      <div class="note">目前格式：貨號／模號／金重／款式碼／供應商代碼／編入日期／工費或標價／其他欄位。</div>
-    </section>
-
-    <section class="card">
-      <h2 class="section">2. 貨品及報價資料</h2>
-      <div class="grid">
-        <div class="field"><label>貨號</label><input id="itemNo"></div>
-        <div class="field"><label>模號</label><input id="modelNo"></div>
-        <div class="field"><label>金重（克）</label><input id="weight" type="number" step="0.001"></div>
-        <div class="field"><label>款式碼</label><input id="styleCode"></div>
-        <div class="field"><label>供應商代碼</label><input id="supplierCode"></div>
-        <div class="field"><label>編入日期</label><input id="entryDate"></div>
-        <div class="field"><label>工費／標價</label><input id="laborFee" type="number" step="0.01"></div>
-        <div class="field"><label>金價單位</label><select id="priceUnit"><option value="gram">每克</option><option value="tael">每両</option></select></div>
+  <main class="site-shell quote-shell">
+    <header class="page-header">
+      <a class="text-link" href="./index.html">返回首頁</a>
+      <div>
+        <div class="title-line">
+          <h1>智能報價</h1>
+          <span class="demo-badge">DEMO</span>
+        </div>
+        <p>掃描貨品 QR Code 或上傳圖片後，系統會讀取貨品資料並計算報價。</p>
       </div>
-      <div class="pricebox"><label>今日飾金售出價</label><div class="price" id="livePrice">—</div><div class="status" id="priceStatus">正在讀取今日金價…</div><div class="btnrow"><button class="btn primary" id="refreshPrice">刷新金價</button><button class="btn secondary" id="applyPrice">引用今日金價</button></div></div>
-      <div class="field"><label>使用售出價</label><input id="sellPrice" type="number" step="0.01"></div>
-      <h2 class="section">3. 報價結果</h2>
-      <div class="tablewrap"><table><thead><tr><th>方案</th><th>計算方式</th><th>金額</th></tr></thead><tbody id="results"></tbody></table></div>
-      <div class="btnrow"><button class="btn primary" id="copyBtn">複製報價摘要</button><button class="btn secondary" id="clearBtn">清除資料</button></div>
-      <div class="field"><label>報價摘要</label><textarea id="summary" rows="10" readonly></textarea></div>
-    </section>
-  </div>
-</main>
-<script>
-const PROXY='https://lukfook-goldprice-proxy.arwing28.workers.dev';
-const $=id=>document.getElementById(id);let scanner=null;let priceData=null;
-const scenarios=[['原價','金價金額 + 工費',(g,l)=>g+l],['半工','金價金額 + 工費 × 50%',(g,l)=>g+l*.5],['免工','金價金額',(g)=>g],['全單95折','（金價金額 + 工費）× 95%',(g,l)=>(g+l)*.95],['金價95折半工','金價金額 × 95% + 工費 × 50%',(g,l)=>g*.95+l*.5],['金價95折免工','金價金額 × 95%',g=>g*.95]];
-function setScanStatus(t,c=''){const e=$('scanStatus');e.textContent=t;e.className='status '+c}
-function normaliseDate(v){const m=String(v||'').match(/^(\d{2})-(\d{2})-(\d{2})$/);return m?`20${m[1]}-${m[2]}-${m[3]}`:v}
-function parseQr(text){const p=String(text||'').trim().split('/');if(p.length<7)throw new Error('QR Code 格式不足，至少需要 7 個欄位。');$('itemNo').value=p[0]||'';$('modelNo').value=p[1]||'';$('weight').value=p[2]||'';$('styleCode').value=p[3]||'';$('supplierCode').value=p[4]||'';$('entryDate').value=normaliseDate(p[5]||'');$('laborFee').value=p[6]||'';$('rawQr').value=text;setScanStatus('已成功讀取並填入貨品資料。','ok');render()}
-async function startScanner(){try{if(scanner)await stopScanner();scanner=new Html5Qrcode('reader');await scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:250,height:250}},text=>{parseQr(text);stopScanner();},()=>{});setScanStatus('相機已開啟，請將 QR Code 放入框內。','ok')}catch(e){setScanStatus('未能開啟相機：'+e.message,'err')}}
-async function stopScanner(){if(scanner){try{await scanner.stop();await scanner.clear()}catch(e){}scanner=null;setScanStatus('掃描已停止。','warn')}}
-async function scanFile(file){if(!file)return;try{const temp=new Html5Qrcode('reader');const text=await temp.scanFile(file,true);await temp.clear();parseQr(text)}catch(e){setScanStatus('圖片內找不到可讀取的 QR Code。','err')}}
-function num(v){const n=Number(v);return Number.isFinite(n)?n:null}
-function priceForUnit(){if(!priceData)return null;return $('priceUnit').value==='gram'?priceData.gram:priceData.tael}
-async function fetchPrice(){const s=$('priceStatus');s.textContent='正在讀取今日金價…';try{const r=await fetch(PROXY,{cache:'no-store'});const j=await r.json();if(!r.ok||j.ok===false)throw new Error(j.message||('HTTP '+r.status));priceData={gram:num(j['克黃金售出']??j.gold_sell_gram),tael:num(j['黃金售出']??j.gold_sell),date:j.record_date||''};if(priceData.gram===null&&priceData.tael!==null)priceData.gram=priceData.tael/37.429;if(priceData.tael===null&&priceData.gram!==null)priceData.tael=priceData.gram*37.429;showLivePrice(true);s.className='status ok'}catch(e){s.textContent='讀取失敗：'+e.message+'。可手動輸入售出價。';s.className='status err'}}
-function showLivePrice(auto=false){const p=priceForUnit();if(p!==null){$('livePrice').textContent='HK$ '+p.toLocaleString('zh-HK',{maximumFractionDigits:2});$('priceStatus').textContent='已同步'+(priceData.date?'｜更新時間：'+priceData.date:'');if(auto||!$('sellPrice').value)$('sellPrice').value=p.toFixed(2).replace(/\.00$/,'');render()}else $('livePrice').textContent='—'}
-function render(){const w=num($('weight').value),l=num($('laborFee').value),sp=num($('sellPrice').value);if(w===null||l===null||sp===null||w<=0||sp<=0){$('results').innerHTML=scenarios.map(s=>`<tr><td>${s[0]}</td><td>${s[1]}</td><td class="amount">—</td></tr>`).join('');$('summary').value='請先掃描 QR Code 或填寫金重、工費及售出價。';return}const weightInPriceUnit=$('priceUnit').value==='gram'?w:w/37.429;const gold=sp*weightInPriceUnit;const rows=scenarios.map(s=>[s[0],s[1],s[2](gold,l)]);$('results').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="amount">HK$ ${r[2].toLocaleString('zh-HK',{minimumFractionDigits:2,maximumFractionDigits:2})}</td></tr>`).join('');$('summary').value=['六福珠寶智能報價',`貨號：${$('itemNo').value||'-'}`,`模號：${$('modelNo').value||'-'}`,`款式碼：${$('styleCode').value||'-'}`,`供應商代碼：${$('supplierCode').value||'-'}`,`編入日期：${$('entryDate').value||'-'}`,`金重：${w} 克`,`工費／標價：HK$ ${l.toLocaleString('zh-HK')}`,`使用售出價：HK$ ${sp.toLocaleString('zh-HK')} / ${$('priceUnit').value==='gram'?'克':'両'}`,'',...rows.map(r=>`${r[0]}：HK$ ${r[2].toLocaleString('zh-HK',{minimumFractionDigits:2,maximumFractionDigits:2})}`)].join('\n')}
-$('startBtn').onclick=startScanner;$('stopBtn').onclick=stopScanner;$('qrFile').onchange=e=>scanFile(e.target.files[0]);$('parseBtn').onclick=()=>{try{parseQr($('rawQr').value)}catch(e){setScanStatus(e.message,'err')}};$('refreshPrice').onclick=fetchPrice;$('applyPrice').onclick=()=>{const p=priceForUnit();if(p!==null){$('sellPrice').value=p;render()}};$('priceUnit').onchange=()=>showLivePrice(false);['itemNo','modelNo','weight','styleCode','supplierCode','entryDate','laborFee','sellPrice'].forEach(id=>$(id).addEventListener('input',render));$('copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText($('summary').value);$('copyBtn').textContent='已複製';setTimeout(()=>$('copyBtn').textContent='複製報價摘要',1200)}catch(e){alert('未能自動複製，請手動複製。')}};$('clearBtn').onclick=()=>{['itemNo','modelNo','weight','styleCode','supplierCode','entryDate','laborFee','sellPrice','rawQr'].forEach(id=>$(id).value='');render()};
-render();fetchPrice();if('serviceWorker' in navigator)navigator.serviceWorker.register('./service-worker.js').catch(console.error);
-</script>
+    </header>
+
+    <div class="quote-layout">
+      <section class="panel scan-panel" id="scanSection">
+        <div class="section-heading"><span>1</span><h2>掃描貨品</h2></div>
+        <div id="reader" class="reader" aria-label="QR Code 掃描畫面"></div>
+        <div class="action-row">
+          <button class="button button-primary" id="startButton" type="button">掃描貨品</button>
+          <label class="button button-secondary file-button" for="qrFile">上傳圖片</label>
+          <input class="visually-hidden" id="qrFile" type="file" accept="image/*" capture="environment">
+        </div>
+        <p class="status" id="scanStatus" role="status">可使用相機掃描或上傳 QR Code 圖片。</p>
+        <p class="offline-note" id="libraryStatus" hidden>QR 掃描功能需要先連接網絡載入。</p>
+      </section>
+
+      <div class="quote-main">
+        <section class="panel" id="itemSection">
+          <div class="section-heading"><span>2</span><h2>貨品資料</h2></div>
+          <div class="form-grid">
+            <div class="field field-readonly"><label for="itemNo">貨號</label><input id="itemNo" autocomplete="off" readonly></div>
+            <div class="field field-readonly"><label for="modelNo">模號</label><input id="modelNo" autocomplete="off" readonly></div>
+            <div class="field"><label for="weight">金重（克）</label><input id="weight" type="number" inputmode="decimal" min="0" step="0.001"></div>
+            <div class="field"><label for="laborFee">工費／標價（HK$）</label><input id="laborFee" type="number" inputmode="decimal" min="0" step="0.01"></div>
+          </div>
+          <p class="field-error" id="itemError" role="alert" hidden></p>
+        </section>
+
+        <section class="panel">
+          <div class="section-heading"><span>3</span><h2>今日金價</h2></div>
+          <div class="price-summary">
+            <div><span>同步售出價</span><strong id="livePrice">—</strong></div>
+            <div><span>更新時間</span><strong id="priceTime">—</strong></div>
+            <div><span>資料來源</span><strong id="sourceState">連線中</strong></div>
+          </div>
+          <div class="form-grid price-controls">
+            <div class="field"><label for="priceUnit">金價單位</label><select id="priceUnit"><option value="gram">每克</option><option value="tael">每両</option></select></div>
+            <div class="field"><label for="sellPrice">使用售出價（HK$）</label><input id="sellPrice" type="number" inputmode="decimal" min="0" step="0.01"></div>
+          </div>
+          <div class="action-row">
+            <button class="button button-secondary" id="refreshPrice" type="button">刷新金價</button>
+            <button class="button button-secondary" id="applyPrice" type="button">引用同步金價</button>
+          </div>
+          <p class="status" id="priceStatus" role="status">正在讀取今日金價。</p>
+        </section>
+
+        <section class="panel" id="resultSection">
+          <div class="section-heading"><span>4</span><h2>報價結果</h2></div>
+          <p class="field-error" id="calculationError" role="alert" hidden></p>
+          <div class="result-grid" id="results" aria-live="polite"></div>
+          <details class="calculation-details">
+            <summary>顯示／隱藏計算方式</summary>
+            <ul>
+              <li>正價：金價金額 + 工費／標價</li>
+              <li>半工：金價金額 + 工費／標價 × 50%</li>
+              <li>免工：金價金額</li>
+              <li>全單 95 折：（金價金額 + 工費／標價）× 95%</li>
+            </ul>
+          </details>
+          <p class="result-disclaimer">以上數據只作參考，一切以金星系統數據為準。</p>
+        </section>
+
+        <section class="panel">
+          <div class="section-heading"><span>5</span><h2>操作</h2></div>
+          <div class="action-grid">
+            <button class="button button-primary" id="copyButton" type="button">複製報價</button>
+            <button class="button button-secondary" id="rescanButton" type="button">重新掃描</button>
+            <button class="button button-secondary" id="clearButton" type="button">清除</button>
+            <a class="button button-secondary" href="./index.html">返回首頁</a>
+          </div>
+          <p class="status" id="actionStatus" role="status"></p>
+        </section>
+      </div>
+    </div>
+    <footer class="site-disclaimer">以上數據只作參考，一切以金星系統數據為準。</footer>
+  </main>
 </body>
 </html>

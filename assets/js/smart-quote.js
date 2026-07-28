@@ -28,23 +28,19 @@
   }
 
   function parseQrPayload(rawValue) {
-    const fields = String(rawValue ?? '').trim().split('/');
+    const rawText = String(rawValue ?? '').trim();
+    if (!rawText || rawText.length > 4096) throw new Error('QR Code 資料不完整，請重新掃描。');
+    const fields = rawText.split('/');
     if (fields.length < 7) throw new Error('QR Code 資料不完整，請重新掃描。');
     const weight = finiteNumber(fields[2]);
     const fee = finiteNumber(fields[6]);
     if (weight === null || weight <= 0) throw new Error('QR Code 內的金重並非有效數字，請重新掃描。');
     if (fee === null || fee < 0) throw new Error('QR Code 內的工費／標價並非有效數字，請重新掃描。');
     return {
-      itemNo: fields[0].trim(),
-      modelNo: fields[1].trim(),
+      itemNo: fields[0].trim().slice(0, 120),
+      modelNo: fields[1].trim().slice(0, 120),
       weight,
-      fee,
-      hidden: {
-        styleCode: fields[3] || '',
-        supplierCode: fields[4] || '',
-        entryDate: fields[5] || '',
-        extraFields: fields.slice(7)
-      }
+      fee
     };
   }
 
@@ -67,6 +63,23 @@
 
   function formatMoney(value) {
     return `HK$ ${value.toLocaleString('zh-HK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  function createSummary({ itemNo, modelNo, weight, fee, sellPrice, unit, quotes }) {
+    const unitLabel = unit === 'gram' ? '克' : '両';
+    return [
+      '六福珠寶智能報價 DEMO',
+      '',
+      `貨號：${itemNo || '-'}`,
+      `模號：${modelNo || '-'}`,
+      `金重：${weight.toLocaleString('zh-HK', { maximumFractionDigits: 3 })} 克`,
+      `工費／標價：${formatMoney(fee)}`,
+      `使用售出價：${formatMoney(sellPrice)} / ${unitLabel}`,
+      '',
+      ...quotes.map(({ label, amount }) => `${label}：${formatMoney(amount)}`),
+      '',
+      DISCLAIMER
+    ].join('\n');
   }
 
   function setStatus(element, message, type = '') {
@@ -158,7 +171,8 @@
     }
     elements.libraryStatus.hidden = true;
     await stopScanner();
-    scanner = new window.Html5Qrcode('reader');
+    const nextScanner = new window.Html5Qrcode('reader');
+    scanner = nextScanner;
     try {
       const boxSize = Math.min(250, Math.max(190, elements.reader.clientWidth - 32));
       await scanner.start(
@@ -177,7 +191,8 @@
       );
       setStatus(elements.scanStatus, '相機已開啟，將 QR Code 放入框內。', 'ok');
     } catch (error) {
-      scanner = null;
+      if (scanner === nextScanner) scanner = null;
+      await nextScanner.clear().catch(() => {});
       setStatus(elements.scanStatus, '未能開啟相機，可改為上傳 QR Code 圖片。', 'error');
     }
   }
@@ -277,26 +292,33 @@
     const weight = finiteNumber(elements.weight.value);
     const fee = finiteNumber(elements.laborFee.value);
     const price = finiteNumber(elements.sellPrice.value);
-    const unit = elements.priceUnit.value === 'gram' ? '克' : '両';
-    return [
-      '六福珠寶智能報價 DEMO',
-      '',
-      `貨號：${elements.itemNo.value || '-'}`,
-      `模號：${elements.modelNo.value || '-'}`,
-      `金重：${weight.toLocaleString('zh-HK', { maximumFractionDigits: 3 })} 克`,
-      `工費／標價：${formatMoney(fee)}`,
-      `使用售出價：${formatMoney(price)} / ${unit}`,
-      '',
-      ...quotes.map(({ label, amount }) => `${label}：${formatMoney(amount)}`),
-      '',
-      DISCLAIMER
-    ].join('\n');
+    return createSummary({
+      itemNo: elements.itemNo.value,
+      modelNo: elements.modelNo.value,
+      weight,
+      fee,
+      sellPrice: price,
+      unit: elements.priceUnit.value,
+      quotes
+    });
   }
 
   async function copySummary() {
     try {
       const summary = buildSummary();
-      await navigator.clipboard.writeText(summary);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(summary);
+      } else {
+        const helper = document.createElement('textarea');
+        helper.value = summary;
+        helper.setAttribute('readonly', '');
+        helper.className = 'visually-hidden';
+        document.body.append(helper);
+        helper.select();
+        const copied = document.execCommand('copy');
+        helper.remove();
+        if (!copied) throw new Error('COPY_FAILED');
+      }
       elements.copyButton.textContent = '已複製';
       setStatus(elements.actionStatus, '報價已複製。', 'ok');
       window.setTimeout(() => { elements.copyButton.textContent = '複製報價'; }, 1200);
@@ -336,7 +358,7 @@
     fetchPrice();
   }
 
-  const api = { parseQrPayload, calculateQuotes, normalisePricePayload, GRAMS_PER_TAEL };
+  const api = { parseQrPayload, calculateQuotes, normalisePricePayload, createSummary, GRAMS_PER_TAEL };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined') {
     window.LukfookSmartQuote = api;

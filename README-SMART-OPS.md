@@ -4,7 +4,7 @@
 
 - 手機、iPad 及電腦適用的 PWA 統一入口
 - 智能報價頁
-- 手機相機掃描及 QR Code 圖片上傳
+- 手機相機掃描及 QR Code 圖片上載
 - 前台只顯示貨號、模號、金重及工費／標價
 - 同步 Cloudflare Worker 今日飾金售出價
 - 金價同步失敗時可手動輸入
@@ -16,11 +16,12 @@
 
 ```sh
 node tests/smart-quote.test.js
+node tests/common.test.js
 node tests/static-audit.js
 node tests/service-worker.test.js
 ```
 
-測試涵蓋 QR 欄位驗證、摘要隱藏資料、每克及每両換算、四個報價公式、金價欄位兼容及 service worker 快取策略。
+測試涵蓋安裝提示、QR 欄位驗證、摘要隱藏資料、每克及每両換算、四個報價公式、金價欄位兼容及 service worker 快取策略。
 
 ## 注意
 

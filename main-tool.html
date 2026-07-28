@@ -471,15 +471,6 @@
 <div class="wrap">
 
   <div class="header">
-    <img class="logo" src="logo.png" alt="六福珠寶 LUKFOOK JEWELLERY"
-         onerror="this.style.display='none'; document.getElementById('logoError').style.display='block';" />
-    <div id="logoError" style="display:none; width:240px; max-width:82vw;">
-      <div class="card">
-        <div class="warn">標誌未載入</div>
-        <div class="sub">請確保 <span class="mono">logo.png</span> 同 <span class="mono">index.html</span> 放喺同一個資料夾。</div>
-      </div>
-    </div>
-
     <div class="titleBlock">
       <h1>
         貴金屬回收／兌換／賣出 計算工具
@@ -626,8 +617,8 @@
           <label>單位 / 貨幣（只作顯示）</label>
           <div style="display:flex; gap:10px;">
             <select id="unit">
-              <option value="両">両</option>
               <option value="克">克</option>
+              <option value="両">両</option>
             </select>
             <select id="currency">
               <option value="HK$">HK$</option>
@@ -636,7 +627,7 @@
               <option value="$">$</option>
             </select>
           </div>
-          <div class="inlineHelp">可用「切換：両 ↔ 克」快速改單位。</div>
+          <div class="inlineHelp">可用「切換：克 ↔ 両」快速改單位。</div>
         </div>
       </div>
     </div>
@@ -655,7 +646,7 @@
       </div>
 
       <div>
-        <label>單價（每両/每克）</label>
+        <label>單價（每克／每両）</label>
         <input id="price" type="number" step="0.01" inputmode="decimal" placeholder="例如：23500（可手動輸入）" />
 
         <div class="pricePanel">
@@ -666,7 +657,7 @@
             </div>
 
             <div class="tabs">
-              <button class="ppMini" id="btnToggleUnit" type="button">切換：両 ↔ 克</button>
+              <button class="ppMini" id="btnToggleUnit" type="button">切換：克 ↔ 両</button>
               <button class="tabBtn" id="fetchGoldBtn" type="button">刷新金價</button>
             </div>
           </div>
@@ -977,9 +968,9 @@
     $("gpBuy").textContent = buy;
     $("gpTrade").textContent = trade;
 
-    $("gpSellSub").textContent = `（${u}）`;
-    $("gpBuySub").textContent  = `（${u}）`;
-    $("gpTradeSub").textContent= `（${u}）`;
+    $("gpSellSub").textContent = `／${u}`;
+    $("gpBuySub").textContent  = `／${u}`;
+    $("gpTradeSub").textContent= `／${u}`;
 
     refreshPurposeHighlight();
   }
@@ -1020,7 +1011,7 @@
 
       hint.textContent = auto ? "金價已完成更新。" : "金價已更新，可按「引用」帶入單價。";
     }catch(e){
-      console.error(e);
+      console.warn("未能讀取金價，已保留手動輸入功能。");
       renderGoldTime();
       $("gpSell").textContent = "—";
       $("gpBuy").textContent = "—";
@@ -1299,7 +1290,7 @@
     $("btnFullscreen").textContent = document.fullscreenElement ? "退出全螢幕" : "全螢幕展示";
   });
 
-  const LS_KEY = "lukfook_calc_state_v11_split_purpose_dealer_hide_sell_settings";
+  const LS_KEY = "lukfook_calc_state_v12_gram_default";
 
   function saveStateToLocal(){
     const payload = {
@@ -1331,7 +1322,7 @@
         $("weight").value = payload.inputs.weight ?? "";
         $("price").value = payload.inputs.price ?? "";
         if($("colorDeduct")) $("colorDeduct").value = payload.inputs.colorDeduct ?? "";
-        $("unit").value = payload.inputs.unit ?? "両";
+        $("unit").value = payload.inputs.unit ?? "克";
         $("currency").value = payload.inputs.currency ?? "HK$";
         $("laborFee").value = payload.inputs.laborFee ?? "";
         $("manualSell").value = payload.inputs.manualSell ?? "";
@@ -1400,7 +1391,7 @@
       $("weight").value="";
       $("price").value="";
       if($("colorDeduct")) $("colorDeduct").value="";
-      $("unit").value="両";
+      $("unit").value="克";
       $("currency").value="HK$";
       $("laborFee").value="";
       $("manualSell").value="";
@@ -1438,7 +1429,7 @@
       }
 
       lines.push(`- 重量：${res.weight} ${res.unit}`);
-      lines.push(`- 單價：${res.currency} ${Number(res.price).toLocaleString("zh-HK")}`);
+      lines.push(`- 單價：${res.currency} ${Number(res.price).toLocaleString("zh-HK")}／${res.unit}`);
       lines.push(`- ${res.amountLabelShort}（取整）：${fmtMoneyInt(res.netRounded, res.currency)}`);
 
       try{

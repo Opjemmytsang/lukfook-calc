@@ -14,6 +14,8 @@
   const $ = (id) => document.getElementById(id);
   const elements = {};
   let scanner = null;
+  let scannerStarting = false;
+  let imageScanning = false;
   let livePrice = null;
 
   function finiteNumber(value) {
@@ -27,6 +29,14 @@
     return parsed !== null && parsed > 0 ? parsed : null;
   }
 
+  function safeIdentifier(value) {
+    return String(value ?? '')
+      .replace(/[\u0000-\u001f\u007f-\u009f\u2028\u2029]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 120);
+  }
+
   function parseQrPayload(rawValue) {
     const rawText = String(rawValue ?? '').trim();
     if (!rawText || rawText.length > 4096) throw new Error('QR Code 資料不完整，請重新掃描。');
@@ -37,8 +47,8 @@
     if (weight === null || weight <= 0) throw new Error('QR Code 內的金重並非有效數字，請重新掃描。');
     if (fee === null || fee < 0) throw new Error('QR Code 內的工費／標價並非有效數字，請重新掃描。');
     return {
-      itemNo: fields[0].trim().slice(0, 120),
-      modelNo: fields[1].trim().slice(0, 120),
+      itemNo: safeIdentifier(fields[0]),
+      modelNo: safeIdentifier(fields[1]),
       weight,
       fee
     };
@@ -74,7 +84,7 @@
       `模號：${modelNo || '-'}`,
       `金重：${weight.toLocaleString('zh-HK', { maximumFractionDigits: 3 })} 克`,
       `工費／標價：${formatMoney(fee)}`,
-      `使用售出價：${formatMoney(sellPrice)} / ${unitLabel}`,
+      `使用售出價：${formatMoney(sellPrice)}／${unitLabel}`,
       '',
       ...quotes.map(({ label, amount }) => `${label}：${formatMoney(amount)}`),
       '',
@@ -138,20 +148,36 @@
     }
   }
 
-  function stopScanner({ updateStatus = false } = {}) {
-    const current = scanner;
-    scanner = null;
-    if (!current) return Promise.resolve();
-    return current.stop()
-      .catch(() => {})
-      .then(() => current.clear().catch(() => {}))
-      .finally(() => {
-        if (updateStatus) setStatus(elements.scanStatus, '掃描已停止。', 'warn');
-      });
+  function updateScannerControls({ active = false, loading = false } = {}) {
+    if (!elements.startButton || !elements.stopButton) return;
+    elements.startButton.disabled = active || loading;
+    elements.startButton.textContent = loading ? '正在開啟相機……' : (active ? '掃描中' : '掃描貨品');
+    elements.stopButton.disabled = !active && !loading;
   }
 
-  function applyScannedData(rawValue) {
+  async function stopScanner({ updateStatus = false } = {}) {
+    const current = scanner;
+    scanner = null;
+    scannerStarting = false;
+    if (current) {
+      try {
+        await current.stop();
+      } catch (error) {
+        // Scanner may not have reached the running state.
+      }
+      try {
+        await current.clear();
+      } catch (error) {
+        // Reader may already be clear.
+      }
+    }
+    updateScannerControls();
+    if (updateStatus) setStatus(elements.scanStatus, '掃描已停止。', 'warn');
+  }
+
+  async function applyScannedData(rawValue) {
     const parsed = parseQrPayload(rawValue);
+    await stopScanner();
     elements.itemNo.value = parsed.itemNo;
     elements.modelNo.value = parsed.modelNo;
     elements.weight.value = String(parsed.weight);
@@ -159,18 +185,28 @@
     elements.itemError.hidden = true;
     setStatus(elements.scanStatus, '已讀取貨品資料。', 'ok');
     render();
-    stopScanner();
     elements.resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   async function startScanner() {
+    if (scannerStarting || scanner) return;
+    if (!window.isSecureContext) {
+      setStatus(elements.scanStatus, '相機只可在 HTTPS 環境使用。', 'error');
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setStatus(elements.scanStatus, '此瀏覽器不支援相機掃描，可改用上載圖片。', 'error');
+      return;
+    }
     if (!window.Html5Qrcode) {
       elements.libraryStatus.hidden = false;
-      setStatus(elements.scanStatus, 'QR 掃描功能未能載入，可改為上傳圖片或連接網絡後重試。', 'error');
+      setStatus(elements.scanStatus, '掃描功能暫時未能使用，可改用上載圖片。', 'error');
       return;
     }
     elements.libraryStatus.hidden = true;
-    await stopScanner();
+    scannerStarting = true;
+    updateScannerControls({ loading: true });
+    setStatus(elements.scanStatus, '正在開啟相機……');
     const nextScanner = new window.Html5Qrcode('reader');
     scanner = nextScanner;
     try {
@@ -178,41 +214,86 @@
       await scanner.start(
         { facingMode: 'environment' },
         { fps: 10, qrbox: { width: boxSize, height: boxSize } },
-        (decodedText) => {
+        async (decodedText) => {
           try {
-            applyScannedData(decodedText);
+            await applyScannedData(decodedText);
           } catch (error) {
             elements.itemError.textContent = error.message;
             elements.itemError.hidden = false;
-            setStatus(elements.scanStatus, error.message, 'error');
+            setStatus(elements.scanStatus, '未能讀取，請重新掃描。', 'error');
           }
         },
         () => {}
       );
-      setStatus(elements.scanStatus, '相機已開啟，將 QR Code 放入框內。', 'ok');
+      if (scanner !== nextScanner) {
+        try {
+          await nextScanner.stop();
+        } catch (stopError) {
+          // Stop may already have been requested while the camera was opening.
+        }
+        try {
+          await nextScanner.clear();
+        } catch (clearError) {
+          // Reader may already be clear.
+        }
+        updateScannerControls();
+        return;
+      }
+      scannerStarting = false;
+      updateScannerControls({ active: true });
+      setStatus(elements.scanStatus, '請將 QR Code 放入框內。', 'ok');
     } catch (error) {
+      const wasCancelled = scanner !== nextScanner;
       if (scanner === nextScanner) scanner = null;
-      await nextScanner.clear().catch(() => {});
-      setStatus(elements.scanStatus, '未能開啟相機，可改為上傳 QR Code 圖片。', 'error');
+      scannerStarting = false;
+      try {
+        await nextScanner.clear();
+      } catch (clearError) {
+        // Reader may already be clear.
+      }
+      updateScannerControls();
+      if (wasCancelled) return;
+      const errorName = String(error?.name || error || '');
+      if (/NotAllowed|PermissionDenied/i.test(errorName)) {
+        setStatus(elements.scanStatus, '未能開啟相機，請檢查瀏覽器的相機權限。', 'error');
+      } else if (/NotFound|DevicesNotFound/i.test(errorName)) {
+        setStatus(elements.scanStatus, '未能找到可用相機，可改用上載圖片。', 'error');
+      } else if (/Security/i.test(errorName)) {
+        setStatus(elements.scanStatus, '相機只可在 HTTPS 環境使用。', 'error');
+      } else {
+        setStatus(elements.scanStatus, '未能開啟相機，請檢查瀏覽器的相機權限。', 'error');
+      }
     }
   }
 
   async function scanFile(file) {
     if (!file) return;
-    if (!window.Html5Qrcode) {
-      setStatus(elements.scanStatus, 'QR 掃描功能未能載入，請連接網絡後重試。', 'error');
+    if (imageScanning) {
+      elements.qrFile.value = '';
       return;
     }
+    if (!window.Html5Qrcode) {
+      elements.qrFile.value = '';
+      setStatus(elements.scanStatus, '掃描功能暫時未能使用，可改用上載圖片。', 'error');
+      return;
+    }
+    imageScanning = true;
     await stopScanner();
     const fileScanner = new window.Html5Qrcode('reader');
     try {
+      setStatus(elements.scanStatus, '正在讀取圖片……');
       const decodedText = await fileScanner.scanFile(file, true);
-      applyScannedData(decodedText);
+      await applyScannedData(decodedText);
     } catch (error) {
-      setStatus(elements.scanStatus, '未能讀取 QR Code，請重新拍攝或上傳另一張圖片。', 'error');
+      setStatus(elements.scanStatus, '圖片內未能讀取 QR Code，請選擇較清晰的圖片。', 'error');
     } finally {
-      fileScanner.clear().catch(() => {});
+      try {
+        await fileScanner.clear();
+      } catch (clearError) {
+        // Reader may already be clear.
+      }
       elements.qrFile.value = '';
+      imageScanning = false;
     }
   }
 
@@ -237,7 +318,8 @@
       elements.livePrice.textContent = '—';
       return;
     }
-    elements.livePrice.textContent = formatMoney(price);
+    const unitLabel = elements.priceUnit.value === 'gram' ? '克' : '両';
+    elements.livePrice.textContent = `${formatMoney(price)}／${unitLabel}`;
     elements.priceTime.textContent = livePrice.date || '未提供';
     if (apply || !positivePrice(elements.sellPrice.value)) elements.sellPrice.value = price.toFixed(2);
     render();
@@ -275,13 +357,15 @@
     ['itemNo', 'modelNo', 'weight', 'laborFee'].forEach((id) => { elements[id].value = ''; });
     elements.itemError.hidden = true;
     elements.calculationError.hidden = true;
+    elements.priceUnit.value = 'gram';
+    showLivePrice({ apply: livePrice !== null });
     setStatus(elements.actionStatus, '');
     renderEmptyResults();
   }
 
   async function rescan() {
     clearItemData();
-    setStatus(elements.scanStatus, '可使用相機掃描或上傳 QR Code 圖片。');
+    setStatus(elements.scanStatus, '可使用相機掃描或上載 QR Code 圖片。');
     elements.scanSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     await startScanner();
   }
@@ -328,7 +412,7 @@
   }
 
   function bind() {
-    ['reader', 'scanSection', 'resultSection', 'startButton', 'qrFile', 'scanStatus', 'libraryStatus',
+    ['reader', 'scanSection', 'resultSection', 'startButton', 'stopButton', 'qrFile', 'scanStatus', 'libraryStatus',
       'itemNo', 'modelNo', 'weight', 'laborFee', 'itemError', 'priceUnit', 'sellPrice', 'livePrice',
       'priceTime', 'sourceState', 'priceStatus', 'refreshPrice', 'applyPrice', 'results',
       'calculationError', 'copyButton', 'rescanButton', 'clearButton', 'actionStatus'
@@ -336,6 +420,7 @@
     if (Object.values(elements).some((element) => !element)) return;
 
     elements.startButton.addEventListener('click', startScanner);
+    elements.stopButton.addEventListener('click', () => stopScanner({ updateStatus: true }));
     elements.qrFile.addEventListener('change', (event) => scanFile(event.target.files?.[0]));
     elements.refreshPrice.addEventListener('click', fetchPrice);
     elements.applyPrice.addEventListener('click', () => {
@@ -349,11 +434,17 @@
     ['weight', 'laborFee', 'sellPrice'].forEach((id) => elements[id].addEventListener('input', render));
     elements.copyButton.addEventListener('click', copySummary);
     elements.rescanButton.addEventListener('click', rescan);
-    elements.clearButton.addEventListener('click', () => {
+    elements.clearButton.addEventListener('click', async () => {
+      await stopScanner();
       clearItemData();
       setStatus(elements.actionStatus, '貨品資料已清除。', 'ok');
     });
     window.addEventListener('pagehide', () => stopScanner());
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') stopScanner();
+    });
+    elements.priceUnit.value = 'gram';
+    updateScannerControls();
     renderEmptyResults();
     fetchPrice();
   }

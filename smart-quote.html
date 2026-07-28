@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="apple-touch-icon" href="./icon-192.png">
   <link rel="stylesheet" href="./assets/css/app.css">
   <title>智能報價 DEMO｜六福珠寶</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
@@ -23,7 +23,7 @@
           <h1>智能報價</h1>
           <span class="demo-badge">DEMO</span>
         </div>
-        <p>掃描貨品 QR Code 或上傳圖片後，系統會讀取貨品資料並計算報價。</p>
+        <p>掃描貨品 QR Code 或上載圖片後，系統會讀取貨品資料並計算報價。</p>
       </div>
     </header>
 
@@ -33,10 +33,11 @@
         <section id="reader" class="reader" aria-label="QR Code 掃描畫面"></section>
         <div class="action-row">
           <button class="button button-primary" id="startButton" type="button">掃描貨品</button>
-          <label class="button button-secondary file-button" for="qrFile">上傳圖片</label>
-          <input class="visually-hidden" id="qrFile" type="file" accept="image/*" capture="environment">
+          <button class="button button-secondary" id="stopButton" type="button" disabled>停止掃描</button>
+          <label class="button button-secondary file-button" for="qrFile">上載圖片</label>
+          <input class="visually-hidden" id="qrFile" type="file" accept="image/*">
         </div>
-        <p class="status" id="scanStatus" role="status">可使用相機掃描或上傳 QR Code 圖片。</p>
+        <p class="status" id="scanStatus" role="status">可使用相機掃描或上載 QR Code 圖片。</p>
         <p class="offline-note" id="libraryStatus" hidden>QR 掃描功能需要先連接網絡載入。</p>
       </section>
 

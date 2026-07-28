@@ -9,28 +9,28 @@
   <meta name="apple-mobile-web-app-title" content="報價工具 DEMO">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="apple-touch-icon" href="./icon-192.png">
   <link rel="stylesheet" href="./assets/css/app.css">
   <title>六福珠寶智能報價工具 DEMO</title>
 </head>
 <body>
   <main class="site-shell">
     <header class="home-hero">
-      <img class="brand-logo" src="./logo.png" alt="六福珠寶 LUKFOOK JEWELLERY">
       <p class="eyebrow">LUKFOOK SMART QUOTE DEMO</p>
       <div class="title-line">
         <h1>六福珠寶智能報價工具</h1>
         <span class="demo-badge">DEMO</span>
       </div>
-      <p class="intro">集中使用智能報價、貴金屬計價、折扣情景及利潤推算工具。</p>
+      <p class="intro">集中使用智能報價、貴金屬計價及折扣情景工具。</p>
       <button class="button button-secondary install-button" id="installButton" type="button" hidden>安裝至主畫面</button>
+      <p class="install-message" id="installStatus" role="status" hidden></p>
     </header>
 
     <section class="tool-grid" aria-label="計價工具">
       <article class="tool-card">
         <span class="tool-index">01</span>
         <h2>智能報價</h2>
-        <p>掃描或上傳貨品 QR Code，讀取貨品資料及計算四個報價方案。</p>
+        <p>掃描或上載貨品 QR Code，讀取貨品資料及計算四個報價方案。</p>
         <a class="button button-primary" href="./smart-quote.html">智能報價</a>
       </article>
       <article class="tool-card">
@@ -44,12 +44,6 @@
         <h2>飾金折扣情景計算</h2>
         <p>輸入金重及工費，檢視現有折扣情景計算結果。</p>
         <a class="button button-primary" href="./discount-scenarios.html">折扣情景計算</a>
-      </article>
-      <article class="tool-card">
-        <span class="tool-index">04</span>
-        <h2>利潤推算器</h2>
-        <p>保留原有貨品成本及利潤推算功能。</p>
-        <a class="button button-primary" href="./profit-estimator-v1.html">利潤推算</a>
       </article>
     </section>
 

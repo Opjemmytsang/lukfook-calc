@@ -13,6 +13,8 @@ assert.throws(() => parseQrPayload('A/B/1/C/D/E'), /資料不完整/);
 assert.throws(() => parseQrPayload('A/B/abc/C/D/E/100'), /金重/);
 assert.throws(() => parseQrPayload('A/B/1/C/D/E/abc'), /工費／標價/);
 assert.throws(() => parseQrPayload(`A/B/1/C/D/E/1/${'X'.repeat(4096)}`), /資料不完整/);
+assert.equal(parseQrPayload('ITEM\nINJECT/MODEL\t9/1/C/D/E/100').itemNo, 'ITEM INJECT');
+assert.equal(parseQrPayload('ITEM\nINJECT/MODEL\t9/1/C/D/E/100').modelNo, 'MODEL 9');
 
 const gramQuotes = calculateQuotes({ weightGram: 10, fee: 1000, sellPrice: 800, unit: 'gram' });
 assert.deepEqual(gramQuotes.map(({ label }) => label), ['正價', '半工', '免工', '全單 95 折']);

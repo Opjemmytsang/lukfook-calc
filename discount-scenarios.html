@@ -22,13 +22,13 @@
   <div class="wrap"><div class="hero">
     <h1>飾金折扣計算器</h1>
     <div class="sub">此工具會自動讀取今日飾金售出價。輸入金重及工費後，可比較四個已確認的報價方案。</div>
-    <div class="chipRow"><div class="chip">同步今日金價</div><div class="chip">支援両／克</div><div class="chip">失敗時可手動輸入</div></div>
+    <div class="chipRow"><div class="chip">同步今日金價</div><div class="chip">支援克／両</div><div class="chip">失敗時可手動輸入</div></div>
     <div class="layout">
       <div class="card">
         <div class="sectionTitle"><div class="t">輸入資料</div><div class="s">更改欄位後即時更新</div></div>
-        <div class="twoCol"><div class="field"><label>金重單位</label><select id="unit"><option value="両">両</option><option value="克">克</option></select></div><div class="field"><label>貨幣</label><input value="HK$" readonly /></div></div>
+        <div class="twoCol"><div class="field"><label>金重單位</label><select id="unit"><option value="克">克</option><option value="両">両</option></select></div><div class="field"><label>貨幣</label><input value="HK$" readonly /></div></div>
         <div class="priceSync"><label>今日飾金售出價</label><div class="syncValue" id="liveGoldPrice">—</div><div class="syncSub" id="goldPriceStatus">正在讀取今日金價…</div><div class="btnRow"><button class="primary" id="refreshPriceBtn" type="button">刷新金價</button><button class="secondary" id="applyPriceBtn" type="button">引用今日金價</button></div></div>
-        <div class="field"><label>飾金售出價（每両／每克）</label><input id="sellPrice" type="number" step="0.01" inputmode="decimal" placeholder="系統會自動帶入，亦可手動修改" /></div>
+        <div class="field"><label>飾金售出價（每克／每両）</label><input id="sellPrice" type="number" step="0.01" inputmode="decimal" placeholder="系統會自動帶入，亦可手動修改" /></div>
         <div class="field"><label>金重</label><input id="weight" type="number" step="0.001" inputmode="decimal" placeholder="例如：1.234" /></div>
         <div class="field"><label>工費</label><input id="laborFee" type="number" step="0.01" inputmode="decimal" placeholder="例如：2000" /></div>
         <div class="btnRow"><button class="primary" id="copyBtn" type="button">複製摘要</button><button class="secondary" id="resetBtn" type="button">重新輸入</button></div>
@@ -131,7 +131,7 @@
     const unit=$('unit').value;$('copyText').textContent=['飾金折扣情景計算結果',`- 今日售出價：HK$ ${sellPrice.toLocaleString('zh-HK')} / 每${unit}`,`- 金重：${weight.toLocaleString('zh-HK',{maximumFractionDigits:3})} ${unit}`,`- 工費：${fmtMoney(labor)}`,`- 金價金額：${fmtMoney(gold)}`,'',...scenarios.map(s=>{const total=s[2](gold,labor);return `【${s[0]}】${fmtMoney(total)}（取整：${fmtMoneyInt(total)}）`}), '', '以上數據只作參考，一切以金星系統數據為準。'].join('\n');
   }
   async function copyResult(){const text=$('copyText').textContent.trim();if(!text||text.includes('請先輸入資料'))return;try{await navigator.clipboard.writeText(text);$('copyBtn').textContent='已複製';setTimeout(()=>$('copyBtn').textContent='複製摘要',1200)}catch(e){alert('未能自動複製，請手動複製下方內容。')}}
-  function resetAll(){$('unit').value='両';$('weight').value='';$('laborFee').value='';$('sellPrice').value=getCurrentLivePrice()??'';renderLivePrice(false)}
+  function resetAll(){$('unit').value='克';$('weight').value='';$('laborFee').value='';$('sellPrice').value=getCurrentLivePrice()??'';renderLivePrice(false)}
   ['weight','sellPrice','laborFee'].forEach(id=>$(id).addEventListener('input',render));
   $('unit').addEventListener('change',()=>{const price=getCurrentLivePrice();if(isNum(price))$('sellPrice').value=price;renderLivePrice(false);render()});
   $('refreshPriceBtn').addEventListener('click',fetchGoldPrice);$('applyPriceBtn').addEventListener('click',applyLivePrice);$('copyBtn').addEventListener('click',copyResult);$('resetBtn').addEventListener('click',resetAll);

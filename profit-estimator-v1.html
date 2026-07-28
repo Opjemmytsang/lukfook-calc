@@ -221,8 +221,8 @@
             <div id="weightUnitField" class="field">
               <label for="unit">重量單位</label>
               <select id="unit">
-                <option value="tael">両</option>
                 <option value="gram">克</option>
+                <option value="tael">両</option>
               </select>
             </div>
             <div id="weightField" class="field">
@@ -527,7 +527,7 @@
 
     function applySample(){
       $('itemType').value = 'A1';
-      $('unit').value = 'tael';
+      $('unit').value = 'gram';
       $('weight').value = '1';
       $('taelToGram').value = '37.429';
       $('marketBasis').value = '36000';
@@ -546,7 +546,7 @@
 
     function resetForm(){
       $('itemType').value = 'A1';
-      $('unit').value = 'tael';
+      $('unit').value = 'gram';
       $('weight').value = '1';
       $('taelToGram').value = '37.429';
       $('marketBasis').value = '0';

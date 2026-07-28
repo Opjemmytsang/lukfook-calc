@@ -22,7 +22,7 @@
   <div class="wrap"><div class="hero">
     <h1>飾金折扣計算器</h1>
     <div class="sub">此工具會自動讀取今日飾金售出價。輸入金重及工費後，可比較四個已確認的報價方案。</div>
-    <div class="chipRow"><div class="chip">同步今日金價</div><div class="chip">支援両／克</div><div class="chip">失敗時使用上次金價</div></div>
+    <div class="chipRow"><div class="chip">同步今日金價</div><div class="chip">支援両／克</div><div class="chip">失敗時可手動輸入</div></div>
     <div class="layout">
       <div class="card">
         <div class="sectionTitle"><div class="t">輸入資料</div><div class="s">更改欄位後即時更新</div></div>
@@ -32,7 +32,7 @@
         <div class="field"><label>金重</label><input id="weight" type="number" step="0.001" inputmode="decimal" placeholder="例如：1.234" /></div>
         <div class="field"><label>工費</label><input id="laborFee" type="number" step="0.01" inputmode="decimal" placeholder="例如：2000" /></div>
         <div class="btnRow"><button class="primary" id="copyBtn" type="button">複製摘要</button><button class="secondary" id="resetBtn" type="button">重新輸入</button></div>
-        <div class="note"><strong>計算方式：</strong><br>1. 金價金額 = 售出價 × 金重<br>2. 金價讀取失敗時，可繼續使用上次成功同步的資料或手動輸入。</div>
+        <div class="note"><strong>計算方式：</strong><br>1. 金價金額 = 售出價 × 金重<br>2. 金價讀取失敗時，可手動輸入售出價。</div>
         <div class="copyBox" id="copyText">請先輸入資料，系統會自動生成可複製內容。</div>
       </div>
       <div><div class="card"><div class="sectionTitle"><div class="t">基礎拆解</div><div class="s">金價金額與正價</div></div><div class="summaryGrid">
@@ -46,7 +46,6 @@
   const $ = id => document.getElementById(id);
   const GOLDPRICE_PROXY = 'https://lukfook-goldprice-proxy.arwing28.workers.dev';
   const AUTO_REFRESH_MS = 5 * 60 * 1000;
-  const CACHE_KEY = 'lukfook-discount-gold-price-v2';
   let goldPriceData = null;
 
   const scenarios = [
@@ -84,14 +83,13 @@
   function normalisePricePayload(payload){
     const row = findPriceRow(payload);
     if(!row) throw new Error('API 沒有回傳金價資料');
-    const tael = firstNumber(row,['黃金售出','飾金售出','飾金售出價','gold_sell','goldSell','sell_price','sellPrice']);
+    let tael = firstNumber(row,['黃金售出','飾金售出','飾金售出價','gold_sell','goldSell','sell_price','sellPrice']);
     let gram = firstNumber(row,['克黃金售出','克飾金售出','飾金每克售出','gold_sell_gram','gram_sell','gramSell']);
     if(gram === null && tael !== null) gram = tael / 37.429;
+    if(tael === null && gram !== null) tael = gram * 37.429;
     if(tael === null && gram === null) throw new Error('找不到可用的飾金售出價欄位');
     return {updatedAt:row.record_date||row.updated_at||row.updatedAt||row.date||'',tael:{sell:tael},gram:{sell:gram}};
   }
-  function saveCache(data){try{localStorage.setItem(CACHE_KEY,JSON.stringify({savedAt:new Date().toISOString(),data}))}catch(e){}}
-  function loadCache(){try{const cached=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');return cached?.data?cached:null}catch(e){return null}}
   function getUnitKey(){return $('unit').value==='克'?'gram':'tael'}
   function getCurrentLivePrice(){const n=goldPriceData?.[getUnitKey()]?.sell;return isNum(n)?n:null}
   function setStatus(text,type=''){const el=$('goldPriceStatus');el.textContent=text;el.className='syncSub'+(type?' status-'+type:'')}
@@ -103,21 +101,18 @@
       if(!res.ok) throw new Error('HTTP '+res.status);
       const text=await res.text();
       let json;try{json=JSON.parse(text)}catch(e){throw new Error('API 回傳內容不是有效 JSON')}
-      goldPriceData=normalisePricePayload(json);saveCache(goldPriceData);renderLivePrice(true,'live');
+      goldPriceData=normalisePricePayload(json);renderLivePrice(true);
     }catch(e){
       console.error('Gold price error:',e);
-      const cached=loadCache();
-      if(cached){goldPriceData=cached.data;renderLivePrice(false,'cache',cached.savedAt);}
-      else{$('liveGoldPrice').textContent='—';setStatus(`讀取失敗：${e.message}。請手動輸入售出價。`,'error');render();}
+      goldPriceData=null;$('liveGoldPrice').textContent='—';setStatus('暫時未能取得今日金價，可手動輸入售出價。','error');render();
     }finally{btn.disabled=false}
   }
-  function renderLivePrice(autoApply=false,source='live',cachedAt=''){
+  function renderLivePrice(autoApply=false){
     const price=getCurrentLivePrice(),unit=$('unit').value;
     if(isNum(price)){
       $('liveGoldPrice').textContent=`HK$ ${price.toLocaleString('zh-HK',{maximumFractionDigits:2})}`;
       const apiTime=goldPriceData?.updatedAt?`｜更新時間：${goldPriceData.updatedAt}`:'';
-      if(source==='cache') setStatus(`未能連線，現使用上次成功金價（每${unit}）${cachedAt?`｜儲存時間：${new Date(cachedAt).toLocaleString('zh-HK')}`:''}`,'warn');
-      else setStatus(`已同步今日飾金售出價（每${unit}）${apiTime}`,'ok');
+      setStatus(`已同步今日飾金售出價（每${unit}）${apiTime}`,'ok');
       if(autoApply||!$('sellPrice').value) $('sellPrice').value=price.toFixed(2).replace(/\.00$/,'');
     }else{$('liveGoldPrice').textContent='—';setStatus('暫未取得此單位的可用金價。','error')}
     render();
@@ -125,7 +120,8 @@
   function applyLivePrice(){const p=getCurrentLivePrice();if(isNum(p)){$('sellPrice').value=p;render()}}
   function fmtMoney(n){return isNum(n)?`HK$ ${n.toLocaleString('zh-HK',{minimumFractionDigits:2,maximumFractionDigits:2})}`:'—'}
   function fmtMoneyInt(n){return isNum(n)?`HK$ ${Math.round(n).toLocaleString('zh-HK')}`:'—'}
-  function getValues(){const s=Number($('sellPrice').value),w=Number($('weight').value),l=Number($('laborFee').value);return{sellPrice:isNum(s)&&s>=0?s:NaN,weight:isNum(w)&&w>=0?w:NaN,labor:isNum(l)&&l>=0?l:NaN}}
+  function validInputNumber(value){if(String(value).trim()==='')return null;const n=Number(value);return isNum(n)?n:null}
+  function getValues(){const s=validInputNumber($('sellPrice').value),w=validInputNumber($('weight').value),l=validInputNumber($('laborFee').value);return{sellPrice:s!==null&&s>0?s:NaN,weight:w!==null&&w>0?w:NaN,labor:l!==null&&l>=0?l:NaN}}
   function renderEmpty(){['goldAmount','laborAmount','regularAmount'].forEach(id=>$(id).textContent='—');$('resultsBody').innerHTML=scenarios.map((s,i)=>`<tr><td class="rank">${i+1}</td><td class="scenarioName">${s[0]}</td><td class="formula">${s[1]}</td><td class="amount">—</td><td class="rounded">—</td></tr>`).join('');$('copyText').textContent='請先輸入資料，系統會自動生成可複製內容。'}
   function render(){
     const {sellPrice,weight,labor}=getValues();if(!(sellPrice>0&&weight>0&&isNum(labor))){renderEmpty();return}
@@ -136,9 +132,10 @@
   }
   async function copyResult(){const text=$('copyText').textContent.trim();if(!text||text.includes('請先輸入資料'))return;try{await navigator.clipboard.writeText(text);$('copyBtn').textContent='已複製';setTimeout(()=>$('copyBtn').textContent='複製摘要',1200)}catch(e){alert('未能自動複製，請手動複製下方內容。')}}
   function resetAll(){$('unit').value='両';$('weight').value='';$('laborFee').value='';$('sellPrice').value=getCurrentLivePrice()??'';renderLivePrice(false)}
-  ['unit','weight','sellPrice','laborFee'].forEach(id=>{$(id).addEventListener('input',render);$(id).addEventListener('change',()=>{if(id==='unit')renderLivePrice(false);render()})});
+  ['weight','sellPrice','laborFee'].forEach(id=>$(id).addEventListener('input',render));
+  $('unit').addEventListener('change',()=>{const price=getCurrentLivePrice();if(isNum(price))$('sellPrice').value=price;renderLivePrice(false);render()});
   $('refreshPriceBtn').addEventListener('click',fetchGoldPrice);$('applyPriceBtn').addEventListener('click',applyLivePrice);$('copyBtn').addEventListener('click',copyResult);$('resetBtn').addEventListener('click',resetAll);
-  const cached=loadCache();if(cached){goldPriceData=cached.data;renderLivePrice(true,'cache',cached.savedAt)}else renderEmpty();fetchGoldPrice();setInterval(fetchGoldPrice,AUTO_REFRESH_MS);
+  renderEmpty();fetchGoldPrice();setInterval(fetchGoldPrice,AUTO_REFRESH_MS);
 </script>
 <footer style="max-width:1180px;margin:18px auto 0;padding:14px 4px;color:#554a51;font-size:12px;text-align:center;">
   以上數據只作參考，一切以金星系統數據為準。

@@ -84,7 +84,7 @@
       `模號：${modelNo || '-'}`,
       `金重：${weight.toLocaleString('zh-HK', { maximumFractionDigits: 3 })} 克`,
       `工費／標價：${formatMoney(fee)}`,
-      `使用售出價：${formatMoney(sellPrice)} / ${unitLabel}`,
+      `使用售出價：${formatMoney(sellPrice)}／${unitLabel}`,
       '',
       ...quotes.map(({ label, amount }) => `${label}：${formatMoney(amount)}`),
       '',
@@ -318,7 +318,8 @@
       elements.livePrice.textContent = '—';
       return;
     }
-    elements.livePrice.textContent = formatMoney(price);
+    const unitLabel = elements.priceUnit.value === 'gram' ? '克' : '両';
+    elements.livePrice.textContent = `${formatMoney(price)}／${unitLabel}`;
     elements.priceTime.textContent = livePrice.date || '未提供';
     if (apply || !positivePrice(elements.sellPrice.value)) elements.sellPrice.value = price.toFixed(2);
     render();

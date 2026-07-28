@@ -103,14 +103,14 @@
       let json;try{json=JSON.parse(text)}catch(e){throw new Error('API 回傳內容不是有效 JSON')}
       goldPriceData=normalisePricePayload(json);renderLivePrice(true);
     }catch(e){
-      console.error('Gold price error:',e);
+      console.warn('未能讀取金價，已保留手動輸入功能。');
       goldPriceData=null;$('liveGoldPrice').textContent='—';setStatus('暫時未能取得今日金價，可手動輸入售出價。','error');render();
     }finally{btn.disabled=false}
   }
   function renderLivePrice(autoApply=false){
     const price=getCurrentLivePrice(),unit=$('unit').value;
     if(isNum(price)){
-      $('liveGoldPrice').textContent=`HK$ ${price.toLocaleString('zh-HK',{maximumFractionDigits:2})}`;
+      $('liveGoldPrice').textContent=`HK$ ${price.toLocaleString('zh-HK',{maximumFractionDigits:2})}／${unit}`;
       const apiTime=goldPriceData?.updatedAt?`｜更新時間：${goldPriceData.updatedAt}`:'';
       setStatus(`已同步今日飾金售出價（每${unit}）${apiTime}`,'ok');
       if(autoApply||!$('sellPrice').value) $('sellPrice').value=price.toFixed(2).replace(/\.00$/,'');
@@ -128,7 +128,7 @@
     const gold=sellPrice*weight,regular=gold+labor;
     $('goldAmount').textContent=fmtMoney(gold);$('laborAmount').textContent=fmtMoney(labor);$('regularAmount').textContent=fmtMoney(regular);
     $('resultsBody').innerHTML=scenarios.map((s,i)=>{const total=s[2](gold,labor);return `<tr><td class="rank">${i+1}</td><td class="scenarioName">${s[0]}</td><td class="formula">${s[1]}</td><td class="amount">${fmtMoney(total)}</td><td class="rounded">${fmtMoneyInt(total)}</td></tr>`}).join('');
-    const unit=$('unit').value;$('copyText').textContent=['飾金折扣情景計算結果',`- 今日售出價：HK$ ${sellPrice.toLocaleString('zh-HK')} / 每${unit}`,`- 金重：${weight.toLocaleString('zh-HK',{maximumFractionDigits:3})} ${unit}`,`- 工費：${fmtMoney(labor)}`,`- 金價金額：${fmtMoney(gold)}`,'',...scenarios.map(s=>{const total=s[2](gold,labor);return `【${s[0]}】${fmtMoney(total)}（取整：${fmtMoneyInt(total)}）`}), '', '以上數據只作參考，一切以金星系統數據為準。'].join('\n');
+    const unit=$('unit').value;$('copyText').textContent=['飾金折扣情景計算結果',`- 今日售出價：HK$ ${sellPrice.toLocaleString('zh-HK')}／${unit}`,`- 金重：${weight.toLocaleString('zh-HK',{maximumFractionDigits:3})} ${unit}`,`- 工費：${fmtMoney(labor)}`,`- 金價金額：${fmtMoney(gold)}`,'',...scenarios.map(s=>{const total=s[2](gold,labor);return `【${s[0]}】${fmtMoney(total)}（取整：${fmtMoneyInt(total)}）`}), '', '以上數據只作參考，一切以金星系統數據為準。'].join('\n');
   }
   async function copyResult(){const text=$('copyText').textContent.trim();if(!text||text.includes('請先輸入資料'))return;try{await navigator.clipboard.writeText(text);$('copyBtn').textContent='已複製';setTimeout(()=>$('copyBtn').textContent='複製摘要',1200)}catch(e){alert('未能自動複製，請手動複製下方內容。')}}
   function resetAll(){$('unit').value='克';$('weight').value='';$('laborFee').value='';$('sellPrice').value=getCurrentLivePrice()??'';renderLivePrice(false)}

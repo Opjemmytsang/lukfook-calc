@@ -44,6 +44,8 @@ const summary = createSummary({
   rawQr: 'MUST_NOT_APPEAR'
 });
 assert.match(summary, /^六福珠寶智能報價 DEMO/);
+assert.match(summary, /金重：10 克/);
+assert.match(summary, /使用售出價：HK\$ 800\.00／克/);
 assert.match(summary, /正價：HK\$ 9,000\.00/);
 assert.match(summary, /以上數據只作參考，一切以金星系統數據為準。$/);
 assert.ok(!summary.includes('MUST_NOT_APPEAR'));

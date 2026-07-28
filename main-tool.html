@@ -646,7 +646,7 @@
       </div>
 
       <div>
-        <label>單價（每両/每克）</label>
+        <label>單價（每克／每両）</label>
         <input id="price" type="number" step="0.01" inputmode="decimal" placeholder="例如：23500（可手動輸入）" />
 
         <div class="pricePanel">
@@ -968,9 +968,9 @@
     $("gpBuy").textContent = buy;
     $("gpTrade").textContent = trade;
 
-    $("gpSellSub").textContent = `（${u}）`;
-    $("gpBuySub").textContent  = `（${u}）`;
-    $("gpTradeSub").textContent= `（${u}）`;
+    $("gpSellSub").textContent = `／${u}`;
+    $("gpBuySub").textContent  = `／${u}`;
+    $("gpTradeSub").textContent= `／${u}`;
 
     refreshPurposeHighlight();
   }
@@ -1011,7 +1011,7 @@
 
       hint.textContent = auto ? "金價已完成更新。" : "金價已更新，可按「引用」帶入單價。";
     }catch(e){
-      console.error(e);
+      console.warn("未能讀取金價，已保留手動輸入功能。");
       renderGoldTime();
       $("gpSell").textContent = "—";
       $("gpBuy").textContent = "—";
@@ -1429,7 +1429,7 @@
       }
 
       lines.push(`- 重量：${res.weight} ${res.unit}`);
-      lines.push(`- 單價：${res.currency} ${Number(res.price).toLocaleString("zh-HK")}`);
+      lines.push(`- 單價：${res.currency} ${Number(res.price).toLocaleString("zh-HK")}／${res.unit}`);
       lines.push(`- ${res.amountLabelShort}（取整）：${fmtMoneyInt(res.netRounded, res.currency)}`);
 
       try{

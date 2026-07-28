@@ -60,7 +60,7 @@ function createHarness({ userAgent = 'Desktop Browser', platform = 'Linux', touc
   });
   assert.equal(ios.button.hidden, false);
   await ios.buttonListeners.click();
-  assert.equal(ios.status.textContent, '請按 Safari 下方的分享按鈕，再選擇『加入主畫面』。');
+  assert.equal(ios.status.textContent, '請按 Safari 的分享按鈕，再選擇『加入主畫面』。');
 
   const android = createHarness({ userAgent: 'Mozilla/5.0 (Linux; Android 14) Chrome/126 Mobile Safari/537.36' });
   let prompted = false;

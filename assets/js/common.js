@@ -64,7 +64,7 @@
     }
 
     if (isIOSSafari()) {
-      showInstallMessage('請按 Safari 下方的分享按鈕，再選擇『加入主畫面』。');
+      showInstallMessage('請按 Safari 的分享按鈕，再選擇『加入主畫面』。');
       return;
     }
 

@@ -16,9 +16,11 @@
 
 ```sh
 node tests/smart-quote.test.js
+node tests/static-audit.js
+node tests/service-worker.test.js
 ```
 
-測試涵蓋 QR 欄位驗證、每克及每両換算、四個報價公式及金價欄位兼容。
+測試涵蓋 QR 欄位驗證、摘要隱藏資料、每克及每両換算、四個報價公式、金價欄位兼容及 service worker 快取策略。
 
 ## 注意
 

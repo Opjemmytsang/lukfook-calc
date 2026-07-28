@@ -1,0 +1,19 @@
+{
+  "name": "六福珠寶智能營運工具",
+  "short_name": "Smart OPS",
+  "description": "六福珠寶智能報價及營運計算工具",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f8f4ef",
+  "theme_color": "#7C2855",
+  "lang": "zh-HK",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

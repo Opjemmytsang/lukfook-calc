@@ -1,16 +1,18 @@
 {
-  "name": "六福珠寶智能營運工具",
-  "short_name": "Smart OPS",
-  "description": "六福珠寶智能報價及營運計算工具",
+  "id": "./",
+  "name": "六福珠寶智能報價工具 DEMO",
+  "short_name": "報價工具 DEMO",
+  "description": "六福珠寶智能報價及計價工具測試版",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f8f4ef",
+  "orientation": "any",
+  "background_color": "#FBF8F4",
   "theme_color": "#7C2855",
   "lang": "zh-HK",
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "./icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

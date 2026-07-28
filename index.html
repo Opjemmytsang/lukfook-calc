@@ -1,33 +1,64 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-HK">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#7C2855">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Smart OPS">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <title>六福珠寶智能營運工具</title>
-  <style>
-    :root{--wine:#7C2855;--wine-dark:#5d183f;--gold:#BC975A;--bg:#f8f4ef;--card:#fff;--text:#24201d;--muted:#736b64;--border:rgba(188,151,90,.36);--shadow:0 18px 42px rgba(44,20,28,.09)}
-    *{box-sizing:border-box}body{margin:0;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang HK","Microsoft JhengHei",sans-serif;color:var(--text);background:linear-gradient(180deg,#fff,var(--bg));min-height:100vh}.wrap{max-width:1120px;margin:0 auto}.hero{padding:28px;border:1px solid var(--border);border-radius:30px;background:linear-gradient(145deg,#fff,rgba(188,151,90,.09));box-shadow:var(--shadow)}.logo{width:210px;max-width:80vw;margin-bottom:14px}.eyebrow{font-size:12px;font-weight:900;letter-spacing:1.6px;color:var(--gold)}h1{margin:7px 0 10px;color:var(--wine);font-size:32px}.sub{max-width:900px;color:var(--muted);font-size:14px;line-height:1.8}.chips{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.chip{padding:7px 11px;border:1px solid var(--border);border-radius:999px;background:rgba(188,151,90,.11);color:var(--wine);font-size:12px;font-weight:800}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}@media(max-width:760px){.grid{grid-template-columns:1fr}h1{font-size:27px}}.card{display:flex;flex-direction:column;min-height:285px;padding:21px;border:1px solid var(--border);border-radius:24px;background:var(--card);box-shadow:0 10px 25px rgba(44,20,28,.06)}.num{font-size:11px;font-weight:900;letter-spacing:.8px;color:var(--gold)}.title{margin:8px 0;color:var(--wine);font-size:22px;font-weight:900}.desc{color:var(--muted);font-size:14px;line-height:1.7}.list{padding:0;margin:14px 0 18px;list-style:none;display:grid;gap:8px}.list li{padding:9px 11px;border:1px solid rgba(0,0,0,.06);border-radius:13px;background:#fff;font-size:13px}.actions{margin-top:auto}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:45px;padding:11px 16px;border-radius:15px;background:linear-gradient(135deg,var(--wine),var(--wine-dark));color:#fff;text-decoration:none;font-size:14px;font-weight:900}.new{display:inline-block;margin-left:7px;padding:4px 8px;border-radius:999px;background:rgba(124,40,85,.1);font-size:10px}.foot{margin-top:18px;padding:14px 16px;border:1px dashed var(--border);border-radius:18px;color:var(--muted);font-size:12px;line-height:1.7}
-  </style>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="報價工具 DEMO">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="stylesheet" href="./assets/css/app.css">
+  <title>六福珠寶智能報價工具 DEMO</title>
 </head>
 <body>
-  <main class="wrap"><section class="hero">
-    <img class="logo" src="logo.png" alt="六福珠寶 LUKFOOK JEWELLERY" onerror="this.style.display='none'">
-    <div class="eyebrow">LUKFOOK SMART OPS</div><h1>六福珠寶智能營運工具</h1>
-    <div class="sub">集中使用智能報價、QR 貨品資料讀取、貴金屬計算、飾金折扣情景及利潤推算。可在手機瀏覽器加入主畫面，以接近 App 的方式使用。</div>
-    <div class="chips"><span class="chip">PWA 網頁 App</span><span class="chip">手機／iPad／電腦</span><span class="chip">營運工具統一入口</span></div>
-    <div class="grid">
-      <article class="card"><div class="num">TOOL 01 <span class="new">NEW</span></div><div class="title">智能報價</div><div class="desc">掃描貨品 QR Code，自動拆分貨品資料並填入報價欄位，再同步今日飾金售出價。</div><ul class="list"><li>讀取貨號、模號、金重及款式碼</li><li>讀取供應商代碼、編入日期及工費／標價</li><li>即時比較原價、半工、免工及 95 折方案</li></ul><div class="actions"><a class="btn" href="smart-quote.html">開始智能報價</a></div></article>
-      <article class="card"><div class="num">TOOL 02</div><div class="title">貴金屬回收／兌換／賣出</div><div class="desc">原有日常營運主工具，支援賣出、買入、兌換及不同展示模式。</div><ul class="list"><li>飾金／添富金／金粒金條／鉑金</li><li>內部版面及對客展示版面</li><li>原有功能完整保留</li></ul><div class="actions"><a class="btn" href="main-tool.html">進入主版系統</a></div></article>
-      <article class="card"><div class="num">TOOL 03</div><div class="title">飾金折扣情景計算器</div><div class="desc">手動輸入金重及工費，集中檢視不同折扣方案下的金額結果。</div><ul class="list"><li>同步今日飾金售出價</li><li>集中比較多個折扣情景</li><li>一鍵複製摘要</li></ul><div class="actions"><a class="btn" href="discount-scenarios.html">進入情景分析</a></div></article>
-      <article class="card"><div class="num">TOOL 04</div><div class="title">利潤推算器 v1</div><div class="desc">輸入金重、金價、單據金額、工費及成本，推算毛利、毛利率及佣金。</div><ul class="list"><li>支援両／克換算</li><li>估算免工後利潤影響</li><li>摘要複製及風險提示</li></ul><div class="actions"><a class="btn" href="profit-estimator-v1.html">進入利潤推算器</a></div></article>
-    </div>
-    <div class="foot"><strong>安裝方法：</strong>iPhone 使用 Safari 開啟後按「分享」→「加入主畫面」；Android 使用 Chrome 選單內的「安裝應用程式」。以上資料只供參考。</div>
-  </section></main>
-  <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.error));}</script>
+  <main class="site-shell">
+    <header class="home-hero">
+      <img class="brand-logo" src="./logo.png" alt="六福珠寶 LUKFOOK JEWELLERY">
+      <p class="eyebrow">LUKFOOK SMART QUOTE DEMO</p>
+      <div class="title-line">
+        <h1>六福珠寶智能報價工具</h1>
+        <span class="demo-badge">DEMO</span>
+      </div>
+      <p class="intro">集中使用智能報價、貴金屬計價、折扣情景及利潤推算工具。</p>
+      <button class="button button-secondary install-button" id="installButton" type="button" hidden>安裝至主畫面</button>
+    </header>
+
+    <section class="tool-grid" aria-label="計價工具">
+      <article class="tool-card">
+        <span class="tool-index">01</span>
+        <h2>智能報價</h2>
+        <p>掃描或上傳貨品 QR Code，讀取貨品資料及計算四個報價方案。</p>
+        <a class="button button-primary" href="./smart-quote.html">智能報價</a>
+      </article>
+      <article class="tool-card">
+        <span class="tool-index">02</span>
+        <h2>貴金屬計價工具</h2>
+        <p>原有貴金屬回收、兌換及賣出計算功能。</p>
+        <a class="button button-primary" href="./main-tool.html">貴金屬計價</a>
+      </article>
+      <article class="tool-card">
+        <span class="tool-index">03</span>
+        <h2>飾金折扣情景計算</h2>
+        <p>輸入金重及工費，檢視現有折扣情景計算結果。</p>
+        <a class="button button-primary" href="./discount-scenarios.html">折扣情景計算</a>
+      </article>
+      <article class="tool-card">
+        <span class="tool-index">04</span>
+        <h2>利潤推算器</h2>
+        <p>保留原有貨品成本及利潤推算功能。</p>
+        <a class="button button-primary" href="./profit-estimator-v1.html">利潤推算</a>
+      </article>
+    </section>
+
+    <aside class="install-note">
+      <strong>加入主畫面</strong>
+      <span>iPhone：使用 Safari 的「分享」選單。Android：使用 Chrome 的「安裝應用程式」。</span>
+    </aside>
+    <footer class="site-disclaimer">以上數據只作參考，一切以金星系統數據為準。</footer>
+  </main>
+  <script src="./assets/js/common.js" defer></script>
 </body>
 </html>

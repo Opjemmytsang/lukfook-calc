@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lukfook-smart-quote-demo-v2';
+const CACHE_NAME = 'lukfook-smart-quote-demo-v3';
 const APP_SHELL = [
   './',
   './index.html',
@@ -69,5 +69,5 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(cacheFirst(event.request));
+  event.respondWith(networkFirst(event.request).catch(() => caches.match(event.request)));
 });

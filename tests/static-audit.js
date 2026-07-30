@@ -39,6 +39,12 @@ assert.equal((smartJs.match(/DOMContentLoaded/g) || []).length, 1, 'smart quote 
 assert.ok(!smartHtml.includes('capture='), 'image upload must not force the camera');
 assert.match(smartHtml, /id="qrFile" type="file" accept="image\/\*"/, 'image upload input is invalid');
 assert.match(smartHtml, /id="stopButton"/, 'stop scanning control is missing');
+assert.match(smartHtml, /id="marketGroup"/, 'market selector is missing');
+assert.match(smartHtml, /id="overseasRegion"/, 'overseas region selector is missing');
+assert.match(smartHtml, /id="overseasStore"/, 'overseas store selector is missing');
+assert.match(smartHtml, /id="adjustedLaborFee" type="number"/, 'adjusted overseas fee must be a number input');
+assert.match(smartHtml, /src="\.\/assets\/js\/region-config\.js"/, 'central region configuration is not loaded');
+assert.match(smartHtml, /src="\.\/assets\/js\/overseas-quote\.js"/, 'overseas quote module is not loaded');
 assert.match(smartHtml, /<option value="gram">每克<\/option><option value="tael">每両<\/option>/, 'smart quote must default to grams');
 assert.equal((indexHtml.match(/class="tool-card"/g) || []).length, 3, 'home page must show exactly three tools');
 assert.ok(!indexHtml.includes('profit-estimator-v1.html'), 'profit estimator must be hidden from the home page');
@@ -70,7 +76,9 @@ for (const icon of manifest.icons) {
 }
 
 const serviceWorker = read('service-worker.js');
-assert.match(serviceWorker, /lukfook-smart-quote-demo-v5/, 'service worker cache version was not updated');
+assert.match(serviceWorker, /lukfook-smart-quote-demo-v6/, 'service worker cache version was not updated');
+assert.match(serviceWorker, /\.\/assets\/js\/region-config\.js/, 'region configuration is missing from the app shell');
+assert.match(serviceWorker, /\.\/assets\/js\/overseas-quote\.js/, 'overseas quote module is missing from the app shell');
 assert.ok(!serviceWorker.includes("'./logo.png'"), 'service worker still pre-caches the removed page logo');
 assert.match(serviceWorker, /url\.hostname === 'lukfook-goldprice-proxy\.arwing28\.workers\.dev'[\s\S]*cache: 'no-store'/, 'gold price API must use no-store');
 const apiFetchBlock = serviceWorker.match(/if \(url\.hostname === 'lukfook-goldprice-proxy\.arwing28\.workers\.dev'\) \{([\s\S]*?)\n  \}/)?.[1] || '';

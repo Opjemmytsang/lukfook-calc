@@ -12,6 +12,7 @@ assert.equal(Object.hasOwn(parsed, 'hidden'), false);
 assert.throws(() => parseQrPayload('A/B/1/C/D/E'), /資料不完整/);
 assert.throws(() => parseQrPayload('A/B/abc/C/D/E/100'), /金重/);
 assert.throws(() => parseQrPayload('A/B/1/C/D/E/abc'), /工費／標價/);
+assert.equal(parseQrPayload('A/B/1/C/D/E/').fee, null);
 assert.throws(() => parseQrPayload(`A/B/1/C/D/E/1/${'X'.repeat(4096)}`), /資料不完整/);
 assert.equal(parseQrPayload('ITEM\nINJECT/MODEL\t9/1/C/D/E/100').itemNo, 'ITEM INJECT');
 assert.equal(parseQrPayload('ITEM\nINJECT/MODEL\t9/1/C/D/E/100').modelNo, 'MODEL 9');

@@ -70,8 +70,13 @@
                 <input id="overseasCurrency" type="text" readonly>
               </div>
               <div class="field">
-                <label>稅率</label>
-                <div class="readonly-box" id="overseasTaxDetails">請先選擇海外店舖。</div>
+                <label for="goldstarPrice" id="goldstarPriceLabel">金星電視價錢</label>
+                <input id="goldstarPrice" type="number" inputmode="decimal" min="0" step="0.01">
+                <small class="multilingual-hint">
+                  請參考當地金星電視價錢<br>
+                  请参考当地金星电视价钱<br>
+                  Please refer to the local Goldstar display price.
+                </small>
               </div>
             </div>
             <p class="status" id="overseasStatus" role="status">請先選擇海外店舖。</p>
@@ -87,16 +92,41 @@
             <div class="field" id="domesticFeeField"><label for="laborFee">工費／標價（HK$）</label><input id="laborFee" type="number" inputmode="decimal" min="0" step="0.01"></div>
             <div class="field" id="originalFeeField" hidden>
               <label for="originalLaborFee">原工費</label>
-              <input id="originalLaborFee" type="text" value="未有資料" readonly>
+              <input id="originalLaborFee" type="number" inputmode="decimal" min="0" step="0.01" placeholder="未有資料">
             </div>
-            <div class="field" id="adjustedFeeField" hidden>
-              <label for="adjustedLaborFee">調整後工費</label>
-              <input id="adjustedLaborFee" type="number" inputmode="decimal" min="0" step="0.01">
-              <small>可按實際情況調整工費，報價會自動更新。</small>
+            <div class="field" id="feeDiscountField" hidden>
+              <label for="feeDiscount">工費折扣（%）</label>
+              <input id="feeDiscount" type="number" inputmode="decimal" min="0" max="100" step="0.01" value="100">
+            </div>
+            <div class="field" id="feeAdjustmentField" hidden>
+              <label for="feeAdjustment" id="feeAdjustmentLabel">額外加減金額</label>
+              <input id="feeAdjustment" type="number" inputmode="decimal" step="0.01" value="0">
+              <small>正數代表增加，負數代表扣減。</small>
+            </div>
+            <div class="field checkbox-field" id="manualFeeField" hidden>
+              <label for="manualFeeOverride">
+                <input id="manualFeeOverride" type="checkbox">
+                手動調整最後實收工費
+              </label>
+            </div>
+            <div class="field" id="finalFeeField" hidden>
+              <label for="finalLaborFee">最後實收工費</label>
+              <input id="finalLaborFee" type="number" inputmode="decimal" min="0" step="0.01" readonly>
+              <small id="manualFeeStatus">按工費折扣及額外加減金額自動計算。</small>
+            </div>
+            <div class="field" id="overseasTaxField" hidden>
+              <label>稅項及總稅率</label>
+              <div class="readonly-box" id="overseasTaxDetails">請先選擇海外店舖。</div>
             </div>
           </div>
+          <p class="field-error" id="negativeFeeWarning" role="alert" hidden>最後實收工費不可低於 0。</p>
           <p class="field-error" id="feeError" role="alert" hidden></p>
           <p class="field-error" id="itemError" role="alert" hidden></p>
+          <div class="authorization-warning" id="authorizationWarning" role="status" hidden>
+            <strong>開單時需要當值主管授權</strong>
+            <span>开单时需要当值主管授权</span>
+            <span>Duty manager authorization is required when issuing the sales order.</span>
+          </div>
         </section>
 
         <section class="panel" id="priceSection">
@@ -123,11 +153,16 @@
           <div class="result-grid" id="results" aria-live="polite"></div>
           <details class="calculation-details">
             <summary>顯示／隱藏計算方式</summary>
-            <ul>
+            <ul id="domesticCalculationDetails">
               <li>正價：金價金額 + 工費／標價</li>
               <li>半工：金價金額 + 工費／標價 × 50%</li>
               <li>免工：金價金額</li>
               <li>全單 95 折：（金價金額 + 工費／標價）× 95%</li>
+            </ul>
+            <ul id="overseasCalculationDetails" hidden>
+              <li>正價：金星電視價錢 + 最後實收工費</li>
+              <li>全單 95 折：（金星電視價錢 + 最後實收工費）× 95%</li>
+              <li>各方案按店舖總稅率計算一次稅項。</li>
             </ul>
           </details>
           <p class="result-disclaimer">以上數據只作參考，一切以金星系統數據為準。</p>

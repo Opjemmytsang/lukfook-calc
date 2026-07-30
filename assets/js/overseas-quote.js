@@ -6,11 +6,19 @@
     : window.LukfookRegionConfig;
 
   const DISCLAIMER = '以上數據只作參考，一切以金星系統數據為準。';
+  const AUTHORIZATION_LINES = Object.freeze([
+    '開單時需要當值主管授權',
+    '开单时需要当值主管授权',
+    'Duty manager authorization is required when issuing the sales order.'
+  ]);
+  const GOLDSTAR_REQUIRED_MESSAGE = [
+    '請輸入當地金星電視價錢。',
+    '请输入当地金星电视价钱。',
+    'Please enter the local Goldstar display price.'
+  ].join('\n');
   const SCENARIOS = Object.freeze([
-    { key: 'regular', label: '正價', feeFactor: 1, preTax: (gold, fee) => gold + fee },
-    { key: 'halfFee', label: '半工', feeFactor: 0.5, preTax: (gold, fee) => gold + fee * 0.5 },
-    { key: 'noFee', label: '免工', feeFactor: 0, preTax: (gold) => gold },
-    { key: 'full95', label: '全單 95 折', feeFactor: 1, preTax: (gold, fee) => (gold + fee) * 0.95 }
+    { key: 'regular', label: '正價', preTax: (baseAmount) => baseAmount },
+    { key: 'full95', label: '全單 95 折', preTax: (baseAmount) => baseAmount * 0.95 }
   ]);
 
   function numberValue(value) {
@@ -21,42 +29,93 @@
 
   function feeStateFromQr(fee) {
     const parsed = numberValue(fee);
-    if (parsed === null || parsed < 0) return { originalFee: null, adjustedFee: '' };
-    return { originalFee: parsed, adjustedFee: String(parsed) };
+    return {
+      originalFee: parsed !== null && parsed >= 0 ? parsed : null,
+      discountPercent: '100',
+      adjustmentAmount: '0',
+      manualOverride: false,
+      manualFee: ''
+    };
   }
 
-  function storeSelectionState(storeCode, adjustedFee = '') {
+  function calculateFinalFee({
+    originalFee,
+    discountPercent,
+    adjustmentAmount,
+    manualOverride = false,
+    manualFee = ''
+  }) {
+    const original = numberValue(originalFee);
+    const discount = numberValue(discountPercent);
+    const adjustment = numberValue(adjustmentAmount);
+    if (original === null || original < 0) throw new Error('請輸入有效原工費。');
+    if (discount === null || discount < 0 || discount > 100) throw new Error('工費折扣必須為 0 至 100%。');
+    if (adjustment === null) throw new Error('請輸入有效額外加減金額。');
+
+    if (manualOverride) {
+      const overriddenFee = numberValue(manualFee);
+      if (manualFee === '') throw new Error('請輸入最後實收工費。');
+      if (overriddenFee === null || overriddenFee < 0) throw new Error('請輸入有效最後實收工費。');
+      return {
+        originalFee: original,
+        discountPercent: discount,
+        adjustmentAmount: adjustment,
+        finalFee: overriddenFee,
+        manualOverride: true,
+        clampedToZero: false
+      };
+    }
+
+    const calculatedFee = original * (discount / 100) + adjustment;
+    return {
+      originalFee: original,
+      discountPercent: discount,
+      adjustmentAmount: adjustment,
+      finalFee: Math.max(0, calculatedFee),
+      manualOverride: false,
+      clampedToZero: calculatedFee < 0
+    };
+  }
+
+  function requiresAuthorization(originalFee, finalFee) {
+    const original = numberValue(originalFee);
+    const actual = numberValue(finalFee);
+    return original !== null && original > 0
+      && actual !== null && actual >= 0
+      && actual < original * 0.3;
+  }
+
+  function storeSelectionState(storeCode, feeState = feeStateFromQr(null)) {
     const store = RegionConfig.getStoreConfig(storeCode);
     return {
       store,
       currencyCode: store?.currencyCode || '',
-      sellPrice: '',
-      adjustedFee,
+      goldstarPrice: '',
+      feeState,
       quotes: null
     };
   }
 
-  function calculateOverseasQuotes({ storeCode, weightGram, sellPrice, adjustedFee }) {
+  function calculateOverseasQuotes({ storeCode, goldstarPrice, finalFee }) {
     const store = RegionConfig.getStoreConfig(storeCode);
     if (!store) throw new Error('請先選擇海外店舖。');
-    const weight = numberValue(weightGram);
-    const price = numberValue(sellPrice);
-    const fee = numberValue(adjustedFee);
-    if (weight === null || weight <= 0) throw new Error('請輸入有效金重。');
-    if (price === null || price <= 0) throw new Error('請輸入有效售出價。');
-    if (adjustedFee === '') throw new Error('請輸入工費。');
-    if (fee === null || fee < 0) throw new Error('請輸入有效工費。');
+    const displayPrice = numberValue(goldstarPrice);
+    const actualFee = numberValue(finalFee);
+    if (goldstarPrice === '') throw new Error(GOLDSTAR_REQUIRED_MESSAGE);
+    if (displayPrice === null || displayPrice < 0) throw new Error('請輸入有效金星電視價錢。');
+    if (finalFee === '') throw new Error('請輸入最後實收工費。');
+    if (actualFee === null || actualFee < 0) throw new Error('請輸入有效最後實收工費。');
 
-    const goldAmount = weight * price;
+    const discountBeforeAmount = displayPrice + actualFee;
     return SCENARIOS.map((scenario) => {
-      const appliedFee = fee * scenario.feeFactor;
-      const preTaxAmount = scenario.preTax(goldAmount, fee);
+      const preTaxAmount = scenario.preTax(discountBeforeAmount);
       const taxAmount = preTaxAmount * store.totalTaxRate;
       return {
         key: scenario.key,
         label: scenario.label,
-        goldAmount,
-        appliedFee,
+        goldstarPrice: displayPrice,
+        finalFee: actualFee,
+        discountBeforeAmount,
         preTaxAmount,
         taxRate: store.totalTaxRate,
         taxAmount,
@@ -83,50 +142,68 @@
     return `${currencyCode} ${value.toLocaleString('zh-HK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
-  function createOverseasSummary({ storeCode, itemNo, modelNo, weightGram, sellPrice, originalFee, adjustedFee, quotes }) {
+  function createOverseasSummary({
+    storeCode,
+    itemNo,
+    modelNo,
+    weightGram,
+    goldstarPrice,
+    feeCalculation,
+    quotes
+  }) {
     const store = RegionConfig.getStoreConfig(storeCode);
-    if (!store || !Array.isArray(quotes)) throw new Error('未有完整海外報價資料。');
-    const originalFeeText = originalFee === null
-      ? '未有資料'
-      : formatMoney(numberValue(originalFee), store.currencyCode);
+    if (!store || !feeCalculation || !Array.isArray(quotes)) throw new Error('未有完整海外報價資料。');
+    const currency = store.currencyCode;
+    const finalFeeSuffix = feeCalculation.manualOverride ? '（已手動調整）' : '';
+    const weight = numberValue(weightGram);
     const lines = [
       '六福珠寶智能報價 DEMO',
       '',
       '營運地區：海外地區',
       `國家／地區：${store.regionName}`,
       `店舖：${store.storeCode}`,
-      `貨幣：${store.currencyCode}`,
+      `貨幣：${currency}`,
       `貨號：${itemNo || '-'}`,
       `模號：${modelNo || '-'}`,
-      `金重：${numberValue(weightGram).toLocaleString('zh-HK', { maximumFractionDigits: 3 })} 克`,
-      `使用售出價：${formatMoney(numberValue(sellPrice), store.currencyCode)}／克`,
-      `原工費：${originalFeeText}`,
-      `調整後工費：${formatMoney(numberValue(adjustedFee), store.currencyCode)}`,
-      ''
+      `金重：${weight === null ? '-' : weight.toLocaleString('zh-HK', { maximumFractionDigits: 3 })} 克`,
+      `金星電視價錢：${formatMoney(numberValue(goldstarPrice), currency)}`,
+      `原工費：${formatMoney(feeCalculation.originalFee, currency)}`,
+      `工費折扣：${Number(feeCalculation.discountPercent).toLocaleString('zh-HK', { maximumFractionDigits: 2 })}%`,
+      `額外加減金額：${formatMoney(feeCalculation.adjustmentAmount, currency)}`,
+      `最後實收工費：${formatMoney(feeCalculation.finalFee, currency)}${finalFeeSuffix}`
     ];
 
+    taxLines(store).forEach(({ name, rate }) => lines.push(`${name}：${formatRate(rate)}`));
+    lines.push('');
     quotes.forEach((quote) => {
+      lines.push(`【${quote.label}】`);
+      if (quote.key === 'full95') {
+        lines.push(`95 折稅前金額：${formatMoney(quote.preTaxAmount, currency)}`);
+      } else {
+        lines.push(`稅前金額：${formatMoney(quote.preTaxAmount, currency)}`);
+      }
       lines.push(
-        `【${quote.label}】`,
-        `金價金額：${formatMoney(quote.goldAmount, store.currencyCode)}`,
-        `採用工費：${formatMoney(quote.appliedFee, store.currencyCode)}`,
-        `稅前金額：${formatMoney(quote.preTaxAmount, store.currencyCode)}`
-      );
-      taxLines(store).forEach(({ name, rate }) => lines.push(`${name}：${formatRate(rate)}`));
-      lines.push(
-        `稅額：${formatMoney(quote.taxAmount, store.currencyCode)}`,
-        `含稅總額：${formatMoney(quote.totalAmount, store.currencyCode)}`,
+        `稅額：${formatMoney(quote.taxAmount, currency)}`,
+        `含稅總額：${formatMoney(quote.totalAmount, currency)}`,
         ''
       );
     });
+
+    if (requiresAuthorization(feeCalculation.originalFee, feeCalculation.finalFee)) {
+      lines.push(...AUTHORIZATION_LINES, '');
+    }
     lines.push(DISCLAIMER);
     return lines.join('\n');
   }
 
   const api = {
+    AUTHORIZATION_LINES,
+    GOLDSTAR_REQUIRED_MESSAGE,
     SCENARIOS,
     numberValue,
     feeStateFromQr,
+    calculateFinalFee,
+    requiresAuthorization,
     storeSelectionState,
     calculateOverseasQuotes,
     formatRate,

@@ -24,6 +24,7 @@ for (const page of pages) {
 const indexHtml = read('index.html');
 const smartHtml = read('smart-quote.html');
 const smartJs = read('assets/js/smart-quote.js');
+const appCss = read('assets/css/app.css');
 const commonJs = read('assets/js/common.js');
 const discountHtml = read('discount-scenarios.html');
 const discountScenarioBlock = discountHtml.match(/const scenarios = \[([\s\S]*?)\n  \];/)?.[1] || '';
@@ -42,7 +43,17 @@ assert.match(smartHtml, /id="stopButton"/, 'stop scanning control is missing');
 assert.match(smartHtml, /id="marketGroup"/, 'market selector is missing');
 assert.match(smartHtml, /id="overseasRegion"/, 'overseas region selector is missing');
 assert.match(smartHtml, /id="overseasStore"/, 'overseas store selector is missing');
-assert.match(smartHtml, /id="adjustedLaborFee" type="number"/, 'adjusted overseas fee must be a number input');
+assert.match(smartHtml, /id="goldstarPrice" type="number"/, 'Goldstar display price input is missing');
+assert.match(smartHtml, /請參考當地金星電視價錢/, 'local Goldstar display price hint is missing');
+assert.match(smartHtml, /请参考当地金星电视价钱/, 'simplified Chinese Goldstar hint is missing');
+assert.match(smartHtml, /Please refer to the local Goldstar display price\./, 'English Goldstar hint is missing');
+assert.match(smartHtml, /id="feeDiscount" type="number"[^>]*min="0" max="100"/, 'overseas fee discount input is invalid');
+assert.match(smartHtml, /id="feeAdjustment" type="number"/, 'overseas fee adjustment input is missing');
+assert.match(smartHtml, /id="manualFeeOverride" type="checkbox"/, 'manual final fee override is missing');
+assert.match(smartHtml, /id="finalLaborFee" type="number"[^>]*min="0"/, 'final overseas fee input is invalid');
+assert.match(smartHtml, /id="authorizationWarning"/, 'manager authorization warning is missing');
+assert.match(smartJs, /elements\.priceSection\.hidden = overseas/, 'Hong Kong price panel must be hidden overseas');
+assert.match(appCss, /\[hidden\]\{display:none!important\}/, 'hidden overseas controls may still be rendered');
 assert.match(smartHtml, /src="\.\/assets\/js\/region-config\.js"/, 'central region configuration is not loaded');
 assert.match(smartHtml, /src="\.\/assets\/js\/overseas-quote\.js"/, 'overseas quote module is not loaded');
 assert.match(smartHtml, /<option value="gram">每克<\/option><option value="tael">每両<\/option>/, 'smart quote must default to grams');
@@ -76,7 +87,7 @@ for (const icon of manifest.icons) {
 }
 
 const serviceWorker = read('service-worker.js');
-assert.match(serviceWorker, /lukfook-smart-quote-demo-v6/, 'service worker cache version was not updated');
+assert.match(serviceWorker, /lukfook-smart-quote-demo-v7/, 'service worker cache version was not updated');
 assert.match(serviceWorker, /\.\/assets\/js\/region-config\.js/, 'region configuration is missing from the app shell');
 assert.match(serviceWorker, /\.\/assets\/js\/overseas-quote\.js/, 'overseas quote module is missing from the app shell');
 assert.ok(!serviceWorker.includes("'./logo.png'"), 'service worker still pre-caches the removed page logo');

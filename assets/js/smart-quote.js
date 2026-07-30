@@ -19,6 +19,7 @@
   let scannerStarting = false;
   let imageScanning = false;
   let livePrice = null;
+  let priceFetchController = null;
   let originalFee = null;
   let latestOverseasQuotes = null;
 
@@ -109,7 +110,8 @@
 
   function renderEmptyResults() {
     if (!elements.results) return;
-    elements.results.replaceChildren(...SCENARIOS.map(({ label }) => {
+    const scenarios = isOverseas() && OverseasQuote ? OverseasQuote.SCENARIOS : SCENARIOS;
+    elements.results.replaceChildren(...scenarios.map(({ label }) => {
       const card = document.createElement('article');
       card.className = 'result-card is-empty';
       const name = document.createElement('span');
@@ -148,9 +150,14 @@
       total.textContent = OverseasQuote.formatMoney(quote.totalAmount, currency);
       const details = document.createElement('dl');
       details.className = 'result-breakdown';
-      addBreakdownRow(details, '金價金額', OverseasQuote.formatMoney(quote.goldAmount, currency));
-      addBreakdownRow(details, '採用工費', OverseasQuote.formatMoney(quote.appliedFee, currency));
-      addBreakdownRow(details, '稅前金額', OverseasQuote.formatMoney(quote.preTaxAmount, currency));
+      if (quote.key === 'regular') {
+        addBreakdownRow(details, '金星電視價錢', OverseasQuote.formatMoney(quote.goldstarPrice, currency));
+        addBreakdownRow(details, '最後實收工費', OverseasQuote.formatMoney(quote.finalFee, currency));
+        addBreakdownRow(details, '稅前金額', OverseasQuote.formatMoney(quote.preTaxAmount, currency));
+      } else {
+        addBreakdownRow(details, '折扣前金額', OverseasQuote.formatMoney(quote.discountBeforeAmount, currency));
+        addBreakdownRow(details, '95 折稅前金額', OverseasQuote.formatMoney(quote.preTaxAmount, currency));
+      }
       const rateText = OverseasQuote.taxLines(store)
         .map(({ name: taxName, rate }) => `${taxName}：${OverseasQuote.formatRate(rate)}`)
         .join('\n');
@@ -162,18 +169,43 @@
     }));
   }
 
+  function updateAuthorizationWarning(feeCalculation = null) {
+    const required = isOverseas()
+      && feeCalculation
+      && OverseasQuote.requiresAuthorization(feeCalculation.originalFee, feeCalculation.finalFee);
+    elements.authorizationWarning.hidden = !required;
+  }
+
+  function getFeeCalculation() {
+    const feeCalculation = OverseasQuote.calculateFinalFee({
+      originalFee: elements.originalLaborFee.value,
+      discountPercent: elements.feeDiscount.value,
+      adjustmentAmount: elements.feeAdjustment.value,
+      manualOverride: elements.manualFeeOverride.checked,
+      manualFee: elements.finalLaborFee.value
+    });
+    if (!feeCalculation.manualOverride) {
+      elements.finalLaborFee.value = String(feeCalculation.finalFee);
+    }
+    elements.negativeFeeWarning.hidden = !feeCalculation.clampedToZero;
+    updateAuthorizationWarning(feeCalculation);
+    return feeCalculation;
+  }
+
   function render() {
     if (!elements.results) return;
     elements.calculationError.hidden = true;
     elements.feeError.hidden = true;
+    elements.negativeFeeWarning.hidden = true;
+    updateAuthorizationWarning();
     try {
       if (isOverseas()) {
         if (!OverseasQuote || !RegionConfig) throw new Error('海外地區設定未能載入。');
+        const feeCalculation = getFeeCalculation();
         const quotes = OverseasQuote.calculateOverseasQuotes({
           storeCode: elements.overseasStore.value,
-          weightGram: elements.weight.value,
-          sellPrice: elements.sellPrice.value,
-          adjustedFee: elements.adjustedLaborFee.value
+          goldstarPrice: elements.goldstarPrice.value,
+          finalFee: feeCalculation.finalFee
         });
         latestOverseasQuotes = quotes;
         renderOverseasResults(quotes);
@@ -252,11 +284,18 @@
     originalFee = parsed.fee;
     elements.laborFee.value = parsed.fee === null ? '' : String(parsed.fee);
     const overseasFee = OverseasQuote?.feeStateFromQr(parsed.fee)
-      || { originalFee: parsed.fee, adjustedFee: parsed.fee === null ? '' : String(parsed.fee) };
-    elements.originalLaborFee.value = overseasFee.originalFee === null
-      ? '未有資料'
-      : String(overseasFee.originalFee);
-    elements.adjustedLaborFee.value = overseasFee.adjustedFee;
+      || { originalFee: parsed.fee, discountPercent: '100', adjustmentAmount: '0' };
+    elements.originalLaborFee.value = overseasFee.originalFee === null ? '' : String(overseasFee.originalFee);
+    elements.originalLaborFee.readOnly = overseasFee.originalFee !== null;
+    elements.feeDiscount.value = overseasFee.discountPercent;
+    elements.feeAdjustment.value = overseasFee.adjustmentAmount;
+    elements.manualFeeOverride.checked = false;
+    elements.finalLaborFee.value = '';
+    elements.finalLaborFee.readOnly = true;
+    elements.goldstarPrice.value = '';
+    elements.manualFeeStatus.textContent = '按工費折扣及額外加減金額自動計算。';
+    elements.negativeFeeWarning.hidden = true;
+    updateAuthorizationWarning();
     elements.itemError.hidden = true;
     elements.feeError.hidden = true;
     setStatus(elements.scanStatus, '已讀取貨品資料。', 'ok');
@@ -403,6 +442,10 @@
   }
 
   async function fetchPrice() {
+    if (isOverseas()) return;
+    priceFetchController?.abort();
+    const controller = new AbortController();
+    priceFetchController = controller;
     setStatus(elements.priceStatus, '正在讀取今日金價。');
     elements.sourceState.textContent = '連線中';
     try {
@@ -411,7 +454,8 @@
         mode: 'cors',
         credentials: 'omit',
         cache: 'no-store',
-        headers: { Accept: 'application/json' }
+        headers: { Accept: 'application/json' },
+        signal: controller.signal
       });
       if (!response.ok) throw new Error('HTTP error');
       const payload = await response.json();
@@ -421,12 +465,15 @@
       showLivePrice({ apply: true });
       setStatus(elements.priceStatus, '今日金價已更新。', 'ok');
     } catch (error) {
+      if (error?.name === 'AbortError') return;
       livePrice = null;
       elements.livePrice.textContent = '—';
       elements.priceTime.textContent = '—';
       elements.sourceState.textContent = '手動輸入';
       setStatus(elements.priceStatus, '暫時未能取得今日金價，可手動輸入售出價。', 'error');
       render();
+    } finally {
+      if (priceFetchController === controller) priceFetchController = null;
     }
   }
 
@@ -442,21 +489,22 @@
     }));
   }
 
-  function clearOverseasResult({ preserveFee = true } = {}) {
-    elements.sellPrice.value = '';
+  function clearOverseasResult() {
+    elements.goldstarPrice.value = '';
     latestOverseasQuotes = null;
     elements.calculationError.hidden = true;
     elements.feeError.hidden = true;
-    if (!preserveFee) elements.adjustedLaborFee.value = '';
+    elements.negativeFeeWarning.hidden = true;
+    updateAuthorizationWarning();
     renderEmptyResults();
-    setStatus(elements.priceStatus, '請輸入當地每克售出價。');
   }
 
   function showStoreTax(store) {
     if (!store) {
       elements.overseasCurrency.value = '';
       elements.overseasTaxDetails.textContent = '請先選擇海外店舖。';
-      elements.sellPriceLabel.textContent = '每克售出價';
+      elements.goldstarPriceLabel.textContent = '金星電視價錢';
+      elements.feeAdjustmentLabel.textContent = '額外加減金額';
       setStatus(elements.overseasStatus, '請先選擇海外店舖。', 'warn');
       return;
     }
@@ -464,7 +512,8 @@
     elements.overseasTaxDetails.textContent = OverseasQuote.taxLines(store)
       .map(({ name, rate }) => `${name}：${OverseasQuote.formatRate(rate)}`)
       .join('\n');
-    elements.sellPriceLabel.textContent = `每克售出價（${store.currencyCode}）`;
+    elements.goldstarPriceLabel.textContent = `金星電視價錢（${store.currencyCode}）`;
+    elements.feeAdjustmentLabel.textContent = `額外加減金額（${store.currencyCode}）`;
     setStatus(elements.overseasStatus, `${store.storeCode} 稅率已更新。`, 'ok');
   }
 
@@ -486,14 +535,15 @@
     );
     elements.overseasStore.disabled = stores.length === 0;
     showStoreTax(null);
-    clearOverseasResult({ preserveFee: true });
+    clearOverseasResult();
+    render();
   }
 
   function handleStoreChange() {
     const store = RegionConfig?.getStoreConfig(elements.overseasStore.value) || null;
     showStoreTax(store);
-    clearOverseasResult({ preserveFee: true });
-    if (!store) render();
+    clearOverseasResult();
+    render();
   }
 
   function resetOverseasSelection() {
@@ -508,45 +558,72 @@
     elements.overseasControls.hidden = !overseas;
     elements.domesticFeeField.hidden = overseas;
     elements.originalFeeField.hidden = !overseas;
-    elements.adjustedFeeField.hidden = !overseas;
-    elements.livePriceSummary.hidden = overseas;
-    elements.livePriceActions.hidden = overseas;
-    elements.priceUnitField.hidden = overseas;
-    elements.priceHeading.textContent = overseas ? '當地每克售出價' : '今日金價';
+    elements.feeDiscountField.hidden = !overseas;
+    elements.feeAdjustmentField.hidden = !overseas;
+    elements.manualFeeField.hidden = !overseas;
+    elements.finalFeeField.hidden = !overseas;
+    elements.overseasTaxField.hidden = !overseas;
+    elements.priceSection.hidden = overseas;
+    elements.domesticCalculationDetails.hidden = overseas;
+    elements.overseasCalculationDetails.hidden = !overseas;
     elements.priceUnit.value = 'gram';
-    elements.sellPriceLabel.textContent = overseas ? '每克售出價' : '使用售出價（HK$）';
 
     if (overseas) {
+      priceFetchController?.abort();
       resetOverseasSelection();
       const feeState = OverseasQuote?.feeStateFromQr(originalFee)
-        || { originalFee, adjustedFee: originalFee === null ? '' : String(originalFee) };
-      elements.originalLaborFee.value = feeState.originalFee === null ? '未有資料' : String(feeState.originalFee);
-      elements.adjustedLaborFee.value = feeState.adjustedFee;
-      elements.sellPrice.value = '';
-      setStatus(elements.priceStatus, '請輸入當地每克售出價。');
+        || { originalFee, discountPercent: '100', adjustmentAmount: '0' };
+      elements.originalLaborFee.value = feeState.originalFee === null ? '' : String(feeState.originalFee);
+      elements.originalLaborFee.readOnly = feeState.originalFee !== null;
+      elements.feeDiscount.value = feeState.discountPercent;
+      elements.feeAdjustment.value = feeState.adjustmentAmount;
+      elements.manualFeeOverride.checked = false;
+      elements.finalLaborFee.value = '';
+      elements.finalLaborFee.readOnly = true;
+      elements.goldstarPrice.value = '';
+      elements.manualFeeStatus.textContent = '按工費折扣及額外加減金額自動計算。';
       render();
       return;
     }
 
-    elements.adjustedLaborFee.value = '';
+    elements.feeDiscount.value = '100';
+    elements.feeAdjustment.value = '0';
+    elements.manualFeeOverride.checked = false;
+    elements.finalLaborFee.value = '';
+    elements.finalLaborFee.readOnly = true;
+    elements.goldstarPrice.value = '';
+    elements.negativeFeeWarning.hidden = true;
+    updateAuthorizationWarning();
     resetOverseasSelection();
     latestOverseasQuotes = null;
-    showLivePrice({ apply: livePrice !== null });
-    setStatus(elements.priceStatus, livePrice ? '今日金價已更新。' : '可手動輸入售出價。');
+    if (livePrice) {
+      showLivePrice({ apply: true });
+      setStatus(elements.priceStatus, '今日金價已更新。', 'ok');
+    } else {
+      fetchPrice();
+    }
     render();
   }
 
   function clearItemData() {
     ['itemNo', 'modelNo', 'weight', 'laborFee'].forEach((id) => { elements[id].value = ''; });
     originalFee = null;
-    elements.originalLaborFee.value = '未有資料';
-    elements.adjustedLaborFee.value = '';
+    elements.originalLaborFee.value = '';
+    elements.originalLaborFee.readOnly = false;
+    elements.feeDiscount.value = '100';
+    elements.feeAdjustment.value = '0';
+    elements.manualFeeOverride.checked = false;
+    elements.finalLaborFee.value = '';
+    elements.finalLaborFee.readOnly = true;
+    elements.goldstarPrice.value = '';
+    elements.manualFeeStatus.textContent = '按工費折扣及額外加減金額自動計算。';
+    elements.negativeFeeWarning.hidden = true;
+    updateAuthorizationWarning();
     elements.itemError.hidden = true;
     elements.feeError.hidden = true;
     elements.calculationError.hidden = true;
     elements.priceUnit.value = 'gram';
     if (isOverseas()) {
-      elements.sellPrice.value = '';
       latestOverseasQuotes = null;
     } else {
       showLivePrice({ apply: livePrice !== null });
@@ -566,14 +643,14 @@
     const quotes = render();
     if (!quotes) throw new Error('未有完整報價資料。');
     if (isOverseas()) {
+      const feeCalculation = getFeeCalculation();
       return OverseasQuote.createOverseasSummary({
         storeCode: elements.overseasStore.value,
         itemNo: elements.itemNo.value,
         modelNo: elements.modelNo.value,
         weightGram: elements.weight.value,
-        sellPrice: elements.sellPrice.value,
-        originalFee,
-        adjustedFee: elements.adjustedLaborFee.value,
+        goldstarPrice: elements.goldstarPrice.value,
+        feeCalculation,
         quotes
       });
     }
@@ -615,15 +692,27 @@
     }
   }
 
+  function updateManualFeeMode() {
+    const manual = elements.manualFeeOverride.checked;
+    elements.finalLaborFee.readOnly = !manual;
+    elements.manualFeeStatus.textContent = manual
+      ? '已手動調整'
+      : '按工費折扣及額外加減金額自動計算。';
+    if (!manual) elements.finalLaborFee.value = '';
+    render();
+  }
+
   function bind() {
     ['reader', 'scanSection', 'resultSection', 'startButton', 'stopButton', 'qrFile', 'scanStatus', 'libraryStatus',
       'itemNo', 'modelNo', 'weight', 'laborFee', 'itemError', 'priceUnit', 'sellPrice', 'livePrice',
       'priceTime', 'sourceState', 'priceStatus', 'refreshPrice', 'applyPrice', 'results',
       'calculationError', 'copyButton', 'rescanButton', 'clearButton', 'actionStatus', 'marketGroup',
       'overseasControls', 'overseasRegion', 'overseasStore', 'overseasCurrency', 'overseasTaxDetails',
-      'overseasStatus', 'domesticFeeField', 'originalFeeField', 'adjustedFeeField', 'originalLaborFee',
-      'adjustedLaborFee', 'feeError', 'livePriceSummary', 'livePriceActions', 'priceUnitField',
-      'priceHeading', 'sellPriceLabel'
+      'overseasStatus', 'domesticFeeField', 'originalFeeField', 'originalLaborFee', 'feeDiscountField',
+      'feeDiscount', 'feeAdjustmentField', 'feeAdjustment', 'feeAdjustmentLabel', 'manualFeeField',
+      'manualFeeOverride', 'finalFeeField', 'finalLaborFee', 'manualFeeStatus', 'overseasTaxField',
+      'goldstarPrice', 'goldstarPriceLabel', 'negativeFeeWarning', 'authorizationWarning', 'feeError',
+      'priceSection', 'domesticCalculationDetails', 'overseasCalculationDetails'
     ].forEach((id) => { elements[id] = $(id); });
     if (Object.values(elements).some((element) => !element)) return;
 
@@ -640,7 +729,9 @@
     });
     elements.priceUnit.addEventListener('change', () => showLivePrice({ apply: livePrice !== null }));
     ['weight', 'laborFee', 'sellPrice'].forEach((id) => elements[id].addEventListener('input', render));
-    elements.adjustedLaborFee.addEventListener('input', render);
+    ['originalLaborFee', 'feeDiscount', 'feeAdjustment', 'finalLaborFee', 'goldstarPrice']
+      .forEach((id) => elements[id].addEventListener('input', render));
+    elements.manualFeeOverride.addEventListener('change', updateManualFeeMode);
     elements.marketGroup.addEventListener('change', updateMarketUI);
     elements.overseasRegion.addEventListener('change', handleRegionChange);
     elements.overseasStore.addEventListener('change', handleStoreChange);
@@ -651,7 +742,10 @@
       clearItemData();
       setStatus(elements.actionStatus, '貨品資料已清除。', 'ok');
     });
-    window.addEventListener('pagehide', () => stopScanner());
+    window.addEventListener('pagehide', () => {
+      priceFetchController?.abort();
+      stopScanner();
+    });
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') stopScanner();
     });
@@ -660,7 +754,6 @@
     updateMarketUI();
     updateScannerControls();
     renderEmptyResults();
-    fetchPrice();
   }
 
   const api = { parseQrPayload, calculateQuotes, normalisePricePayload, createSummary, GRAMS_PER_TAEL };

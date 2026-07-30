@@ -11,17 +11,19 @@
 - 正價、半工、免工及全單 95 折
 - 複製不含隱藏 QR 欄位的報價摘要
 - 核心工具頁離線開啟
+- 海外店舖稅率、工費調整及含稅報價
 
 ## 本機測試
 
 ```sh
 node tests/smart-quote.test.js
+node tests/overseas-quote.test.js
 node tests/common.test.js
 node tests/static-audit.js
 node tests/service-worker.test.js
 ```
 
-測試涵蓋安裝提示、QR 欄位驗證、摘要隱藏資料、每克及每両換算、四個報價公式、金價欄位兼容及 service worker 快取策略。
+測試涵蓋安裝提示、QR 欄位驗證、摘要隱藏資料、每克及每両換算、四個報價公式、海外店舖稅率、金價欄位兼容及 service worker 快取策略。
 
 ## 注意
 

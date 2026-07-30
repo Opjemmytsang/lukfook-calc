@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lukfook-smart-quote-demo-v5';
+const CACHE_NAME = 'lukfook-smart-quote-demo-v6';
 const APP_SHELL = [
   './',
   './index.html',
@@ -12,6 +12,8 @@ const APP_SHELL = [
   './icon-512.png',
   './assets/css/app.css',
   './assets/js/common.js',
+  './assets/js/region-config.js',
+  './assets/js/overseas-quote.js',
   './assets/js/smart-quote.js'
 ];
 

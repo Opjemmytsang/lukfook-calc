@@ -12,6 +12,8 @@
   <title>智能報價 DEMO｜六福珠寶</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
   <script src="./assets/js/common.js" defer></script>
+  <script src="./assets/js/region-config.js" defer></script>
+  <script src="./assets/js/overseas-quote.js" defer></script>
   <script src="./assets/js/smart-quote.js" defer></script>
 </head>
 <body>
@@ -42,29 +44,73 @@
       </section>
 
       <div class="quote-main">
+        <section class="panel" id="regionSection">
+          <div class="section-heading"><span>2</span><h2>營運地區</h2></div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="marketGroup">營運地區</label>
+              <select id="marketGroup">
+                <option value="hkmo">港澳地區</option>
+                <option value="overseas">海外地區</option>
+              </select>
+            </div>
+          </div>
+          <div id="overseasControls" hidden>
+            <div class="form-grid overseas-controls">
+              <div class="field">
+                <label for="overseasRegion">海外國家／地區</label>
+                <select id="overseasRegion"><option value="">請選擇</option></select>
+              </div>
+              <div class="field">
+                <label for="overseasStore">店舖</label>
+                <select id="overseasStore" disabled><option value="">請先選擇國家／地區</option></select>
+              </div>
+              <div class="field">
+                <label for="overseasCurrency">貨幣</label>
+                <input id="overseasCurrency" type="text" readonly>
+              </div>
+              <div class="field">
+                <label>稅率</label>
+                <div class="readonly-box" id="overseasTaxDetails">請先選擇海外店舖。</div>
+              </div>
+            </div>
+            <p class="status" id="overseasStatus" role="status">請先選擇海外店舖。</p>
+          </div>
+        </section>
+
         <section class="panel" id="itemSection">
-          <div class="section-heading"><span>2</span><h2>貨品資料</h2></div>
+          <div class="section-heading"><span>3</span><h2>貨品資料</h2></div>
           <div class="form-grid">
             <div class="field field-readonly"><label for="itemNo">貨號</label><input id="itemNo" type="text" autocomplete="off" readonly></div>
             <div class="field field-readonly"><label for="modelNo">模號</label><input id="modelNo" type="text" autocomplete="off" readonly></div>
             <div class="field"><label for="weight">金重（克）</label><input id="weight" type="number" inputmode="decimal" min="0" step="0.001"></div>
-            <div class="field"><label for="laborFee">工費／標價（HK$）</label><input id="laborFee" type="number" inputmode="decimal" min="0" step="0.01"></div>
+            <div class="field" id="domesticFeeField"><label for="laborFee">工費／標價（HK$）</label><input id="laborFee" type="number" inputmode="decimal" min="0" step="0.01"></div>
+            <div class="field" id="originalFeeField" hidden>
+              <label for="originalLaborFee">原工費</label>
+              <input id="originalLaborFee" type="text" value="未有資料" readonly>
+            </div>
+            <div class="field" id="adjustedFeeField" hidden>
+              <label for="adjustedLaborFee">調整後工費</label>
+              <input id="adjustedLaborFee" type="number" inputmode="decimal" min="0" step="0.01">
+              <small>可按實際情況調整工費，報價會自動更新。</small>
+            </div>
           </div>
+          <p class="field-error" id="feeError" role="alert" hidden></p>
           <p class="field-error" id="itemError" role="alert" hidden></p>
         </section>
 
-        <section class="panel">
-          <div class="section-heading"><span>3</span><h2>今日金價</h2></div>
-          <div class="price-summary">
+        <section class="panel" id="priceSection">
+          <div class="section-heading"><span>4</span><h2 id="priceHeading">今日金價</h2></div>
+          <div class="price-summary" id="livePriceSummary">
             <div><span>同步售出價</span><strong id="livePrice">—</strong></div>
             <div><span>更新時間</span><strong id="priceTime">—</strong></div>
             <div><span>資料來源</span><strong id="sourceState">連線中</strong></div>
           </div>
           <div class="form-grid price-controls">
-            <div class="field"><label for="priceUnit">金價單位</label><select id="priceUnit"><option value="gram">每克</option><option value="tael">每両</option></select></div>
-            <div class="field"><label for="sellPrice">使用售出價（HK$）</label><input id="sellPrice" type="number" inputmode="decimal" min="0" step="0.01"></div>
+            <div class="field" id="priceUnitField"><label for="priceUnit">金價單位</label><select id="priceUnit"><option value="gram">每克</option><option value="tael">每両</option></select></div>
+            <div class="field"><label for="sellPrice" id="sellPriceLabel">使用售出價（HK$）</label><input id="sellPrice" type="number" inputmode="decimal" min="0" step="0.01"></div>
           </div>
-          <div class="action-row">
+          <div class="action-row" id="livePriceActions">
             <button class="button button-secondary" id="refreshPrice" type="button">刷新金價</button>
             <button class="button button-secondary" id="applyPrice" type="button">引用同步金價</button>
           </div>
@@ -72,7 +118,7 @@
         </section>
 
         <section class="panel" id="resultSection">
-          <div class="section-heading"><span>4</span><h2>報價結果</h2></div>
+          <div class="section-heading"><span>5</span><h2>報價結果</h2></div>
           <p class="field-error" id="calculationError" role="alert" hidden></p>
           <div class="result-grid" id="results" aria-live="polite"></div>
           <details class="calculation-details">
@@ -88,7 +134,7 @@
         </section>
 
         <section class="panel">
-          <div class="section-heading"><span>5</span><h2>操作</h2></div>
+          <div class="section-heading"><span>6</span><h2>操作</h2></div>
           <div class="action-grid">
             <button class="button button-primary" id="copyButton" type="button">複製報價</button>
             <button class="button button-secondary" id="rescanButton" type="button">重新掃描</button>

@@ -84,6 +84,16 @@
   function isOverseas() {
     return elements.marketGroup?.value === 'overseas';
   }
+  function selectedDomesticScenario() {
+    const key=elements.domesticOffer?.value || 'regular';
+    return SCENARIOS.find(s=>s.key===key) || SCENARIOS[0];
+  }
+  function updateActiveOffer() {
+    if(!elements.activeOfferStatus) return;
+    if(isOverseas()){ elements.domesticOfferField.hidden=true; elements.activeOfferStatus.hidden=true; return; }
+    elements.domesticOfferField.hidden=false; elements.activeOfferStatus.hidden=false;
+    elements.activeOfferStatus.textContent='目前優惠：'+selectedDomesticScenario().label;
+  }
 
   function createSummary({ itemNo, modelNo, weight, fee, sellPrice, unit, quotes }) {
     const unitLabel = unit === 'gram' ? '克' : '両';
@@ -110,7 +120,7 @@
 
   function renderEmptyResults() {
     if (!elements.results) return;
-    const scenarios = isOverseas() && OverseasQuote ? OverseasQuote.SCENARIOS : SCENARIOS;
+    const scenarios = isOverseas() && OverseasQuote ? OverseasQuote.SCENARIOS : [selectedDomesticScenario()];
     elements.results.replaceChildren(...scenarios.map(({ label }) => {
       const card = document.createElement('article');
       card.className = 'result-card is-empty';
@@ -226,7 +236,9 @@
         sellPrice: elements.sellPrice.value,
         unit: elements.priceUnit.value
       });
-      elements.results.replaceChildren(...quotes.map(({ label, amount }) => {
+      const chosen=selectedDomesticScenario();
+      const selectedQuotes=quotes.filter(q=>q.key===chosen.key);
+      elements.results.replaceChildren(...selectedQuotes.map(({ label, amount }) => {
         const card = document.createElement('article');
         card.className = 'result-card';
         const name = document.createElement('span');
@@ -238,7 +250,8 @@
         card.append(name, value);
         return card;
       }));
-      return quotes;
+      updateActiveOffer();
+      return selectedQuotes;
     } catch (error) {
       latestOverseasQuotes = null;
       renderEmptyResults();
@@ -578,6 +591,7 @@
     elements.domesticCalculationDetails.hidden = overseas;
     elements.overseasCalculationDetails.hidden = !overseas;
     elements.priceUnit.value = 'gram';
+    updateActiveOffer();
 
     if (overseas) {
       priceFetchController?.abort();
@@ -808,7 +822,7 @@
       'feeDiscount', 'feeAdjustmentField', 'feeAdjustment', 'feeAdjustmentLabel', 'manualFeeField',
       'manualFeeOverride', 'finalFeeField', 'finalLaborFee', 'manualFeeStatus', 'overseasTaxField',
       'goldstarPrice', 'goldstarPriceLabel', 'negativeFeeWarning', 'authorizationWarning', 'feeError',
-      'priceSection', 'domesticCalculationDetails', 'overseasCalculationDetails', 'full95Field', 'full95Enabled', 'customerDisplayButton',
+      'priceSection', 'domesticCalculationDetails', 'overseasCalculationDetails', 'domesticOfferField', 'domesticOffer', 'activeOfferStatus', 'full95Field', 'full95Enabled', 'customerDisplayButton',
       'customerDisplay', 'customerExitButton', 'customerItemInfo', 'customerPriceInfo', 'customerResults'
     ].forEach((id) => { elements[id] = $(id); });
     if (Object.values(elements).some((element) => !element)) return;
@@ -849,6 +863,7 @@
       render();
     });
     elements.marketGroup.addEventListener('change', updateMarketUI);
+    elements.domesticOffer.addEventListener('change', ()=>{ updateActiveOffer(); render(); });
     elements.overseasRegion.addEventListener('change', handleRegionChange);
     elements.overseasStore.addEventListener('change', handleStoreChange);
     elements.copyButton.addEventListener('click', copySummary);
@@ -882,6 +897,7 @@
       if (document.visibilityState === 'hidden') stopScanner();
     });
     elements.priceUnit.value = 'gram';
+    updateActiveOffer();
     populateRegions();
     updateMarketUI();
     updateScannerControls();

@@ -96,7 +96,7 @@
     };
   }
 
-  function calculateOverseasQuotes({ storeCode, goldstarPrice, finalFee }) {
+  function calculateOverseasQuotes({ storeCode, goldstarPrice, finalFee, useFull95 = false }) {
     const store = RegionConfig.getStoreConfig(storeCode);
     if (!store) throw new Error('請先選擇海外店舖。');
     const displayPrice = numberValue(goldstarPrice);
@@ -107,7 +107,8 @@
     if (actualFee === null || actualFee < 0) throw new Error('請輸入有效最後實收工費。');
 
     const discountBeforeAmount = displayPrice + actualFee;
-    return SCENARIOS.map((scenario) => {
+    const scenarios = useFull95 ? SCENARIOS : SCENARIOS.filter((scenario) => scenario.key === 'regular');
+    return scenarios.map((scenario) => {
       const preTaxAmount = scenario.preTax(discountBeforeAmount);
       const taxAmount = preTaxAmount * store.totalTaxRate;
       return {

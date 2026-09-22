@@ -762,8 +762,9 @@
     elements.customerResults.replaceChildren();
     const enMap={regular:'Regular Price',halfFee:'50% Labour Charge',noFee:'No Labour Charge',full95:'5% Off Total'};
     quotes.forEach(q=>{
-      const card=document.createElement('article'); card.className='customer-result-card';
+      const card=document.createElement('article'); card.className='customer-result-card customer-price-primary';
       const label=bilingualLabel(q.label,enMap[q.key]||q.label);
+      label.classList.add('customer-final-caption');
       const amount=document.createElement('strong');
       if(isOverseas()){
         const store=RegionConfig.getStoreConfig(elements.overseasStore.value);

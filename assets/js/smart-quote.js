@@ -110,7 +110,8 @@
 
   function renderEmptyResults() {
     if (!elements.results) return;
-    const scenarios = isOverseas() && OverseasQuote ? OverseasQuote.SCENARIOS : SCENARIOS;
+    const scenarios = isOverseas() && OverseasQuote
+      ? OverseasQuote.SCENARIOS.map((scenario) => ({ ...scenario, label: scenario.key === 'regular' ? '正價' : '全單折扣' })) : SCENARIOS;
     elements.results.replaceChildren(...scenarios.map(({ label }) => {
       const card = document.createElement('article');
       card.className = 'result-card is-empty';
@@ -151,12 +152,13 @@
       const details = document.createElement('dl');
       details.className = 'result-breakdown';
       if (quote.key === 'regular') {
-        addBreakdownRow(details, '金星電視價錢', OverseasQuote.formatMoney(quote.goldstarPrice, currency));
+        addBreakdownRow(details, '每克金價', OverseasQuote.formatMoney(quote.goldstarPrice, currency));
+        addBreakdownRow(details, '金值', OverseasQuote.formatMoney(quote.goldAmount, currency));
         addBreakdownRow(details, '最後實收工費', OverseasQuote.formatMoney(quote.finalFee, currency));
         addBreakdownRow(details, '稅前金額', OverseasQuote.formatMoney(quote.preTaxAmount, currency));
       } else {
         addBreakdownRow(details, '折扣前金額', OverseasQuote.formatMoney(quote.discountBeforeAmount, currency));
-        addBreakdownRow(details, '95 折稅前金額', OverseasQuote.formatMoney(quote.preTaxAmount, currency));
+        addBreakdownRow(details, '折後稅前售價', OverseasQuote.formatMoney(quote.preTaxAmount, currency));
       }
       const rateText = OverseasQuote.taxLines(store)
         .map(({ name: taxName, rate }) => `${taxName}：${OverseasQuote.formatRate(rate)}`)
@@ -205,6 +207,8 @@
         const quotes = OverseasQuote.calculateOverseasQuotes({
           storeCode: elements.overseasStore.value,
           goldstarPrice: elements.goldstarPrice.value,
+          weightGram: elements.weight.value,
+          discountPercent: elements.orderDiscount.value,
           finalFee: feeCalculation.finalFee
         });
         latestOverseasQuotes = quotes;
@@ -292,7 +296,7 @@
     elements.manualFeeOverride.checked = false;
     elements.finalLaborFee.value = '';
     elements.finalLaborFee.readOnly = true;
-    elements.goldstarPrice.value = '';
+
     elements.manualFeeStatus.textContent = '按工費折扣及額外加減金額自動計算。';
     elements.negativeFeeWarning.hidden = true;
     updateAuthorizationWarning();
@@ -503,7 +507,7 @@
     if (!store) {
       elements.overseasCurrency.value = '';
       elements.overseasTaxDetails.textContent = '請先選擇海外店舖。';
-      elements.goldstarPriceLabel.textContent = '金星電視價錢';
+      elements.goldstarPriceLabel.textContent = '每克金價（未含稅）';
       elements.feeAdjustmentLabel.textContent = '額外加減金額';
       setStatus(elements.overseasStatus, '請先選擇海外店舖。', 'warn');
       return;
@@ -512,7 +516,7 @@
     elements.overseasTaxDetails.textContent = OverseasQuote.taxLines(store)
       .map(({ name, rate }) => `${name}：${OverseasQuote.formatRate(rate)}`)
       .join('\n');
-    elements.goldstarPriceLabel.textContent = `金星電視價錢（${store.currencyCode}）`;
+    elements.goldstarPriceLabel.textContent = `每克金價（${store.currencyCode}，未含稅）`;
     elements.feeAdjustmentLabel.textContent = `額外加減金額（${store.currencyCode}）`;
     setStatus(elements.overseasStatus, `${store.storeCode} 稅率已更新。`, 'ok');
   }
@@ -542,7 +546,9 @@
   function handleStoreChange() {
     const store = RegionConfig?.getStoreConfig(elements.overseasStore.value) || null;
     showStoreTax(store);
+    try { localStorage.setItem('lukfook-selected-store', store?.storeCode || ''); } catch (_) {}
     clearOverseasResult();
+    restoreStorePrice();
     render();
   }
 
@@ -615,7 +621,7 @@
     elements.manualFeeOverride.checked = false;
     elements.finalLaborFee.value = '';
     elements.finalLaborFee.readOnly = true;
-    elements.goldstarPrice.value = '';
+
     elements.manualFeeStatus.textContent = '按工費折扣及額外加減金額自動計算。';
     elements.negativeFeeWarning.hidden = true;
     updateAuthorizationWarning();
@@ -702,6 +708,88 @@
     render();
   }
 
+  const STORE_PRICE_KEY = 'lukfook-store-price-v1:';
+
+  function validateStorePrice(record) {
+    if (!record || !RegionConfig.getStoreConfig(record.storeCode)
+      || typeof record.price !== 'number' || !Number.isFinite(record.price) || record.price <= 0
+      || !Number.isFinite(Date.parse(record.updatedAt))
+      || Date.parse(record.updatedAt) > Date.now() + 60000) throw new Error('金價設定無效。');
+    return record;
+  }
+
+  function showStorePriceTime(record) {
+    const stale = Date.now() - Date.parse(record.updatedAt) > 24 * 60 * 60 * 1000;
+    setStatus(elements.storePriceStatus,
+      `${record.storeCode} 金價設定時間：${new Date(record.updatedAt).toLocaleString('zh-HK')}。${stale ? '已超過 24 小時，請向帳房取得新金價。' : '請核對帳房最新金價；本機不會自動同步。'}`,
+      stale ? 'warn' : '');
+  }
+
+  function saveStorePrice() {
+    try {
+      const record = validateStorePrice({ storeCode: elements.overseasStore.value,
+        price: positivePrice(elements.goldstarPrice.value), updatedAt: new Date().toISOString() });
+      localStorage.setItem(STORE_PRICE_KEY + record.storeCode, JSON.stringify(record));
+      showStorePriceTime(record);
+      return record;
+    } catch (error) {
+      setStatus(elements.storePriceStatus, '未能儲存：請選擇分行、輸入有效金價，並允許瀏覽器儲存資料。', 'error');
+      return null;
+    }
+  }
+
+  function restoreStorePrice() {
+    elements.priceShareLink.hidden = true;
+    elements.priceShareLink.value = '';
+    setStatus(elements.storePriceStatus, '未有此分行金價，請由帳房輸入或開啟帳房分享的設定連結。');
+    try {
+      const record = validateStorePrice(JSON.parse(localStorage.getItem(STORE_PRICE_KEY + elements.overseasStore.value)));
+      if (record.storeCode !== elements.overseasStore.value) return;
+      elements.goldstarPrice.value = String(record.price);
+      showStorePriceTime(record);
+    } catch (_) { /* No usable saved price. */ }
+  }
+
+  async function shareStorePrice() {
+    const record = saveStorePrice();
+    if (!record) return;
+    const url = new URL(window.location.href);
+    url.search = '';
+    url.hash = 'store-price=' + encodeURIComponent(JSON.stringify(record));
+    elements.priceShareLink.value = url.href;
+    elements.priceShareLink.hidden = false;
+    try {
+      await navigator.clipboard.writeText(url.href);
+      setStatus(elements.storePriceStatus, '已複製金價設定連結。金價更改後，請重新分享新連結。', 'ok');
+    } catch (_) {
+      setStatus(elements.storePriceStatus, '請手動複製下方金價設定連結。', 'warn');
+    }
+  }
+
+  function importStorePrice() {
+    if (!window.location.hash.startsWith('#store-price=')) return;
+    try {
+      if (window.location.hash.length > 2048) throw new Error('設定過長');
+      const record = validateStorePrice(JSON.parse(decodeURIComponent(window.location.hash.slice('#store-price='.length))));
+      const store = RegionConfig.getStoreConfig(record.storeCode);
+      const message = `套用 ${record.storeCode} 每克金價 ${store.currencyCode} ${record.price}？\n設定時間：${new Date(record.updatedAt).toLocaleString('zh-HK')}\n請確認連結由帳房提供。`;
+      if (!window.confirm(message)) return;
+      const old = JSON.parse(localStorage.getItem(STORE_PRICE_KEY + record.storeCode) || 'null');
+      if (old && Date.parse(old.updatedAt) > Date.parse(record.updatedAt)) throw new Error('此連結比本機金價舊，未有覆蓋。');
+      localStorage.setItem(STORE_PRICE_KEY + record.storeCode, JSON.stringify(record));
+      elements.marketGroup.value = 'overseas';
+      updateMarketUI();
+      elements.overseasRegion.value = store.regionCode;
+      handleRegionChange();
+      elements.overseasStore.value = store.storeCode;
+      handleStoreChange();
+    } catch (error) {
+      setStatus(elements.storePriceStatus, `未能套用金價：${error.message}`, 'error');
+    } finally {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  }
+
   function bind() {
     ['reader', 'scanSection', 'resultSection', 'startButton', 'stopButton', 'qrFile', 'scanStatus', 'libraryStatus',
       'itemNo', 'modelNo', 'weight', 'laborFee', 'itemError', 'priceUnit', 'sellPrice', 'livePrice',
@@ -712,7 +800,8 @@
       'feeDiscount', 'feeAdjustmentField', 'feeAdjustment', 'feeAdjustmentLabel', 'manualFeeField',
       'manualFeeOverride', 'finalFeeField', 'finalLaborFee', 'manualFeeStatus', 'overseasTaxField',
       'goldstarPrice', 'goldstarPriceLabel', 'negativeFeeWarning', 'authorizationWarning', 'feeError',
-      'priceSection', 'domesticCalculationDetails', 'overseasCalculationDetails'
+      'priceSection', 'domesticCalculationDetails', 'overseasCalculationDetails',
+      'orderDiscount', 'saveStorePrice', 'shareStorePrice', 'storePriceStatus', 'priceShareLink'
     ].forEach((id) => { elements[id] = $(id); });
     if (Object.values(elements).some((element) => !element)) return;
 
@@ -729,8 +818,11 @@
     });
     elements.priceUnit.addEventListener('change', () => showLivePrice({ apply: livePrice !== null }));
     ['weight', 'laborFee', 'sellPrice'].forEach((id) => elements[id].addEventListener('input', render));
-    ['originalLaborFee', 'feeDiscount', 'feeAdjustment', 'finalLaborFee', 'goldstarPrice']
+    ['originalLaborFee', 'feeDiscount', 'feeAdjustment', 'finalLaborFee', 'goldstarPrice', 'orderDiscount']
       .forEach((id) => elements[id].addEventListener('input', render));
+    elements.saveStorePrice.addEventListener('click', saveStorePrice);
+    elements.shareStorePrice.addEventListener('click', shareStorePrice);
+    elements.goldstarPrice.addEventListener('input', () => setStatus(elements.storePriceStatus, '金價已手動修改，尚未儲存或分享。', 'warn'));
     elements.manualFeeOverride.addEventListener('change', updateManualFeeMode);
     elements.marketGroup.addEventListener('change', updateMarketUI);
     elements.overseasRegion.addEventListener('change', handleRegionChange);
@@ -752,8 +844,18 @@
     elements.priceUnit.value = 'gram';
     populateRegions();
     updateMarketUI();
+    try {
+      const remembered = RegionConfig.getStoreConfig(localStorage.getItem('lukfook-selected-store'));
+      if (remembered) {
+        elements.overseasRegion.value = remembered.regionCode;
+        handleRegionChange();
+        elements.overseasStore.value = remembered.storeCode;
+        handleStoreChange();
+      }
+    } catch (_) {}
+    importStorePrice();
     updateScannerControls();
-    renderEmptyResults();
+    render();
   }
 
   const api = { parseQrPayload, calculateQuotes, normalisePricePayload, createSummary, GRAMS_PER_TAEL };

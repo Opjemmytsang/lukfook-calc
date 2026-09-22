@@ -51,7 +51,7 @@
               <label for="marketGroup">營運地區</label>
               <select id="marketGroup">
                 <option value="hkmo">港澳地區</option>
-                <option value="overseas">海外地區</option>
+                <option value="overseas" selected>海外地區</option>
               </select>
             </div>
           </div>
@@ -70,15 +70,20 @@
                 <input id="overseasCurrency" type="text" readonly>
               </div>
               <div class="field">
-                <label for="goldstarPrice" id="goldstarPriceLabel">金星電視價錢</label>
+                <label for="goldstarPrice" id="goldstarPriceLabel">每克金價（未含稅）</label>
                 <input id="goldstarPrice" type="number" inputmode="decimal" min="0" step="0.01">
                 <small class="multilingual-hint">
-                  請參考當地金星電視價錢<br>
+                  請參考當地金星電視價錢，輸入未含稅每克金價<br>
                   请参考当地金星电视价钱<br>
                   Please refer to the local Goldstar display price.
                 </small>
               </div>
             </div>
+            <div class="field"><label for="orderDiscount">全單折扣：實收百分比（95 = 95 折）</label><input id="orderDiscount" type="number" min="0.01" max="100" step="0.01" value="95"><small>工費調整後，再按此比例計算折後售價，最後加稅。</small></div>
+            <div class="action-row"><button class="button button-secondary" id="saveStorePrice" type="button">儲存本機金價</button><button class="button button-secondary" id="shareStorePrice" type="button">複製金價設定連結</button></div>
+            <p id="storePriceStatus" class="status" role="status">帳房可分享金價設定連結；同事須開啟新連結更新，並非自動同步。</p>
+            <textarea id="priceShareLink" readonly hidden aria-label="金價設定連結"></textarea>
+            <p class="offline-note">本版適用於計重黃金。請確認 QR 金重單位為克，第七欄為當地工費；定價貨暫不適用。</p>
             <p class="status" id="overseasStatus" role="status">請先選擇海外店舖。</p>
           </div>
         </section>
@@ -160,9 +165,9 @@
               <li>全單 95 折：（金價金額 + 工費／標價）× 95%</li>
             </ul>
             <ul id="overseasCalculationDetails" hidden>
-              <li>正價：金星電視價錢 + 最後實收工費</li>
-              <li>全單 95 折：（金星電視價錢 + 最後實收工費）× 95%</li>
-              <li>各方案按店舖總稅率計算一次稅項。</li>
+              <li>稅前正價：每克金價 × 金重（克）+ 調整後工費</li>
+              <li>折後售價：稅前正價 × 全單實收百分比</li>
+              <li>稅額：折後售價 × 店舖總稅率；應付總額 = 折後售價 + 稅額，免佣金。</li>
             </ul>
           </details>
           <p class="result-disclaimer">以上數據只作參考，一切以金星系統數據為準。</p>

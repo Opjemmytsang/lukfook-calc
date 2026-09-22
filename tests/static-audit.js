@@ -87,7 +87,7 @@ for (const icon of manifest.icons) {
 }
 
 const serviceWorker = read('service-worker.js');
-assert.match(serviceWorker, /lukfook-smart-quote-demo-v7/, 'service worker cache version was not updated');
+assert.match(serviceWorker, /lukfook-smart-quote-demo-v8/, 'service worker cache version was not updated');
 assert.match(serviceWorker, /\.\/assets\/js\/region-config\.js/, 'region configuration is missing from the app shell');
 assert.match(serviceWorker, /\.\/assets\/js\/overseas-quote\.js/, 'overseas quote module is missing from the app shell');
 assert.ok(!serviceWorker.includes("'./logo.png'"), 'service worker still pre-caches the removed page logo');

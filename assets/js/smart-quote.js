@@ -729,13 +729,35 @@
     const quotes=render();
     if(!quotes) throw new Error('未有完整報價資料。');
     elements.customerItemInfo.replaceChildren();
+    const weight=(finiteNumber(elements.weight.value)||0);
     const info=[
       ['貨號','Item No.',elements.itemNo.value||'-'],
       ['模號','Model No.',elements.modelNo.value||'-'],
-      ['金重','Gold Weight',(finiteNumber(elements.weight.value)||0).toLocaleString('zh-HK',{maximumFractionDigits:3})+' g']
+      ['金重','Gold Weight',weight.toLocaleString('zh-HK',{maximumFractionDigits:3})+' g']
     ];
     info.forEach(([zh,en,val])=>{
       const row=document.createElement('div'); const label=bilingualLabel(zh,en); const strong=document.createElement('strong'); strong.textContent=val; row.append(label,strong); elements.customerItemInfo.append(row);
+    });
+    elements.customerPriceInfo.replaceChildren();
+    let priceInfo=[];
+    if(isOverseas()){
+      const store=RegionConfig.getStoreConfig(elements.overseasStore.value);
+      const fee=getFeeCalculation();
+      priceInfo=[
+        ['今日金價','Today Gold Price',OverseasQuote.formatMoney(finiteNumber(elements.goldstarPrice.value)||0,store.currencyCode)],
+        ['工費','Labour Charge',OverseasQuote.formatMoney(fee.finalFee,store.currencyCode)]
+      ];
+    } else {
+      const price=finiteNumber(elements.sellPrice.value)||0;
+      const fee=finiteNumber(elements.laborFee.value)||0;
+      const unit=elements.priceUnit.value==='gram'?'g':'tael';
+      priceInfo=[
+        ['今日金價','Today Gold Price',formatMoney(price)+' / '+unit],
+        ['工費','Labour Charge',formatMoney(fee)]
+      ];
+    }
+    priceInfo.forEach(([zh,en,val])=>{
+      const row=document.createElement('div'); const label=bilingualLabel(zh,en); const strong=document.createElement('strong'); strong.textContent=val; row.append(label,strong); elements.customerPriceInfo.append(row);
     });
     elements.customerResults.replaceChildren();
     const enMap={regular:'Regular Price',halfFee:'50% Labour Charge',noFee:'No Labour Charge',full95:'5% Off Total'};
@@ -747,7 +769,16 @@
         const store=RegionConfig.getStoreConfig(elements.overseasStore.value);
         amount.textContent=OverseasQuote.formatMoney(q.totalAmount,store.currencyCode);
       } else amount.textContent=formatMoney(q.amount);
-      card.append(label,amount); elements.customerResults.append(card);
+      if(isOverseas()){
+        const tax=document.createElement('small');
+        const store=RegionConfig.getStoreConfig(elements.overseasStore.value);
+        const taxAmount=OverseasQuote.formatMoney(q.taxAmount,store.currencyCode);
+        tax.append(bilingualLabel('稅項：'+taxAmount,'Tax: '+taxAmount));
+        card.append(label,amount,tax);
+      } else {
+        card.append(label,amount);
+      }
+      elements.customerResults.append(card);
     });
   }
 
@@ -777,7 +808,7 @@
       'manualFeeOverride', 'finalFeeField', 'finalLaborFee', 'manualFeeStatus', 'overseasTaxField',
       'goldstarPrice', 'goldstarPriceLabel', 'negativeFeeWarning', 'authorizationWarning', 'feeError',
       'priceSection', 'domesticCalculationDetails', 'overseasCalculationDetails', 'full95Field', 'full95Enabled', 'customerDisplayButton',
-      'customerDisplay', 'customerExitButton', 'customerItemInfo', 'customerResults'
+      'customerDisplay', 'customerExitButton', 'customerItemInfo', 'customerPriceInfo', 'customerResults'
     ].forEach((id) => { elements[id] = $(id); });
     if (Object.values(elements).some((element) => !element)) return;
 

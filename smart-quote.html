@@ -149,11 +149,12 @@
 
         <section class="panel" id="resultSection">
           <div class="section-heading"><span>5</span><h2>報價結果</h2></div>
+          <div class="field checkbox-field" id="full95Field" hidden>
+            <label for="full95Enabled"><input id="full95Enabled" type="checkbox"> 使用全單 95 折（必須全工費）</label>
+          </div>
           <p class="field-error" id="calculationError" role="alert" hidden></p>
           <div class="result-grid" id="results" aria-live="polite"></div>
-          <div class="action-row customer-display-actions">
-            <button class="button button-primary" id="customerDisplayButton" type="button">對客全螢幕展示</button>
-          </div>
+          
           <div class="customer-display" id="customerDisplay" hidden>
             <div class="customer-display-toolbar">
               <div class="customer-language" role="group" aria-label="顯示語言">
@@ -186,6 +187,9 @@
             </ul>
           </details>
           <p class="result-disclaimer">以上數據只作參考，一切以金星系統數據為準。</p>
+          <div class="action-row customer-display-actions">
+            <button class="button button-primary" id="customerDisplayButton" type="button">對客全螢幕展示</button>
+          </div>
         </section>
 
         <section class="panel">

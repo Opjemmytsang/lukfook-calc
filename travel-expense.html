@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#7C2855">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="stylesheet" href="./assets/css/app.css">
+<title>出差工時及膳食報銷</title>
+<style>
+.travel-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.travel-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.travel-card h2{margin-bottom:10px}.metric{font-size:1.45rem;color:var(--wine);font-weight:800}.receipt-preview{max-width:100%;max-height:280px;border-radius:12px;border:1px solid var(--line);margin-top:10px}.record-list{display:grid;gap:10px}.record{padding:12px;border:1px solid #eadfd4;border-radius:12px;background:#fcfaf8}.record strong{color:var(--wine)}.tiny{font-size:.78rem;color:var(--muted)}.pill{display:inline-flex;padding:3px 8px;border-radius:999px;background:#f4ebe4;font-size:.72rem;font-weight:700}.summary-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #eee4dc}.summary-row:last-child{border-bottom:0}.upload-zone{border:1px dashed #bda99b;border-radius:14px;padding:14px;background:#fcfaf8}.status-box{margin-top:10px;padding:10px 12px;border-radius:10px;background:#f7f4f1;color:var(--muted);font-size:.82rem}.danger{color:var(--error)}@media(max-width:800px){.travel-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="site-shell">
+<header class="page-header"><div><p class="eyebrow">BUSINESS TRIP</p><h1>出差工時及膳食報銷</h1><p>手機快速記錄工時、OT、膳食單據及輸出PDF。</p></div><a class="text-link" href="./index.html">← 返回首頁</a></header>
+
+<section class="travel-grid">
+<div class="travel-card">
+<h2>工時記錄</h2>
+<div class="form-grid">
+<div class="field"><label>日期</label><input id="workDate" type="date"></div>
+<div class="field"><label>地點</label><select id="city"><option>Sydney</option><option>Auckland</option></select></div>
+<div class="field"><label>返工時間（HHMM）</label><input id="startTime" inputmode="numeric" maxlength="4" placeholder="0900"></div>
+<div class="field"><label>收工時間（HHMM）</label><input id="endTime" inputmode="numeric" maxlength="4" placeholder="1830"></div>
+<div class="field"><label>休息分鐘</label><input id="breakMinutes" inputmode="numeric" value="60"></div>
+<div class="field"><label>工作備註</label><input id="workNote" placeholder="開店支援"></div>
+</div>
+<div id="workCalc" class="status-box">平日 09:30–18:30；18:30後滿30分鐘才計OT。星期六、日實際工作時間（扣休息）全數OT。</div>
+<div class="action-row"><button class="button button-primary" id="saveWork">儲存工時</button></div>
+</div>
+
+<div class="travel-card">
+<h2>膳食報銷</h2>
+<div class="upload-zone">
+<label class="button button-secondary file-button">影單 / 上載收據 / 付款截圖<input class="visually-hidden" id="receiptFile" type="file" accept="image/*" capture="environment"></label>
+<img id="receiptPreview" class="receipt-preview" hidden>
+<p class="tiny">可使用相機、相簿或付款截圖。OCR會嘗試讀取日期、商戶、金額及幣別；請提交前確認。</p>
+</div>
+<div class="form-grid" style="margin-top:12px">
+<div class="field"><label>日期</label><input id="expenseDate" type="date"></div>
+<div class="field"><label>城市</label><select id="expenseCity"><option>Sydney</option><option>Auckland</option></select></div>
+<div class="field"><label>餐別</label><select id="mealType"><option>早餐</option><option>午餐</option><option>晚餐</option></select></div>
+<div class="field"><label>商戶</label><input id="merchant" placeholder="自動讀取 / 手動輸入"></div>
+<div class="field"><label>原幣金額</label><input id="amount" inputmode="decimal" placeholder="0.00"></div>
+<div class="field"><label>幣別</label><select id="currency"><option>AUD</option><option>NZD</option></select></div>
+<div class="field"><label>HKD匯率</label><input id="rate" inputmode="decimal" placeholder="例如 5.10"></div>
+<div class="field"><label>備註</label><input id="expenseNote" placeholder="付款截圖 / Receipt"></div>
+</div>
+<div id="ocrStatus" class="status-box">等待上載單據。</div>
+<div class="action-row"><button class="button button-primary" id="saveExpense">儲存報銷</button></div>
+</div>
+</section>
+
+<section class="travel-grid" style="margin-top:16px">
+<div class="travel-card"><h2>總覽</h2><div id="summary"></div><div class="action-row"><button class="button button-primary" id="downloadPdf">下載PDF</button><button class="button button-secondary" id="clearAll">清除本機紀錄</button></div></div>
+<div class="travel-card"><h2>最近紀錄</h2><div id="records" class="record-list"></div></div>
+</section>
+<footer class="site-disclaimer">資料儲存在此裝置瀏覽器。正式報銷前請核對單據及公司規定。</footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="./assets/js/travel-expense.js" defer></script>
+<script src="./assets/js/common.js" defer></script>
+</body></html>

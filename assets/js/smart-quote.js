@@ -702,6 +702,59 @@
     render();
   }
 
+  function bilingualLabel(zh, en) {
+    const wrap=document.createElement('span');
+    const z=document.createElement('span'); z.className='lang-zh'; z.textContent=zh;
+    const e=document.createElement('span'); e.className='lang-en'; e.textContent=en;
+    wrap.append(z,e); return wrap;
+  }
+
+  function setCustomerLanguage(lang='both') {
+    elements.customerDisplay.dataset.lang=lang;
+    document.querySelectorAll('.customer-lang').forEach(b=>b.classList.toggle('is-active',b.dataset.lang===lang));
+  }
+
+  function buildCustomerDisplay() {
+    const quotes=render();
+    if(!quotes) throw new Error('未有完整報價資料。');
+    elements.customerItemInfo.replaceChildren();
+    const info=[
+      ['貨號','Item No.',elements.itemNo.value||'-'],
+      ['模號','Model No.',elements.modelNo.value||'-'],
+      ['金重','Gold Weight',(finiteNumber(elements.weight.value)||0).toLocaleString('zh-HK',{maximumFractionDigits:3})+' g']
+    ];
+    info.forEach(([zh,en,val])=>{
+      const row=document.createElement('div'); const label=bilingualLabel(zh,en); const strong=document.createElement('strong'); strong.textContent=val; row.append(label,strong); elements.customerItemInfo.append(row);
+    });
+    elements.customerResults.replaceChildren();
+    const enMap={regular:'Regular Price',halfFee:'50% Labour Charge',noFee:'No Labour Charge',full95:'5% Off Total'};
+    quotes.forEach(q=>{
+      const card=document.createElement('article'); card.className='customer-result-card';
+      const label=bilingualLabel(q.label,enMap[q.key]||q.label);
+      const amount=document.createElement('strong');
+      if(isOverseas()){
+        const store=RegionConfig.getStoreConfig(elements.overseasStore.value);
+        amount.textContent=OverseasQuote.formatMoney(q.totalAmount,store.currencyCode);
+      } else amount.textContent=formatMoney(q.amount);
+      card.append(label,amount); elements.customerResults.append(card);
+    });
+  }
+
+  async function openCustomerDisplay() {
+    try { buildCustomerDisplay(); }
+    catch(error){ setStatus(elements.actionStatus,error.message,'error'); return; }
+    elements.customerDisplay.hidden=false;
+    document.body.classList.add('customer-mode');
+    setCustomerLanguage('both');
+    try { if(document.documentElement.requestFullscreen && !document.fullscreenElement) await document.documentElement.requestFullscreen(); } catch {}
+  }
+
+  async function closeCustomerDisplay() {
+    elements.customerDisplay.hidden=true;
+    document.body.classList.remove('customer-mode');
+    if(document.fullscreenElement){ try{await document.exitFullscreen()}catch{} }
+  }
+
   function bind() {
     ['reader', 'scanSection', 'resultSection', 'startButton', 'stopButton', 'qrFile', 'scanStatus', 'libraryStatus',
       'itemNo', 'modelNo', 'weight', 'laborFee', 'itemError', 'priceUnit', 'sellPrice', 'livePrice',
@@ -712,7 +765,8 @@
       'feeDiscount', 'feeAdjustmentField', 'feeAdjustment', 'feeAdjustmentLabel', 'manualFeeField',
       'manualFeeOverride', 'finalFeeField', 'finalLaborFee', 'manualFeeStatus', 'overseasTaxField',
       'goldstarPrice', 'goldstarPriceLabel', 'negativeFeeWarning', 'authorizationWarning', 'feeError',
-      'priceSection', 'domesticCalculationDetails', 'overseasCalculationDetails'
+      'priceSection', 'domesticCalculationDetails', 'overseasCalculationDetails', 'customerDisplayButton',
+      'customerDisplay', 'customerExitButton', 'customerItemInfo', 'customerResults'
     ].forEach((id) => { elements[id] = $(id); });
     if (Object.values(elements).some((element) => !element)) return;
 
@@ -736,6 +790,22 @@
     elements.overseasRegion.addEventListener('change', handleRegionChange);
     elements.overseasStore.addEventListener('change', handleStoreChange);
     elements.copyButton.addEventListener('click', copySummary);
+    elements.customerDisplayButton.addEventListener('click', openCustomerDisplay);
+    document.querySelectorAll('.customer-lang').forEach((button) => {
+      button.addEventListener('click', () => setCustomerLanguage(button.dataset.lang));
+    });
+    let exitTimer = null;
+    const beginExitHold = () => {
+      elements.customerExitButton.textContent = '繼續按住… / Keep holding…';
+      exitTimer = window.setTimeout(closeCustomerDisplay, 2000);
+    };
+    const cancelExitHold = () => {
+      if (exitTimer) window.clearTimeout(exitTimer);
+      exitTimer = null;
+      elements.customerExitButton.textContent = '長按 2 秒退出';
+    };
+    ['pointerdown','touchstart'].forEach(evt => elements.customerExitButton.addEventListener(evt, beginExitHold, {passive:true}));
+    ['pointerup','pointercancel','pointerleave','touchend','touchcancel'].forEach(evt => elements.customerExitButton.addEventListener(evt, cancelExitHold, {passive:true}));
     elements.rescanButton.addEventListener('click', rescan);
     elements.clearButton.addEventListener('click', async () => {
       await stopScanner();

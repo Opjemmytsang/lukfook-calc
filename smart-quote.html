@@ -119,6 +119,9 @@
               <div class="readonly-box" id="overseasTaxDetails">請先選擇海外店舖。</div>
             </div>
           </div>
+          <div class="field checkbox-field" id="full95Field" hidden>
+            <label for="full95Enabled"><input id="full95Enabled" type="checkbox"> 使用全單 95 折（必須全工費）</label>
+          </div>
           <p class="field-error" id="negativeFeeWarning" role="alert" hidden>最後實收工費不可低於 0。</p>
           <p class="field-error" id="feeError" role="alert" hidden></p>
           <p class="field-error" id="itemError" role="alert" hidden></p>
@@ -149,9 +152,7 @@
 
         <section class="panel" id="resultSection">
           <div class="section-heading"><span>5</span><h2>報價結果</h2></div>
-          <div class="field checkbox-field" id="full95Field" hidden>
-            <label for="full95Enabled"><input id="full95Enabled" type="checkbox"> 使用全單 95 折（必須全工費）</label>
-          </div>
+
           <p class="field-error" id="calculationError" role="alert" hidden></p>
           <div class="result-grid" id="results" aria-live="polite"></div>
           
@@ -168,6 +169,7 @@
               <div class="customer-brand">LUKFOOK JEWELLERY</div>
               <h2><span class="lang-zh">報價資料</span><span class="lang-en">Quotation</span></h2>
               <div id="customerItemInfo" class="customer-item-info"></div>
+              <div id="customerPriceInfo" class="customer-item-info"></div>
               <div id="customerResults" class="customer-results"></div>
               <p class="customer-note"><span class="lang-zh">以上資料只作報價參考，最終以店舖系統為準。</span><span class="lang-en">For quotation reference only. Final amount is subject to the store system.</span></p>
             </div>

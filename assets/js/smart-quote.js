@@ -201,11 +201,20 @@
     try {
       if (isOverseas()) {
         if (!OverseasQuote || !RegionConfig) throw new Error('海外地區設定未能載入。');
+        const use95 = elements.full95Enabled.checked;
+        if (use95) {
+          elements.feeDiscount.value = '100';
+          elements.feeAdjustment.value = '0';
+          elements.manualFeeOverride.checked = false;
+          elements.finalLaborFee.readOnly = true;
+          elements.manualFeeStatus.textContent = '全單 95 折必須收取全工費，工費不可扣減。';
+        }
         const feeCalculation = getFeeCalculation();
         const quotes = OverseasQuote.calculateOverseasQuotes({
           storeCode: elements.overseasStore.value,
           goldstarPrice: elements.goldstarPrice.value,
-          finalFee: feeCalculation.finalFee
+          finalFee: feeCalculation.finalFee,
+          useFull95: use95
         });
         latestOverseasQuotes = quotes;
         renderOverseasResults(quotes);
@@ -563,6 +572,8 @@
     elements.manualFeeField.hidden = !overseas;
     elements.finalFeeField.hidden = !overseas;
     elements.overseasTaxField.hidden = !overseas;
+    elements.full95Field.hidden = !overseas;
+    if (!overseas) elements.full95Enabled.checked = false;
     elements.priceSection.hidden = overseas;
     elements.domesticCalculationDetails.hidden = overseas;
     elements.overseasCalculationDetails.hidden = !overseas;
@@ -765,7 +776,7 @@
       'feeDiscount', 'feeAdjustmentField', 'feeAdjustment', 'feeAdjustmentLabel', 'manualFeeField',
       'manualFeeOverride', 'finalFeeField', 'finalLaborFee', 'manualFeeStatus', 'overseasTaxField',
       'goldstarPrice', 'goldstarPriceLabel', 'negativeFeeWarning', 'authorizationWarning', 'feeError',
-      'priceSection', 'domesticCalculationDetails', 'overseasCalculationDetails', 'customerDisplayButton',
+      'priceSection', 'domesticCalculationDetails', 'overseasCalculationDetails', 'full95Field', 'full95Enabled', 'customerDisplayButton',
       'customerDisplay', 'customerExitButton', 'customerItemInfo', 'customerResults'
     ].forEach((id) => { elements[id] = $(id); });
     if (Object.values(elements).some((element) => !element)) return;
@@ -786,6 +797,25 @@
     ['originalLaborFee', 'feeDiscount', 'feeAdjustment', 'finalLaborFee', 'goldstarPrice']
       .forEach((id) => elements[id].addEventListener('input', render));
     elements.manualFeeOverride.addEventListener('change', updateManualFeeMode);
+    elements.full95Enabled.addEventListener('change', () => {
+      const locked = elements.full95Enabled.checked;
+      if (locked) {
+        elements.feeDiscount.value='100';
+        elements.feeAdjustment.value='0';
+        elements.manualFeeOverride.checked=false;
+        elements.finalLaborFee.readOnly=true;
+        elements.feeDiscount.disabled=true;
+        elements.feeAdjustment.disabled=true;
+        elements.manualFeeOverride.disabled=true;
+        elements.manualFeeStatus.textContent='全單 95 折必須收取全工費，工費不可扣減。';
+      } else {
+        elements.feeDiscount.disabled=false;
+        elements.feeAdjustment.disabled=false;
+        elements.manualFeeOverride.disabled=false;
+        elements.manualFeeStatus.textContent='未使用全單 95 折，可手動調整工費。';
+      }
+      render();
+    });
     elements.marketGroup.addEventListener('change', updateMarketUI);
     elements.overseasRegion.addEventListener('change', handleRegionChange);
     elements.overseasStore.addEventListener('change', handleStoreChange);

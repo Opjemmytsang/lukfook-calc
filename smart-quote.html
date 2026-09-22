@@ -50,7 +50,7 @@
             <div class="field">
               <label for="marketGroup">營運地區</label>
               <select id="marketGroup">
-                <option value="hkmo">港澳地區</option>
+                <option value="hk">香港</option><option value="mo">澳門</option>
                 <option value="overseas">海外地區</option>
               </select>
             </div>
@@ -154,6 +154,16 @@
           <div class="section-heading"><span>5</span><h2>報價結果</h2></div>
 
           <p class="field-error" id="calculationError" role="alert" hidden></p>
+          <div class="field" id="domesticOfferField">
+            <label for="domesticOffer">選擇優惠</label>
+            <select id="domesticOffer">
+              <option value="regular">正價</option>
+              <option value="halfFee">半工</option>
+              <option value="noFee">免工</option>
+              <option value="full95">全單 95 折</option>
+            </select>
+          </div>
+          <p class="status" id="activeOfferStatus">目前優惠：正價</p>
           <div class="result-grid" id="results" aria-live="polite"></div>
           
           <div class="customer-display" id="customerDisplay" hidden>

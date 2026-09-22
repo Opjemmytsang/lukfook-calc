@@ -14,10 +14,43 @@ function setDefaults(){['workDate','expenseDate'].forEach(id=>$(id).value=today(
 function syncCity(){const city=$('workDate').value>='2026-09-30'?'Auckland':'Sydney';$('city').value=city;$('expenseCity').value=city;$('currency').value=city==='Sydney'?'AUD':'NZD'}
 function previewWork(){const ot=calcOT($('workDate').value,$('startTime').value,$('endTime').value,$('breakMinutes').value);$('workCalc').textContent=ot===null?'請輸入有效HHMM時間，例如 0900 / 1830。':'預計OT／補鐘：'+fmtMins(ot)}
 ['startTime','endTime','breakMinutes','workDate'].forEach(id=>$(id).addEventListener('input',()=>{syncCity();previewWork()}));
-$('saveWork').addEventListener('click',()=>{const ot=calcOT($('workDate').value,$('startTime').value,$('endTime').value,$('breakMinutes').value);if(ot===null){alert('時間格式錯誤，請輸入例如 0900、1830、2115。');return}const d=load();d.work.push({date:$('workDate').value,city:$('city').value,start:$('startTime').value.padStart(4,'0'),end:$('endTime').value.padStart(4,'0'),breakMinutes:+$('breakMinutes').value||0,ot,note:$('workNote').value});save(d);$('startTime').value='';$('endTime').value='';$('workNote').value='';render()});
+$('saveWork').addEventListener('click',()=>{
+  const date=$('workDate').value, city=$('city').value;
+  const startRaw=$('startTime').value, endRaw=$('endTime').value;
+  const start=hhmmMinutes(startRaw), end=hhmmMinutes(endRaw);
+  const brk=+$('breakMinutes').value||0;
+  const ot=calcOT(date,startRaw,endRaw,brk);
+  if(!date){alert('請選擇日期。');return}
+  if(start===null||end===null){alert('時間格式錯誤，請輸入例如 0900、1830、2115。');return}
+  const worked=end-start-brk;
+  if(end<=start||worked<=0){alert('工時為0或時間有錯，請檢查返工、收工及休息時間。');return}
+  const d=load();
+  const duplicate=d.work.some(x=>x.date===date&&x.city===city);
+  if(duplicate){alert('呢一日已經有工時紀錄，為避免重覆輸入，請先檢查現有紀錄。');return}
+  d.work.push({date,city,start:String(startRaw).padStart(4,'0'),end:String(endRaw).padStart(4,'0'),breakMinutes:brk,ot,note:$('workNote').value});
+  save(d);$('startTime').value='';$('endTime').value='';$('workNote').value='';render()
+});
 function parseOCR(text){const clean=text.replace(/,/g,'');const money=[...clean.matchAll(/(?:AUD|NZD|A\$|NZ\$|\$)?\s*([0-9]{1,5}(?:\.[0-9]{2}))/gi)].map(m=>+m[1]).filter(n=>n>0&&n<10000);const amount=money.length?Math.max(...money):'';const dateMatch=clean.match(/\b(\d{1,2})[\/\-.](\d{1,2})[\/\-.](20\d{2}|\d{2})\b/);let date='';if(dateMatch){let y=dateMatch[3];if(y.length===2)y='20'+y;date=y+'-'+String(dateMatch[2]).padStart(2,'0')+'-'+String(dateMatch[1]).padStart(2,'0')}const currency=/NZD|NZ\$/i.test(clean)?'NZD':/AUD|A\$/i.test(clean)?'AUD':'';const lines=clean.split(/\n/).map(s=>s.trim()).filter(Boolean);const merchant=lines.find(x=>/[A-Za-z]{3,}/.test(x)&&x.length<50)||'';return{amount,date,currency,merchant}}
 $('receiptFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;const url=URL.createObjectURL(file);$('receiptPreview').src=url;$('receiptPreview').hidden=false;$('ocrStatus').textContent='正在讀取單據…';try{if(!window.Tesseract)throw new Error('OCR unavailable');const {data:{text}}=await Tesseract.recognize(file,'eng');const p=parseOCR(text);if(p.amount)$('amount').value=p.amount.toFixed(2);if(p.date)$('expenseDate').value=p.date;if(p.currency)$('currency').value=p.currency;if(p.merchant)$('merchant').value=p.merchant;$('expenseNote').value='OCR上載：'+file.name;$('ocrStatus').textContent='已完成OCR，請核對商戶、日期及金額後再儲存。'}catch(err){$('ocrStatus').textContent='未能自動讀取，可手動輸入；圖片仍可作單據參考。'}});
-$('saveExpense').addEventListener('click',()=>{const amount=+$('amount').value,rate=+$('rate').value;if(!amount){alert('請輸入金額。');return}const d=load();const hkd=rate?amount*rate:null;d.expenses.push({date:$('expenseDate').value,city:$('expenseCity').value,meal:$('mealType').value,merchant:$('merchant').value||'未填商戶',amount,currency:$('currency').value,rate:rate||null,hkd,limit:hkdLimit($('mealType').value),note:$('expenseNote').value});save(d);$('merchant').value='';$('amount').value='';$('expenseNote').value='';$('receiptPreview').hidden=true;$('ocrStatus').textContent='已儲存報銷紀錄。';render()});
+$('saveExpense').addEventListener('click',()=>{
+  const date=$('expenseDate').value, city=$('expenseCity').value, meal=$('mealType').value;
+  const merchant=($('merchant').value||'').trim();
+  const currency=$('currency').value;
+  const amount=+$('amount').value, rate=+$('rate').value;
+  if(!date){alert('請選擇膳食日期。');return}
+  if(!Number.isFinite(amount)||amount<=0){alert('膳食金額為0或格式有錯，請檢查後再儲存。');return}
+  if($('rate').value && (!Number.isFinite(rate)||rate<=0)){alert('HKD匯率為0或格式有錯，請檢查後再儲存。');return}
+  const d=load();
+  const duplicate=d.expenses.some(x=>
+    x.date===date&&x.city===city&&x.meal===meal&&x.currency===currency&&
+    Math.abs(Number(x.amount)-amount)<0.001&&
+    ((x.merchant||'').trim().toLowerCase()===(merchant||'未填商戶').toLowerCase())
+  );
+  if(duplicate){alert('偵測到相同膳食紀錄，為避免重覆報銷，今次不會再次儲存。');return}
+  const hkd=rate?amount*rate:null;
+  d.expenses.push({date,city,meal,merchant:merchant||'未填商戶',amount,currency,rate:rate||null,hkd,limit:hkdLimit(meal),note:$('expenseNote').value});
+  save(d);$('merchant').value='';$('amount').value='';$('expenseNote').value='';$('receiptPreview').hidden=true;$('ocrStatus').textContent='已儲存報銷紀錄。';render()
+});
 function render(){const d=load(),totalOT=d.work.reduce((a,x)=>a+x.ot,0),hkd=d.expenses.reduce((a,x)=>a+(x.hkd||0),0),over=d.expenses.filter(x=>x.hkd&&x.hkd>x.limit).length;$('summary').innerHTML='<div class="summary-row"><span>工時紀錄</span><strong>'+d.work.length+' 日</strong></div><div class="summary-row"><span>總OT／補鐘</span><strong>'+fmtMins(totalOT)+'</strong></div><div class="summary-row"><span>膳食紀錄</span><strong>'+d.expenses.length+' 筆</strong></div><div class="summary-row"><span>已換算HKD</span><strong>HK$ '+hkd.toFixed(2)+'</strong></div><div class="summary-row"><span>超額筆數</span><strong class="'+(over?'danger':'')+'">'+over+'</strong></div>';const all=[...d.work.map(x=>({type:'work',date:x.date,text:x.city+' '+x.start+'–'+x.end+'｜OT '+fmtMins(x.ot)})),...d.expenses.map(x=>({type:'expense',date:x.date,text:x.meal+'｜'+x.merchant+'｜'+x.currency+' '+x.amount.toFixed(2)}))].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);$('records').innerHTML=all.length?all.map(x=>'<div class="record"><span class="pill">'+(x.type==='work'?'工時':'報銷')+'</span> <strong>'+x.date+'</strong><div>'+x.text+'</div></div>').join(''):'<p class="tiny">尚未有紀錄。</p>'}
 $('downloadPdf').addEventListener('click',()=>{if(!window.jspdf?.jsPDF){alert('PDF模組未載入。');return}const {jsPDF}=window.jspdf;const d=load();const doc=new jsPDF({unit:'mm',format:'a4'});let y=15;doc.setFontSize(16);doc.text('Business Trip Work & Meal Expense Report',14,y);y+=9;doc.setFontSize(10);doc.text('Generated: '+new Date().toLocaleString(),14,y);y+=8;doc.setFontSize(12);doc.text('Work records',14,y);y+=6;doc.setFontSize(9);d.work.forEach(x=>{const line=x.date+'  '+x.city+'  '+x.start+'-'+x.end+'  OT '+fmtMins(x.ot)+(x.note?'  '+x.note:'');doc.text(line,14,y,{maxWidth:180});y+=6;if(y>280){doc.addPage();y=15}});y+=3;doc.setFontSize(12);doc.text('Meal expenses',14,y);y+=6;doc.setFontSize(9);d.expenses.forEach(x=>{const hk=x.hkd?'  HKD '+x.hkd.toFixed(2):'';doc.text(x.date+'  '+x.meal+'  '+x.merchant+'  '+x.currency+' '+x.amount.toFixed(2)+hk,14,y,{maxWidth:180});y+=6;if(y>280){doc.addPage();y=15}});const totalOT=d.work.reduce((a,x)=>a+x.ot,0),hkd=d.expenses.reduce((a,x)=>a+(x.hkd||0),0);y+=4;doc.setFontSize(11);doc.text('Total OT: '+fmtMins(totalOT)+'    Meal total (converted): HKD '+hkd.toFixed(2),14,y,{maxWidth:180});doc.save('business-trip-report.pdf')});
 $('clearAll').addEventListener('click',()=>{if(confirm('確定清除本機所有工時及報銷紀錄？')){localStorage.removeItem(KEY);render()}});

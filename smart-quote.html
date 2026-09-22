@@ -151,6 +151,26 @@
           <div class="section-heading"><span>5</span><h2>報價結果</h2></div>
           <p class="field-error" id="calculationError" role="alert" hidden></p>
           <div class="result-grid" id="results" aria-live="polite"></div>
+          <div class="action-row customer-display-actions">
+            <button class="button button-primary" id="customerDisplayButton" type="button">對客全螢幕展示</button>
+          </div>
+          <div class="customer-display" id="customerDisplay" hidden>
+            <div class="customer-display-toolbar">
+              <div class="customer-language" role="group" aria-label="顯示語言">
+                <button type="button" class="customer-lang is-active" data-lang="both">中英對照</button>
+                <button type="button" class="customer-lang" data-lang="zh">中文</button>
+                <button type="button" class="customer-lang" data-lang="en">English</button>
+              </div>
+              <button type="button" class="customer-exit" id="customerExitButton">長按 2 秒退出</button>
+            </div>
+            <div class="customer-display-inner">
+              <div class="customer-brand">LUKFOOK JEWELLERY</div>
+              <h2><span class="lang-zh">報價資料</span><span class="lang-en">Quotation</span></h2>
+              <div id="customerItemInfo" class="customer-item-info"></div>
+              <div id="customerResults" class="customer-results"></div>
+              <p class="customer-note"><span class="lang-zh">以上資料只作報價參考，最終以店舖系統為準。</span><span class="lang-en">For quotation reference only. Final amount is subject to the store system.</span></p>
+            </div>
+          </div>
           <details class="calculation-details">
             <summary>顯示／隱藏計算方式</summary>
             <ul id="domesticCalculationDetails">

@@ -15,7 +15,7 @@ const expectedRates = {
   UK1: 0.20
 };
 
-assert.equal(RegionConfig.OVERSEAS_STORES.length, 23);
+assert.equal(RegionConfig.OVERSEAS_STORES.length, 32);
 for (const [storeCode, rate] of Object.entries(expectedRates)) {
   assert.equal(RegionConfig.getStoreConfig(storeCode)?.totalTaxRate, rate, `${storeCode} tax rate is incorrect`);
 }
@@ -200,3 +200,22 @@ assert.equal(discounted.totalAmount, 2194.5);
 assert.throws(()=>OverseasQuote.calculateOverseasQuotes({...base, useFull95:true, finalFee:50}), /原工費/);
 for (const weightGram of [undefined,'',0,-1,NaN]) assert.throws(()=>OverseasQuote.calculateOverseasQuotes({...base,weightGram}), /金重/);
 assert.throws(()=>OverseasQuote.calculateOverseasQuotes({...base,goldstarPrice:0}), /金價/);
+
+assert.equal(new Set(RegionConfig.OVERSEAS_STORES.map(s=>s.storeCode)).size,32);
+for (const code of ['AU9','AUA','AUB','AUC','AUE']) {
+  const store=RegionConfig.getStoreConfig(code);
+  assert.equal(store.regionCode,'AU');
+  assert.equal(store.currencyCode,'AUD');
+  assert.equal(store.totalTaxRate,0.1);
+  assert.equal(OverseasQuote.calculateOverseasQuotes({...base,storeCode:code})[0].totalAmount,2310);
+}
+for (const code of ['USC','USF','BC3','NZ1']) {
+  const store=RegionConfig.getStoreConfig(code);
+  assert.equal(store.totalTaxRate,null);
+  assert.equal(OverseasQuote.formatRate(OverseasQuote.taxLines(store)[0].rate),'待設定');
+  assert.throws(()=>OverseasQuote.calculateOverseasQuotes({...base,storeCode:code}), /稅率待設定/);
+}
+assert.equal(RegionConfig.getStoreConfig('NZ1').currencyCode,'NZD');
+assert.ok(RegionConfig.getRegions().some(r=>r.regionCode==='NZ'));
+assert.equal(RegionConfig.OVERSEAS_STORES.filter(s=>s.storeCode==='SP4').length,1);
+assert.equal(RegionConfig.getStoreConfig('SP4').totalTaxRate,0.09);

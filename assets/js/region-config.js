@@ -2,6 +2,15 @@
   'use strict';
 
   const OVERSEAS_STORES = Object.freeze([
+    { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'USC', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [], totalTaxRate: null },
+    { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'USF', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [], totalTaxRate: null },
+    { marketGroup: 'overseas', regionCode: 'CA', regionName: '加拿大', storeCode: 'BC3', currencyCode: 'CAD', taxType: '待設定', taxComponents: [], totalTaxRate: null },
+    { marketGroup: 'overseas', regionCode: 'AU', regionName: '澳洲', storeCode: 'AU9', currencyCode: 'AUD', taxType: 'GST', taxComponents: [{ name: 'GST', rate: 0.1 }], totalTaxRate: 0.1 },
+    { marketGroup: 'overseas', regionCode: 'AU', regionName: '澳洲', storeCode: 'AUA', currencyCode: 'AUD', taxType: 'GST', taxComponents: [{ name: 'GST', rate: 0.1 }], totalTaxRate: 0.1 },
+    { marketGroup: 'overseas', regionCode: 'AU', regionName: '澳洲', storeCode: 'AUB', currencyCode: 'AUD', taxType: 'GST', taxComponents: [{ name: 'GST', rate: 0.1 }], totalTaxRate: 0.1 },
+    { marketGroup: 'overseas', regionCode: 'AU', regionName: '澳洲', storeCode: 'AUC', currencyCode: 'AUD', taxType: 'GST', taxComponents: [{ name: 'GST', rate: 0.1 }], totalTaxRate: 0.1 },
+    { marketGroup: 'overseas', regionCode: 'AU', regionName: '澳洲', storeCode: 'AUE', currencyCode: 'AUD', taxType: 'GST', taxComponents: [{ name: 'GST', rate: 0.1 }], totalTaxRate: 0.1 },
+    { marketGroup: 'overseas', regionCode: 'NZ', regionName: '紐西蘭', storeCode: 'NZ1', currencyCode: 'NZD', taxType: 'GST', taxComponents: [], totalTaxRate: null },
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US2', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.08875 }], totalTaxRate: 0.08875 },
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US4', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.08875 }], totalTaxRate: 0.08875 },
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US5', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.08625 }], totalTaxRate: 0.08625 },
@@ -27,7 +36,7 @@
     { marketGroup: 'overseas', regionCode: 'UK', regionName: '英國', storeCode: 'UK1', currencyCode: 'GBP', taxType: 'VAT', taxComponents: [{ name: 'VAT', rate: 0.20 }], totalTaxRate: 0.20 }
   ]);
 
-  const REGION_ORDER = Object.freeze(['US', 'CA', 'AU', 'MY', 'SG', 'UK']);
+  const REGION_ORDER = Object.freeze(['US', 'CA', 'AU', 'NZ', 'MY', 'SG', 'UK']);
 
   function getRegions() {
     return REGION_ORDER.map((regionCode) => {

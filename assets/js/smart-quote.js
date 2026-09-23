@@ -538,7 +538,9 @@
       .join('\n');
     elements.goldstarPriceLabel.textContent = `每克金價（${store.currencyCode}，未含稅）`;
     elements.feeAdjustmentLabel.textContent = `額外加減金額（${store.currencyCode}）`;
-    setStatus(elements.overseasStatus, `${store.storeCode} 稅率已更新。`, 'ok');
+    setStatus(elements.overseasStatus,
+      Number.isFinite(store.totalTaxRate) ? `${store.storeCode} 稅率已更新。` : `${store.storeCode} 稅率待設定，暫未能計算報價。`,
+      Number.isFinite(store.totalTaxRate) ? 'ok' : 'warn');
   }
 
   function populateRegions() {

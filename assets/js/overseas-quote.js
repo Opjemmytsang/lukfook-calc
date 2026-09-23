@@ -99,6 +99,7 @@
   function calculateOverseasQuotes({ storeCode, goldstarPrice, finalFee, weightGram, originalFee, useFull95 = false }) {
     const store = RegionConfig.getStoreConfig(storeCode);
     if (!store) throw new Error('請先選擇海外店舖。');
+    if (!Number.isFinite(store.totalTaxRate)) throw new Error(`${store.storeCode} 稅率待設定，暫未能計算報價。`);
     const displayPrice = numberValue(goldstarPrice);
     const actualFee = numberValue(finalFee);
     if (goldstarPrice === '') throw new Error(GOLDSTAR_REQUIRED_MESSAGE);
@@ -136,11 +137,13 @@
   }
 
   function formatRate(rate) {
+    if (!Number.isFinite(rate)) return '待設定';
     return `${Number((rate * 100).toFixed(3)).toLocaleString('zh-HK', { maximumFractionDigits: 3 })}%`;
   }
 
   function taxLines(store, { includeTotal = true } = {}) {
     if (!store) return [];
+    if (!Number.isFinite(store.totalTaxRate)) return [{ name: '稅率', rate: null }];
     if (store.taxComponents.length === 0) return [{ name: '稅率', rate: 0 }];
     const lines = store.taxComponents.map(({ name, rate }) => ({ name, rate }));
     if (includeTotal && (store.taxComponents.length > 1 || store.regionCode === 'CA')) {

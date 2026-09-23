@@ -70,12 +70,12 @@
                 <input id="overseasCurrency" type="text" readonly>
               </div>
               <div class="field">
-                <label for="goldstarPrice" id="goldstarPriceLabel">金星電視價錢</label>
+                <label for="goldstarPrice" id="goldstarPriceLabel">每克金價（未含稅）</label>
                 <input id="goldstarPrice" type="number" inputmode="decimal" min="0" step="0.01">
                 <small class="multilingual-hint">
-                  請參考當地金星電視價錢<br>
-                  请参考当地金星电视价钱<br>
-                  Please refer to the local Goldstar display price.
+                  請輸入當地金星未含稅每克金價；掃下一件時保留此金價。<br>
+                  请输入当地金星未含税每克金价。<br>
+                  Enter the local Goldstar price per gram, excluding tax.
                 </small>
               </div>
             </div>
@@ -194,9 +194,9 @@
               <li>全單 95 折：（金價金額 + 工費／標價）× 95%</li>
             </ul>
             <ul id="overseasCalculationDetails" hidden>
-              <li>正價：金星電視價錢 + 最後實收工費</li>
-              <li>全單 95 折：（金星電視價錢 + 最後實收工費）× 95%</li>
-              <li>各方案按店舖總稅率計算一次稅項。</li>
+              <li>正價：每克金價 × 金重（克）+ 最後實收工費</li>
+              <li>全單 95 折：（每克金價 × 金重（克）+ 原工費）× 95%；必須剔選，且不可扣減工費</li>
+              <li>稅額：最後稅前售價 × 分行稅率；應付總額 = 最後稅前售價 + 稅額，海外不加佣金。</li>
             </ul>
           </details>
           <p class="result-disclaimer">以上數據只作參考，一切以金星系統數據為準。</p>

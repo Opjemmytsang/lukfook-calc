@@ -161,7 +161,8 @@
       const details = document.createElement('dl');
       details.className = 'result-breakdown';
       if (quote.key === 'regular') {
-        addBreakdownRow(details, '金星電視價錢', OverseasQuote.formatMoney(quote.goldstarPrice, currency));
+        addBreakdownRow(details, '每克金價', OverseasQuote.formatMoney(quote.goldstarPrice, currency) + ' / g');
+        addBreakdownRow(details, '金值', OverseasQuote.formatMoney(quote.goldAmount, currency));
         addBreakdownRow(details, '最後實收工費', OverseasQuote.formatMoney(quote.finalFee, currency));
         addBreakdownRow(details, '稅前金額', OverseasQuote.formatMoney(quote.preTaxAmount, currency));
       } else {
@@ -223,6 +224,8 @@
         const quotes = OverseasQuote.calculateOverseasQuotes({
           storeCode: elements.overseasStore.value,
           goldstarPrice: elements.goldstarPrice.value,
+          weightGram: elements.weight.value,
+          originalFee: feeCalculation.originalFee,
           finalFee: feeCalculation.finalFee,
           useFull95: use95
         });
@@ -314,7 +317,6 @@
     elements.manualFeeOverride.checked = false;
     elements.finalLaborFee.value = '';
     elements.finalLaborFee.readOnly = true;
-    elements.goldstarPrice.value = '';
     elements.manualFeeStatus.textContent = '按工費折扣及額外加減金額自動計算。';
     elements.negativeFeeWarning.hidden = true;
     updateAuthorizationWarning();
@@ -525,7 +527,7 @@
     if (!store) {
       elements.overseasCurrency.value = '';
       elements.overseasTaxDetails.textContent = '請先選擇海外店舖。';
-      elements.goldstarPriceLabel.textContent = '金星電視價錢';
+      elements.goldstarPriceLabel.textContent = '每克金價（未含稅）';
       elements.feeAdjustmentLabel.textContent = '額外加減金額';
       setStatus(elements.overseasStatus, '請先選擇海外店舖。', 'warn');
       return;
@@ -534,7 +536,7 @@
     elements.overseasTaxDetails.textContent = OverseasQuote.taxLines(store)
       .map(({ name, rate }) => `${name}：${OverseasQuote.formatRate(rate)}`)
       .join('\n');
-    elements.goldstarPriceLabel.textContent = `金星電視價錢（${store.currencyCode}）`;
+    elements.goldstarPriceLabel.textContent = `每克金價（${store.currencyCode}，未含稅）`;
     elements.feeAdjustmentLabel.textContent = `額外加減金額（${store.currencyCode}）`;
     setStatus(elements.overseasStatus, `${store.storeCode} 稅率已更新。`, 'ok');
   }
@@ -640,7 +642,6 @@
     elements.manualFeeOverride.checked = false;
     elements.finalLaborFee.value = '';
     elements.finalLaborFee.readOnly = true;
-    elements.goldstarPrice.value = '';
     elements.manualFeeStatus.textContent = '按工費折扣及額外加減金額自動計算。';
     elements.negativeFeeWarning.hidden = true;
     updateAuthorizationWarning();
@@ -758,7 +759,7 @@
       const store=RegionConfig.getStoreConfig(elements.overseasStore.value);
       const fee=getFeeCalculation();
       priceInfo=[
-        ['今日金價','Today Gold Price',OverseasQuote.formatMoney(finiteNumber(elements.goldstarPrice.value)||0,store.currencyCode)],
+        ['今日金價','Today Gold Price',OverseasQuote.formatMoney(finiteNumber(elements.goldstarPrice.value)||0,store.currencyCode)+' / g'],
         ['工費','Labour Charge',OverseasQuote.formatMoney(fee.finalFee,store.currencyCode)]
       ];
     } else {

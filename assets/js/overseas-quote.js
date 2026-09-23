@@ -12,9 +12,9 @@
     'Duty manager authorization is required when issuing the sales order.'
   ]);
   const GOLDSTAR_REQUIRED_MESSAGE = [
-    '請輸入當地金星電視價錢。',
-    '请输入当地金星电视价钱。',
-    'Please enter the local Goldstar display price.'
+    '請輸入當地每克金價。',
+    '请输入当地每克金价。',
+    'Please enter the local gold price per gram.'
   ].join('\n');
   const SCENARIOS = Object.freeze([
     { key: 'regular', label: '正價', preTax: (baseAmount) => baseAmount },
@@ -96,17 +96,25 @@
     };
   }
 
-  function calculateOverseasQuotes({ storeCode, goldstarPrice, finalFee, useFull95 = false }) {
+  function calculateOverseasQuotes({ storeCode, goldstarPrice, finalFee, weightGram, originalFee, useFull95 = false }) {
     const store = RegionConfig.getStoreConfig(storeCode);
     if (!store) throw new Error('請先選擇海外店舖。');
     const displayPrice = numberValue(goldstarPrice);
     const actualFee = numberValue(finalFee);
     if (goldstarPrice === '') throw new Error(GOLDSTAR_REQUIRED_MESSAGE);
-    if (displayPrice === null || displayPrice < 0) throw new Error('請輸入有效金星電視價錢。');
+    if (displayPrice === null || displayPrice <= 0) throw new Error('請輸入有效每克金價。');
+    const weight = numberValue(weightGram);
+    if (weight === null || weight <= 0) throw new Error('請輸入有效金重。');
     if (finalFee === '') throw new Error('請輸入最後實收工費。');
     if (actualFee === null || actualFee < 0) throw new Error('請輸入有效最後實收工費。');
 
-    const discountBeforeAmount = displayPrice + actualFee;
+    if (useFull95) {
+      const fullFee = numberValue(originalFee);
+      if (fullFee === null || fullFee < 0 || actualFee !== fullFee) throw new Error('全單 95 折必須使用原工費，不可扣減。');
+    }
+    const goldAmount = displayPrice * weight;
+    const discountBeforeAmount = goldAmount + actualFee;
+    if (!Number.isFinite(discountBeforeAmount)) throw new Error('報價金額超出有效範圍。');
     const scenarios = useFull95 ? SCENARIOS : SCENARIOS.filter((scenario) => scenario.key === 'regular');
     return scenarios.map((scenario) => {
       const preTaxAmount = scenario.preTax(discountBeforeAmount);
@@ -115,6 +123,8 @@
         key: scenario.key,
         label: scenario.label,
         goldstarPrice: displayPrice,
+        weightGram: weight,
+        goldAmount,
         finalFee: actualFee,
         discountBeforeAmount,
         preTaxAmount,
@@ -167,7 +177,7 @@
       `貨號：${itemNo || '-'}`,
       `模號：${modelNo || '-'}`,
       `金重：${weight === null ? '-' : weight.toLocaleString('zh-HK', { maximumFractionDigits: 3 })} 克`,
-      `金星電視價錢：${formatMoney(numberValue(goldstarPrice), currency)}`,
+      `每克金價：${formatMoney(numberValue(goldstarPrice), currency)}／克`,
       `原工費：${formatMoney(feeCalculation.originalFee, currency)}`,
       `工費折扣：${Number(feeCalculation.discountPercent).toLocaleString('zh-HK', { maximumFractionDigits: 2 })}%`,
       `額外加減金額：${formatMoney(feeCalculation.adjustmentAmount, currency)}`,

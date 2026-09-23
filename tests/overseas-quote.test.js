@@ -7,7 +7,7 @@ const OverseasQuote = require('../assets/js/overseas-quote.js');
 const { calculateQuotes } = require('../assets/js/smart-quote.js');
 
 const expectedRates = {
-  US2: 0.08875, US4: 0.08875, US5: 0.08625, US6: 0.09375, US7: 0.105, US8: 0.08875,
+  US2: 0.08875, US4: 0.08875, US5: 0.08625, US6: 0.10, US7: 0.105, US8: 0.08875,
   BC2: 0.12, CA5: 0.13, CA6: 0.13,
   AU2: 0.10, AU7: 0.10, AU3: 0.10, AU5: 0.10, AU6: 0.10, AU8: 0.10,
   MY1: 0, MY2: 0, MY4: 0, MY5: 0, MY7: 0,
@@ -61,20 +61,20 @@ assert.throws(() => fee({ originalFee: -1 }), /有效原工費/);
 assert.throws(() => fee({ manualOverride: true, manualFee: '' }), /請輸入最後實收工費/);
 assert.throws(() => fee({ manualOverride: true, manualFee: -1 }), /有效最後實收工費/);
 
-const sp3 = OverseasQuote.calculateOverseasQuotes({
+const sp3 = OverseasQuote.calculateOverseasQuotes({ weightGram: 1,
   storeCode: 'SP3',
   goldstarPrice: 1000,
   finalFee: 40
 });
-assert.deepEqual(sp3.map(({ label }) => label), ['正價', '全單 95 折']);
-assert.deepEqual(sp3.map(({ preTaxAmount }) => preTaxAmount), [1040, 988]);
-assert.deepEqual(sp3.map(({ taxAmount }) => taxAmount), [93.6, 88.92]);
-assert.deepEqual(sp3.map(({ totalAmount }) => totalAmount), [1133.6, 1076.92]);
+assert.deepEqual(sp3.map(({ label }) => label), ['正價']);
+assert.deepEqual(sp3.map(({ preTaxAmount }) => preTaxAmount), [1040]);
+assert.deepEqual(sp3.map(({ taxAmount }) => taxAmount), [93.6]);
+assert.deepEqual(sp3.map(({ totalAmount }) => totalAmount), [1133.6]);
 assert.equal(sp3[0].goldstarPrice, 1000);
 assert.equal(sp3[0].finalFee, 40);
-assert.ok(sp3.every((quote) => !Object.hasOwn(quote, 'goldAmount')));
+assert.equal(sp3[0].goldAmount, 1000);
 
-const bc2 = OverseasQuote.calculateOverseasQuotes({
+const bc2 = OverseasQuote.calculateOverseasQuotes({ weightGram: 1,
   storeCode: 'BC2',
   goldstarPrice: 1000,
   finalFee: 0
@@ -87,26 +87,26 @@ assert.deepEqual(OverseasQuote.taxLines(RegionConfig.getStoreConfig('BC2')), [
   { name: '總稅率', rate: 0.12 }
 ]);
 
-assert.equal(OverseasQuote.calculateOverseasQuotes({
-  storeCode: 'MY1', goldstarPrice: 0, finalFee: 0
-})[0].totalAmount, 0);
+assert.equal(OverseasQuote.calculateOverseasQuotes({ weightGram: 1,
+  storeCode: 'MY1', goldstarPrice: 100, finalFee: 0
+})[0].totalAmount, 100);
 assert.throws(
-  () => OverseasQuote.calculateOverseasQuotes({ storeCode: 'SP3', goldstarPrice: '', finalFee: 0 }),
-  /請輸入當地金星電視價錢/
+  () => OverseasQuote.calculateOverseasQuotes({ weightGram: 1, storeCode: 'SP3', goldstarPrice: '', finalFee: 0 }),
+  /請輸入當地每克金價/
 );
 for (const line of [
-  '請輸入當地金星電視價錢。',
-  '请输入当地金星电视价钱。',
-  'Please enter the local Goldstar display price.'
+  '請輸入當地每克金價。',
+  '请输入当地每克金价。',
+  'Please enter the local gold price per gram.'
 ]) {
   assert.ok(OverseasQuote.GOLDSTAR_REQUIRED_MESSAGE.includes(line));
 }
 assert.throws(
-  () => OverseasQuote.calculateOverseasQuotes({ storeCode: 'SP3', goldstarPrice: -1, finalFee: 0 }),
-  /有效金星電視價錢/
+  () => OverseasQuote.calculateOverseasQuotes({ weightGram: 1, storeCode: 'SP3', goldstarPrice: -1, finalFee: 0 }),
+  /有效每克金價/
 );
 assert.throws(
-  () => OverseasQuote.calculateOverseasQuotes({ storeCode: 'SP3', goldstarPrice: 100, finalFee: '' }),
+  () => OverseasQuote.calculateOverseasQuotes({ weightGram: 1, storeCode: 'SP3', goldstarPrice: 100, finalFee: '' }),
   /請輸入最後實收工費/
 );
 
@@ -137,7 +137,7 @@ const authorizedSummary = OverseasQuote.createOverseasSummary({
   weightGram: 10,
   goldstarPrice: 1000,
   feeCalculation: belowThirty,
-  quotes: OverseasQuote.calculateOverseasQuotes({
+  quotes: OverseasQuote.calculateOverseasQuotes({ weightGram: 1,
     storeCode: 'SP3', goldstarPrice: 1000, finalFee: belowThirty.finalFee
   })
 });
@@ -149,7 +149,7 @@ for (const expected of [
   '貨號：ITEM001',
   '模號：MODEL9',
   '金重：10 克',
-  '金星電視價錢：SGD 1,000.00',
+  '每克金價：SGD 1,000.00／克',
   '原工費：SGD 100.00',
   '工費折扣：30%',
   '額外加減金額：SGD -1.00',
@@ -157,8 +157,6 @@ for (const expected of [
   'GST：9%',
   '【正價】',
   '稅前金額：SGD 1,029.00',
-  '【全單 95 折】',
-  '95 折稅前金額：SGD 977.55',
   ...OverseasQuote.AUTHORIZATION_LINES,
   '以上數據只作參考，一切以金星系統數據為準。'
 ]) {
@@ -174,7 +172,7 @@ const manualSummary = OverseasQuote.createOverseasSummary({
   weightGram: 1,
   goldstarPrice: 100,
   feeCalculation: manual,
-  quotes: OverseasQuote.calculateOverseasQuotes({
+  quotes: OverseasQuote.calculateOverseasQuotes({ weightGram: 1,
     storeCode: 'SP3', goldstarPrice: 100, finalFee: manual.finalFee
   })
 });
@@ -182,7 +180,7 @@ assert.ok(manualSummary.includes('最後實收工費：SGD 35.00（已手動調�
 
 const overseasSource = fs.readFileSync('assets/js/overseas-quote.js', 'utf8');
 assert.ok(!overseasSource.includes('1.02'), 'overseas calculation must not multiply by 1.02');
-assert.ok(!overseasSource.includes('weightGram *'), 'overseas price must not use weight times price');
+
 assert.ok(!overseasSource.includes('GOLD_PRICE_API'), 'overseas module must not use Hong Kong gold price API');
 
 const domesticQuotes = calculateQuotes({ weightGram: 10, fee: 1000, sellPrice: 800, unit: 'gram' });
@@ -191,3 +189,14 @@ assert.deepEqual(domesticQuotes.map(({ amount }) => amount), [9000, 8500, 8000, 
 assert.match(fs.readFileSync('main-tool.html', 'utf8'), /subTotal \* 1\.02/, 'existing Hong Kong/Macao calculation changed');
 
 console.log('overseas quote tests passed');
+
+const base = { storeCode: 'US6', goldstarPrice: 200, weightGram: 10, finalFee: 100, originalFee: 100 };
+assert.equal(OverseasQuote.calculateOverseasQuotes(base).length, 1);
+assert.equal(OverseasQuote.calculateOverseasQuotes(base)[0].totalAmount, 2310);
+const discounted = OverseasQuote.calculateOverseasQuotes({...base, useFull95: true})[1];
+assert.equal(discounted.preTaxAmount, 1995);
+assert.equal(discounted.taxAmount, 199.5);
+assert.equal(discounted.totalAmount, 2194.5);
+assert.throws(()=>OverseasQuote.calculateOverseasQuotes({...base, useFull95:true, finalFee:50}), /原工費/);
+for (const weightGram of [undefined,'',0,-1,NaN]) assert.throws(()=>OverseasQuote.calculateOverseasQuotes({...base,weightGram}), /金重/);
+assert.throws(()=>OverseasQuote.calculateOverseasQuotes({...base,goldstarPrice:0}), /金價/);

@@ -5,7 +5,7 @@
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US2', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.08875 }], totalTaxRate: 0.08875 },
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US4', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.08875 }], totalTaxRate: 0.08875 },
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US5', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.08625 }], totalTaxRate: 0.08625 },
-    { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US6', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.09375 }], totalTaxRate: 0.09375 },
+    { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US6', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.10 }], totalTaxRate: 0.10 },
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US7', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.105 }], totalTaxRate: 0.105 },
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US8', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.08875 }], totalTaxRate: 0.08875 },
     { marketGroup: 'overseas', regionCode: 'CA', regionName: '加拿大', storeCode: 'BC2', currencyCode: 'CAD', taxType: 'GST/PST', taxComponents: [{ name: 'GST', rate: 0.05 }, { name: 'PST', rate: 0.07 }], totalTaxRate: 0.12 },

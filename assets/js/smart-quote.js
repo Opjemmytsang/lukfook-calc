@@ -17,6 +17,7 @@
   const elements = {};
   let scanner = null;
   let scannerStarting = false;
+  let scannerGeneration = 0;
   let imageScanning = false;
   let livePrice = null;
   let priceFetchController = null;
@@ -281,6 +282,7 @@
   }
 
   async function stopScanner({ updateStatus = false } = {}) {
+    scannerGeneration++;
     const current = scanner;
     scanner = null;
     scannerStarting = false;
@@ -327,80 +329,76 @@
     elements.resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  function showCameraFallback(message) {
+    elements.cameraFallback.hidden = false;
+    setStatus(elements.scanStatus, message + ' 請按「拍照掃碼」，拍攝 QR Code 後會自動讀取。', 'warn');
+  }
+
   async function startScanner() {
     if (imageScanning || scannerStarting || scanner) return;
-    if (!window.isSecureContext) {
-      setStatus(elements.scanStatus, '相機只可在 HTTPS 環境使用。', 'error');
-      return;
-    }
-    if (!navigator.mediaDevices?.getUserMedia) {
-      setStatus(elements.scanStatus, '此瀏覽器不支援相機掃描，可改用上載圖片。', 'error');
+    if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
+      showCameraFallback('此瀏覽器未能使用即時相機掃描。');
       return;
     }
     if (!window.Html5Qrcode) {
       elements.libraryStatus.hidden = false;
-      setStatus(elements.scanStatus, '掃描功能暫時未能使用，可改用上載圖片。', 'error');
+      showCameraFallback('即時掃描程式未能載入。');
       return;
     }
     elements.libraryStatus.hidden = true;
+    elements.cameraFallback.hidden = true;
     scannerStarting = true;
+    const generation = ++scannerGeneration;
     updateScannerControls({ loading: true });
     setStatus(elements.scanStatus, '正在開啟相機……');
-    const nextScanner = new window.Html5Qrcode('reader');
-    scanner = nextScanner;
-    try {
-      const boxSize = Math.min(250, Math.max(190, elements.reader.clientWidth - 32));
-      await scanner.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: boxSize, height: boxSize } },
-        async (decodedText) => {
-          try {
-            await applyScannedData(decodedText);
-          } catch (error) {
-            elements.itemError.textContent = error.message;
-            elements.itemError.hidden = false;
-            setStatus(elements.scanStatus, '未能讀取，請重新掃描。', 'error');
-          }
-        },
-        () => {}
-      );
-      if (scanner !== nextScanner) {
-        try {
-          await nextScanner.stop();
-        } catch (stopError) {
-          // Stop may already have been requested while the camera was opening.
-        }
-        try {
-          await nextScanner.clear();
-        } catch (clearError) {
-          // Reader may already be clear.
-        }
-        updateScannerControls();
-        return;
-      }
-      scannerStarting = false;
-      updateScannerControls({ active: true });
-      setStatus(elements.scanStatus, '請將 QR Code 放入框內。', 'ok');
-    } catch (error) {
-      const wasCancelled = scanner !== nextScanner;
-      if (scanner === nextScanner) scanner = null;
-      scannerStarting = false;
+    // Prefer the rear camera; retry once without camera constraints or scan box.
+    const configurations = [
+      { fps: 10, videoConstraints: { facingMode: { ideal: 'environment' } } },
+      { fps: 10, videoConstraints: { width: { ideal: 1280 } } }
+    ];
+    for (let attempt = 0; attempt < configurations.length; attempt++) {
+      let nextScanner;
       try {
-        await nextScanner.clear();
-      } catch (clearError) {
-        // Reader may already be clear.
-      }
-      updateScannerControls();
-      if (wasCancelled) return;
-      const errorName = String(error?.name || error || '');
-      if (/NotAllowed|PermissionDenied/i.test(errorName)) {
-        setStatus(elements.scanStatus, '未能開啟相機，請檢查瀏覽器的相機權限。', 'error');
-      } else if (/NotFound|DevicesNotFound/i.test(errorName)) {
-        setStatus(elements.scanStatus, '未能找到可用相機，可改用上載圖片。', 'error');
-      } else if (/Security/i.test(errorName)) {
-        setStatus(elements.scanStatus, '相機只可在 HTTPS 環境使用。', 'error');
-      } else {
-        setStatus(elements.scanStatus, '未能開啟相機，請檢查瀏覽器的相機權限。', 'error');
+        nextScanner = new window.Html5Qrcode('reader');
+        scanner = nextScanner;
+        await nextScanner.start(
+          { facingMode: 'environment' }, configurations[attempt],
+          async (decodedText) => {
+            if (generation !== scannerGeneration || imageScanning) return;
+            try { await applyScannedData(decodedText); }
+            catch (error) {
+              elements.itemError.textContent = error.message;
+              elements.itemError.hidden = false;
+              setStatus(elements.scanStatus, '未能讀取，請重新掃描。', 'error');
+            }
+          }, () => {}
+        );
+        if (generation !== scannerGeneration) {
+          try { await nextScanner.stop(); } catch {}
+          try { await nextScanner.clear(); } catch {}
+          return;
+        }
+        scannerStarting = false;
+        updateScannerControls({ active: true });
+        setStatus(elements.scanStatus, '請將 QR Code 放入畫面內。', 'ok');
+        return;
+      } catch (error) {
+        try { await nextScanner?.stop(); } catch {}
+        try { await nextScanner?.clear(); } catch {}
+        if (generation !== scannerGeneration) return;
+        scanner = null;
+        const name = String(error?.name || error || '');
+        const denied = /NotAllowed|PermissionDenied|Security/i.test(name);
+        if (!denied && attempt === 0) {
+          setStatus(elements.scanStatus, '正在自動切換相機設定重試……');
+          continue;
+        }
+        scannerStarting = false;
+        updateScannerControls();
+        showCameraFallback(denied
+          ? 'Safari 未允許即時相機。可在網址列的網站設定將「相機」改為「允許」。'
+          : '即時相機未能啟動，已提供拍照掃碼方式。');
+        return;
       }
     }
   }
@@ -409,6 +407,7 @@
     if (!file || imageScanning) return;
     imageScanning = true;
     elements.qrFile.disabled = true;
+    elements.cameraFile.disabled = true;
     try {
       await stopScanner();
       elements.startButton.disabled = true;
@@ -423,6 +422,8 @@
     } finally {
       elements.qrFile.value = '';
       elements.qrFile.disabled = false;
+      elements.cameraFile.disabled = false;
+      elements.cameraFile.value = '';
       elements.rescanButton.disabled = false;
       elements.clearButton.disabled = false;
       imageScanning = false;
@@ -810,7 +811,7 @@
   }
 
   function bind() {
-    ['reader', 'scanSection', 'resultSection', 'startButton', 'stopButton', 'qrFile', 'scanStatus', 'libraryStatus',
+    ['reader', 'scanSection', 'resultSection', 'startButton', 'stopButton', 'qrFile', 'cameraFile', 'cameraFallback', 'scanStatus', 'libraryStatus',
       'itemNo', 'modelNo', 'weight', 'laborFee', 'itemError', 'priceUnit', 'sellPrice', 'livePrice',
       'priceTime', 'sourceState', 'priceStatus', 'refreshPrice', 'applyPrice', 'results',
       'calculationError', 'copyButton', 'rescanButton', 'clearButton', 'actionStatus', 'marketGroup',
@@ -827,6 +828,7 @@
     elements.startButton.addEventListener('click', startScanner);
     elements.stopButton.addEventListener('click', () => stopScanner({ updateStatus: true }));
     elements.qrFile.addEventListener('change', (event) => scanFile(event.target.files?.[0]));
+    elements.cameraFile.addEventListener('change', (event) => scanFile(event.target.files?.[0]));
     elements.refreshPrice.addEventListener('click', fetchPrice);
     elements.applyPrice.addEventListener('click', () => {
       const price = selectedLivePrice();

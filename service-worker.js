@@ -1,8 +1,8 @@
-const CACHE_NAME = 'lukfook-smart-quote-demo-v12';
+const CACHE_NAME = 'lukfook-smart-quote-demo-v13';
 const APP_SHELL = [
   './','./index.html','./smart-quote.html','./main-tool.html','./discount-scenarios.html','./profit-estimator-v1.html',
   './travel-expense.html','./manifest.webmanifest','./icon.svg','./icon-192.png','./icon-512.png','./assets/css/app.css',
-  './assets/vendor/jsQR-1.4.0.js','./assets/js/photo-qr.js','./assets/js/common.js','./assets/js/region-config.js','./assets/js/overseas-quote.js','./assets/js/smart-quote.js','./assets/js/travel-expense.js'
+  './assets/vendor/html5-qrcode-2.3.8.min.js','./assets/vendor/jsQR-1.4.0.js','./assets/js/photo-qr.js','./assets/js/common.js','./assets/js/region-config.js','./assets/js/overseas-quote.js','./assets/js/smart-quote.js','./assets/js/travel-expense.js'
 ];
 self.addEventListener('install',(event)=>{event.waitUntil(caches.open(CACHE_NAME).then((cache)=>cache.addAll(APP_SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',(event)=>{event.waitUntil(caches.keys().then((keys)=>Promise.all(keys.filter((key)=>key!==CACHE_NAME).map((key)=>caches.delete(key)))).then(()=>self.clients.claim()))});

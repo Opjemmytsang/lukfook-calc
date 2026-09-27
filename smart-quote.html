@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" href="./icon-192.png">
   <link rel="stylesheet" href="./assets/css/app.css">
   <title>智能報價 DEMO｜六福珠寶</title>
-  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
+  <script src="./assets/vendor/html5-qrcode-2.3.8.min.js" defer></script>
   <script src="./assets/vendor/jsQR-1.4.0.js" defer></script>
   <script src="./assets/js/photo-qr.js" defer></script>
   <script src="./assets/js/common.js" defer></script>
@@ -40,6 +40,11 @@
           <button class="button button-secondary" id="stopButton" type="button" disabled>停止掃描</button>
           <label class="button button-secondary file-button" for="qrFile">上載圖片</label>
           <input class="visually-hidden" id="qrFile" type="file" accept="image/*">
+        </div>
+        <div id="cameraFallback" hidden>
+          <label class="button button-primary file-button" for="cameraFile">拍照掃碼</label>
+          <input class="visually-hidden" id="cameraFile" type="file" accept="image/*" capture="environment">
+          <p class="offline-note">拍清楚整個 QR Code，再確認使用照片，系統會自動讀取貨品資料。亦可按「上載圖片」選擇相簿照片。</p>
         </div>
         <p class="status" id="scanStatus" role="status">可使用相機掃描或上載 QR Code 圖片。</p>
         <p class="offline-note" id="libraryStatus" hidden>相機掃描程式未能載入，可使用「上載圖片」讀取照片。</p>

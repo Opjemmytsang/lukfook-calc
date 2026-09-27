@@ -328,7 +328,7 @@
   }
 
   async function startScanner() {
-    if (scannerStarting || scanner) return;
+    if (imageScanning || scannerStarting || scanner) return;
     if (!window.isSecureContext) {
       setStatus(elements.scanStatus, '相機只可在 HTTPS 環境使用。', 'error');
       return;
@@ -406,33 +406,27 @@
   }
 
   async function scanFile(file) {
-    if (!file) return;
-    if (imageScanning) {
-      elements.qrFile.value = '';
-      return;
-    }
-    if (!window.Html5Qrcode) {
-      elements.qrFile.value = '';
-      setStatus(elements.scanStatus, '掃描功能暫時未能使用，可改用上載圖片。', 'error');
-      return;
-    }
+    if (!file || imageScanning) return;
     imageScanning = true;
-    await stopScanner();
-    const fileScanner = new window.Html5Qrcode('reader');
+    elements.qrFile.disabled = true;
     try {
-      setStatus(elements.scanStatus, '正在讀取圖片……');
-      const decodedText = await fileScanner.scanFile(file, true);
+      await stopScanner();
+      elements.startButton.disabled = true;
+      elements.rescanButton.disabled = true;
+      elements.clearButton.disabled = true;
+      setStatus(elements.scanStatus, '正在讀取照片……');
+      if (!window.LukfookPhotoQr) throw new Error('照片掃描程式未能載入，請連網重新整理頁面再試。');
+      const decodedText = await window.LukfookPhotoQr.decodePhoto(file);
       await applyScannedData(decodedText);
     } catch (error) {
-      setStatus(elements.scanStatus, '圖片內未能讀取 QR Code，請選擇較清晰的圖片。', 'error');
+      setStatus(elements.scanStatus, error.message || '未能讀取照片，請重新選擇。', 'error');
     } finally {
-      try {
-        await fileScanner.clear();
-      } catch (clearError) {
-        // Reader may already be clear.
-      }
       elements.qrFile.value = '';
+      elements.qrFile.disabled = false;
+      elements.rescanButton.disabled = false;
+      elements.clearButton.disabled = false;
       imageScanning = false;
+      updateScannerControls();
     }
   }
 
@@ -914,3 +908,4 @@
     window.addEventListener('DOMContentLoaded', bind);
   }
 })();
+

@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="./assets/css/app.css">
   <title>智能報價 DEMO｜六福珠寶</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
+  <script src="./assets/vendor/jsQR-1.4.0.js" defer></script>
+  <script src="./assets/js/photo-qr.js" defer></script>
   <script src="./assets/js/common.js" defer></script>
   <script src="./assets/js/region-config.js" defer></script>
   <script src="./assets/js/overseas-quote.js" defer></script>
@@ -40,7 +42,7 @@
           <input class="visually-hidden" id="qrFile" type="file" accept="image/*">
         </div>
         <p class="status" id="scanStatus" role="status">可使用相機掃描或上載 QR Code 圖片。</p>
-        <p class="offline-note" id="libraryStatus" hidden>QR 掃描功能需要先連接網絡載入。</p>
+        <p class="offline-note" id="libraryStatus" hidden>相機掃描程式未能載入，可使用「上載圖片」讀取照片。</p>
       </section>
 
       <div class="quote-main">
@@ -221,3 +223,4 @@
   </main>
 </body>
 </html>
+

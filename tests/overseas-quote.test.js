@@ -207,9 +207,9 @@ for (const code of ['AU9','AUA','AUB','AUC','AUE']) {
   assert.equal(store.regionCode,'AU');
   assert.equal(store.currencyCode,'AUD');
   assert.equal(store.totalTaxRate,0.1);
-  assert.equal(OverseasQuote.calculateOverseasQuotes({...base,storeCode:code})[0].totalAmount,2310);
+  assert.equal(OverseasQuote.calculateOverseasQuotes({...base,storeCode:code})[0].totalAmount,2300);
 }
-for (const code of ['USC','USF','BC3','NZ1']) {
+for (const code of ['USC','USF','BC3']) {
   const store=RegionConfig.getStoreConfig(code);
   assert.equal(store.totalTaxRate,null);
   assert.equal(OverseasQuote.formatRate(OverseasQuote.taxLines(store)[0].rate),'待設定');
@@ -219,3 +219,20 @@ assert.equal(RegionConfig.getStoreConfig('NZ1').currencyCode,'NZD');
 assert.ok(RegionConfig.getRegions().some(r=>r.regionCode==='NZ'));
 assert.equal(RegionConfig.OVERSEAS_STORES.filter(s=>s.storeCode==='SP4').length,1);
 assert.equal(RegionConfig.getStoreConfig('SP4').totalTaxRate,0.09);
+
+
+// AU taxes gold only; manual labour does not change GST; full95 discounts all components.
+for (const store of RegionConfig.getStoresByRegion('AU')) {
+  const input={...base,storeCode:store.storeCode};
+  const quote=OverseasQuote.calculateOverseasQuotes(input)[0];
+  assert.equal(quote.taxAmount,200);assert.equal(quote.totalAmount,2300);
+  assert.equal(OverseasQuote.calculateOverseasQuotes({...input,finalFee:50})[0].taxAmount,200);
+  const q95=OverseasQuote.calculateOverseasQuotes({...input,useFull95:true})[1];
+  assert.equal(q95.taxAmount,190);assert.equal(q95.totalAmount,2185);
+}
+assert.equal(RegionConfig.getStoreConfig('NZ1').totalTaxRate,0.15);
+const nz=OverseasQuote.calculateOverseasQuotes({...base,storeCode:'NZ1',useFull95:true});
+assert.equal(nz[0].taxAmount,300);assert.equal(nz[0].totalAmount,2400);
+assert.equal(nz[1].taxAmount,285);assert.equal(nz[1].totalAmount,2280);
+assert.equal(OverseasQuote.calculateOverseasQuotes({...base,storeCode:'NZ1',finalFee:50})[0].totalAmount,2350);
+console.log('AU/NZ gold-only GST tests passed');

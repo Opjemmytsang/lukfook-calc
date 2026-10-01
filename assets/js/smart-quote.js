@@ -174,6 +174,7 @@
         .map(({ name: taxName, rate }) => `${taxName}：${OverseasQuote.formatRate(rate)}`)
         .join('\n');
       addBreakdownRow(details, '稅率', rateText, 'result-tax-lines');
+      if (quote.taxOnGoldOnly) addBreakdownRow(details, 'GST 計稅金值（工費不計稅）', OverseasQuote.formatMoney(quote.taxableAmount, currency));
       addBreakdownRow(details, '稅額', OverseasQuote.formatMoney(quote.taxAmount, currency));
       addBreakdownRow(details, '含稅總額', OverseasQuote.formatMoney(quote.totalAmount, currency));
       card.append(name, total, details);
@@ -910,4 +911,5 @@
     window.addEventListener('DOMContentLoaded', bind);
   }
 })();
+
 

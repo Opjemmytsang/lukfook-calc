@@ -10,7 +10,7 @@
     { marketGroup: 'overseas', regionCode: 'AU', regionName: '澳洲', storeCode: 'AUB', currencyCode: 'AUD', taxType: 'GST', taxComponents: [{ name: 'GST', rate: 0.1 }], totalTaxRate: 0.1 },
     { marketGroup: 'overseas', regionCode: 'AU', regionName: '澳洲', storeCode: 'AUC', currencyCode: 'AUD', taxType: 'GST', taxComponents: [{ name: 'GST', rate: 0.1 }], totalTaxRate: 0.1 },
     { marketGroup: 'overseas', regionCode: 'AU', regionName: '澳洲', storeCode: 'AUE', currencyCode: 'AUD', taxType: 'GST', taxComponents: [{ name: 'GST', rate: 0.1 }], totalTaxRate: 0.1 },
-    { marketGroup: 'overseas', regionCode: 'NZ', regionName: '紐西蘭', storeCode: 'NZ1', currencyCode: 'NZD', taxType: 'GST', taxComponents: [], totalTaxRate: null },
+    { marketGroup: 'overseas', regionCode: 'NZ', regionName: '紐西蘭', storeCode: 'NZ1', currencyCode: 'NZD', taxType: 'GST', taxComponents: [{ name: 'GST', rate: 0.15 }], totalTaxRate: 0.15 },
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US2', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.08875 }], totalTaxRate: 0.08875 },
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US4', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.08875 }], totalTaxRate: 0.08875 },
     { marketGroup: 'overseas', regionCode: 'US', regionName: '美國', storeCode: 'US5', currencyCode: 'USD', taxType: 'Sales Tax', taxComponents: [{ name: 'Sales Tax', rate: 0.08625 }], totalTaxRate: 0.08625 },
@@ -57,3 +57,4 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined') window.LukfookRegionConfig = api;
 })();
+

@@ -119,7 +119,9 @@
     const scenarios = useFull95 ? SCENARIOS : SCENARIOS.filter((scenario) => scenario.key === 'regular');
     return scenarios.map((scenario) => {
       const preTaxAmount = scenario.preTax(discountBeforeAmount);
-      const taxAmount = preTaxAmount * store.totalTaxRate;
+      const taxOnGoldOnly = ['AU', 'NZ'].includes(store.regionCode);
+      const taxableAmount = taxOnGoldOnly ? scenario.preTax(goldAmount) : preTaxAmount;
+      const taxAmount = taxableAmount * store.totalTaxRate;
       return {
         key: scenario.key,
         label: scenario.label,
@@ -129,6 +131,8 @@
         finalFee: actualFee,
         discountBeforeAmount,
         preTaxAmount,
+        taxOnGoldOnly,
+        taxableAmount,
         taxRate: store.totalTaxRate,
         taxAmount,
         totalAmount: preTaxAmount + taxAmount
@@ -196,6 +200,7 @@
       } else {
         lines.push(`稅前金額：${formatMoney(quote.preTaxAmount, currency)}`);
       }
+      if (quote.taxOnGoldOnly) lines.push(`GST 計稅金值（工費不計稅）：${formatMoney(quote.taxableAmount, currency)}`);
       lines.push(
         `稅額：${formatMoney(quote.taxAmount, currency)}`,
         `含稅總額：${formatMoney(quote.totalAmount, currency)}`,
@@ -228,3 +233,4 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined') window.LukfookOverseasQuote = api;
 })();
+

@@ -102,8 +102,14 @@
               <input id="originalLaborFee" type="number" inputmode="decimal" min="0" step="0.01" placeholder="未有資料">
             </div>
             <div class="field" id="feeDiscountField" hidden>
-              <label for="feeDiscount">工費折扣（%）</label>
-              <input id="feeDiscount" type="number" inputmode="decimal" min="0" max="100" step="0.01" value="100">
+              <label>工費收取比例</label>
+              <input id="feeDiscount" type="hidden" value="100">
+              <div class="discount-buttons" role="group" aria-label="工費收取比例">
+                <button type="button" class="button button-secondary" data-fee-percent="100" aria-pressed="true">全工費</button>
+                <button type="button" class="button button-secondary" data-fee-percent="80" aria-pressed="false">80%</button>
+                <button type="button" class="button button-secondary" data-fee-percent="50" aria-pressed="false">50%</button>
+                <button type="button" class="button button-secondary" data-fee-percent="30" aria-pressed="false">30%</button>
+              </div>
             </div>
             <div class="field" id="feeAdjustmentField" hidden>
               <label for="feeAdjustment" id="feeAdjustmentLabel">額外加減金額</label>
@@ -162,13 +168,21 @@
 
           <p class="field-error" id="calculationError" role="alert" hidden></p>
           <div class="field" id="domesticOfferField">
-            <label for="domesticOffer">選擇優惠</label>
-            <select id="domesticOffer">
+            <label>工費收取比例／優惠 · 固定 2% 佣金</label>
+            <select id="domesticOffer" hidden aria-label="已選優惠">
               <option value="regular">正價</option>
+              <option value="fee80">工費 80%</option><option value="fee30">工費 30%</option>
               <option value="halfFee">半工</option>
               <option value="noFee">免工</option>
               <option value="full95">全單 95 折</option>
             </select>
+            <div class="discount-buttons" role="group" aria-label="香港澳門工費及優惠">
+              <button type="button" class="button button-secondary" data-domestic-offer="regular" aria-pressed="true">全工費</button>
+              <button type="button" class="button button-secondary" data-domestic-offer="fee80" aria-pressed="false">80%</button>
+              <button type="button" class="button button-secondary" data-domestic-offer="halfFee" aria-pressed="false">50%</button>
+              <button type="button" class="button button-secondary" data-domestic-offer="fee30" aria-pressed="false">30%</button>
+              <button type="button" class="button button-secondary" data-domestic-offer="full95" aria-pressed="false">全單 95 折（全工費）</button>
+            </div>
           </div>
           <p class="status" id="activeOfferStatus">目前優惠：正價</p>
           <div class="result-grid" id="results" aria-live="polite"></div>
@@ -195,10 +209,9 @@
           <details class="calculation-details">
             <summary>顯示／隱藏計算方式</summary>
             <ul id="domesticCalculationDetails">
-              <li>正價：金價金額 + 工費／標價</li>
-              <li>半工：金價金額 + 工費／標價 × 50%</li>
-              <li>免工：金價金額</li>
-              <li>全單 95 折：（金價金額 + 工費／標價）× 95%</li>
+              <li>港澳佣金固定 2%，已計入報價。</li>
+              <li>工費優惠：（金價金額 + 原工費 × 所選比例）× 1.02。</li>
+              <li>全單 95 折：（金價金額 + 全工費）× 95% × 1.02。</li>
             </ul>
             <ul id="overseasCalculationDetails" hidden>
               <li>正價：每克金價 × 金重（克）+ 最後實收工費</li>
@@ -229,5 +242,6 @@
   </main>
 </body>
 </html>
+
 
 

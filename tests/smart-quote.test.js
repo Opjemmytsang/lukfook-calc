@@ -18,11 +18,11 @@ assert.equal(parseQrPayload('ITEM\nINJECT/MODEL\t9/1/C/D/E/100').itemNo, 'ITEM I
 assert.equal(parseQrPayload('ITEM\nINJECT/MODEL\t9/1/C/D/E/100').modelNo, 'MODEL 9');
 
 const gramQuotes = calculateQuotes({ weightGram: 10, fee: 1000, sellPrice: 800, unit: 'gram' });
-assert.deepEqual(gramQuotes.map(({ label }) => label), ['正價', '半工', '免工', '全單 95 折']);
-assert.deepEqual(gramQuotes.map(({ amount }) => amount), [9000, 8500, 8000, 8550]);
+assert.deepEqual(gramQuotes.map(({ label }) => label), ['正價', '半工', '免工', '工費 80%', '工費 30%', '全單 95 折']);
+assert.deepEqual(gramQuotes.map(({ amount }) => amount), [9180, 8670, 8160, 8976, 8466, 8721]);
 
 const taelQuotes = calculateQuotes({ weightGram: GRAMS_PER_TAEL, fee: 1000, sellPrice: 30000, unit: 'tael' });
-assert.deepEqual(taelQuotes.map(({ amount }) => Number(amount.toFixed(2))), [31000, 30500, 30000, 29450]);
+assert.deepEqual(taelQuotes.map(({ amount }) => Number(amount.toFixed(2))), [31620, 31110, 30600, 31416, 30906, 30039]);
 assert.throws(() => calculateQuotes({ weightGram: '', fee: 0, sellPrice: 800, unit: 'gram' }), /金重/);
 
 const payload = normalisePricePayload({ '克黃金售出': 800, '黃金售出': 29943.2, record_date: '2026-07-28 09:00:00' });
@@ -47,8 +47,9 @@ const summary = createSummary({
 assert.match(summary, /^六福珠寶智能報價 DEMO/);
 assert.match(summary, /金重：10 克/);
 assert.match(summary, /使用售出價：HK\$ 800\.00／克/);
-assert.match(summary, /正價：HK\$ 9,000\.00/);
+assert.match(summary, /正價：HK\$ 9,180\.00/);
 assert.match(summary, /以上數據只作參考，一切以金星系統數據為準。$/);
 assert.ok(!summary.includes('MUST_NOT_APPEAR'));
 
 console.log('smart-quote tests passed');
+

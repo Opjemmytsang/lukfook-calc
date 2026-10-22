@@ -10,6 +10,8 @@
     { key: 'regular', label: '正價', formula: (gold, fee) => gold + fee },
     { key: 'halfFee', label: '半工', formula: (gold, fee) => gold + fee * 0.5 },
     { key: 'noFee', label: '免工', formula: (gold) => gold },
+    { key: 'fee80', label: '工費 80%', formula: (gold, fee) => gold + fee * 0.8 },
+    { key: 'fee30', label: '工費 30%', formula: (gold, fee) => gold + fee * 0.3 },
     { key: 'full95', label: '全單 95 折', formula: (gold, fee) => (gold + fee) * 0.95 }
   ];
 
@@ -74,7 +76,9 @@
     return SCENARIOS.map((scenario) => ({
       key: scenario.key,
       label: scenario.label,
-      amount: scenario.formula(goldAmount, labor)
+      subtotal: scenario.formula(goldAmount, labor),
+      commission: scenario.formula(goldAmount, labor) * 0.02,
+      amount: scenario.formula(goldAmount, labor) * 1.02
     }));
   }
 
@@ -107,6 +111,7 @@
       `工費／標價：${formatMoney(fee)}`,
       `使用售出價：${formatMoney(sellPrice)}／${unitLabel}`,
       '',
+      '佣金：固定 2%（已計入總額）',
       ...quotes.map(({ label, amount }) => `${label}：${formatMoney(amount)}`),
       '',
       DISCLAIMER
@@ -205,8 +210,19 @@
     return feeCalculation;
   }
 
+  function syncDiscountButtons() {
+    document.querySelectorAll('[data-fee-percent]').forEach(button => {
+      button.disabled = elements.full95Enabled.checked;
+      button.setAttribute('aria-pressed', String(!elements.manualFeeOverride.checked && elements.feeDiscount.value === button.dataset.feePercent));
+    });
+    document.querySelectorAll('[data-domestic-offer]').forEach(button => {
+      button.setAttribute('aria-pressed', String(elements.domesticOffer.value === button.dataset.domesticOffer));
+    });
+  }
+
   function render() {
     if (!elements.results) return;
+    syncDiscountButtons();
     elements.calculationError.hidden = true;
     elements.feeError.hidden = true;
     elements.negativeFeeWarning.hidden = true;
@@ -235,6 +251,8 @@
         renderOverseasResults(quotes);
         return quotes;
       }
+      if (selectedDomesticScenario().key === 'full95' && originalFee !== null) elements.laborFee.value = String(originalFee);
+      elements.laborFee.readOnly = selectedDomesticScenario().key === 'full95' && originalFee !== null;
       const quotes = calculateQuotes({
         weightGram: elements.weight.value,
         fee: elements.laborFee.value,
@@ -252,7 +270,9 @@
         const value = document.createElement('strong');
         value.className = 'result-amount';
         value.textContent = formatMoney(amount);
-        card.append(name, value);
+        const commission = document.createElement('small');
+        commission.textContent = '已包括固定 2% 佣金';
+        card.append(name, value, commission);
         return card;
       }));
       updateActiveOffer();
@@ -766,14 +786,15 @@
       const unit=elements.priceUnit.value==='gram'?'g':'tael';
       priceInfo=[
         ['今日金價','Today Gold Price',formatMoney(price)+' / '+unit],
-        ['工費','Labour Charge',formatMoney(fee)]
+        ['工費','Labour Charge',formatMoney(fee * ({fee80:0.8,halfFee:0.5,fee30:0.3,noFee:0}[selectedDomesticScenario().key] ?? 1))],
+        ['佣金（固定 2%）','Commission (Fixed 2%)',formatMoney(quotes[0].commission)]
       ];
     }
     priceInfo.forEach(([zh,en,val])=>{
       const row=document.createElement('div'); const label=bilingualLabel(zh,en); const strong=document.createElement('strong'); strong.textContent=val; row.append(label,strong); elements.customerPriceInfo.append(row);
     });
     elements.customerResults.replaceChildren();
-    const enMap={regular:'Regular Price',halfFee:'50% Labour Charge',noFee:'No Labour Charge',full95:'5% Off Total'};
+    const enMap={fee80:'80% Labour Charge',fee30:'30% Labour Charge',regular:'Regular Price',halfFee:'50% Labour Charge',noFee:'No Labour Charge',full95:'5% Off Total'};
     quotes.forEach(q=>{
       const card=document.createElement('article'); card.className='customer-result-card customer-price-primary';
       const label=bilingualLabel(q.label,enMap[q.key]||q.label);
@@ -826,6 +847,20 @@
     ].forEach((id) => { elements[id] = $(id); });
     if (Object.values(elements).some((element) => !element)) return;
 
+    document.querySelectorAll('[data-fee-percent]').forEach(button => button.addEventListener('click', () => {
+      if (elements.full95Enabled.checked) return;
+      elements.feeDiscount.value = button.dataset.feePercent;
+      elements.manualFeeOverride.checked = false;
+      elements.finalLaborFee.readOnly = true;
+      elements.feeAdjustment.value = '0';
+      elements.manualFeeStatus.textContent = '按已選工費百分比計算。';
+      render();
+    }));
+    document.querySelectorAll('[data-domestic-offer]').forEach(button => button.addEventListener('click', () => {
+      elements.domesticOffer.value = button.dataset.domesticOffer;
+      updateActiveOffer();
+      render();
+    }));
     elements.startButton.addEventListener('click', startScanner);
     elements.stopButton.addEventListener('click', () => stopScanner({ updateStatus: true }));
     elements.qrFile.addEventListener('change', (event) => scanFile(event.target.files?.[0]));
@@ -911,5 +946,6 @@
     window.addEventListener('DOMContentLoaded', bind);
   }
 })();
+
 
 

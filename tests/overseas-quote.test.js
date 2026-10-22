@@ -184,8 +184,8 @@ assert.ok(!overseasSource.includes('1.02'), 'overseas calculation must not multi
 assert.ok(!overseasSource.includes('GOLD_PRICE_API'), 'overseas module must not use Hong Kong gold price API');
 
 const domesticQuotes = calculateQuotes({ weightGram: 10, fee: 1000, sellPrice: 800, unit: 'gram' });
-assert.deepEqual(domesticQuotes.map(({ label }) => label), ['正價', '半工', '免工', '全單 95 折']);
-assert.deepEqual(domesticQuotes.map(({ amount }) => amount), [9000, 8500, 8000, 8550]);
+assert.deepEqual(domesticQuotes.map(({ label }) => label), ['正價', '半工', '免工', '工費 80%', '工費 30%', '全單 95 折']);
+assert.deepEqual(domesticQuotes.map(({ amount }) => amount), [9180, 8670, 8160, 8976, 8466, 8721]);
 assert.match(fs.readFileSync('main-tool.html', 'utf8'), /subTotal \* 1\.02/, 'existing Hong Kong/Macao calculation changed');
 
 console.log('overseas quote tests passed');
@@ -236,3 +236,4 @@ assert.equal(nz[0].taxAmount,300);assert.equal(nz[0].totalAmount,2400);
 assert.equal(nz[1].taxAmount,285);assert.equal(nz[1].totalAmount,2280);
 assert.equal(OverseasQuote.calculateOverseasQuotes({...base,storeCode:'NZ1',finalFee:50})[0].totalAmount,2350);
 console.log('AU/NZ gold-only GST tests passed');
+

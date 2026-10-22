@@ -18,7 +18,7 @@ assert.equal(parseQrPayload('ITEM\nINJECT/MODEL\t9/1/C/D/E/100').itemNo, 'ITEM I
 assert.equal(parseQrPayload('ITEM\nINJECT/MODEL\t9/1/C/D/E/100').modelNo, 'MODEL 9');
 
 const gramQuotes = calculateQuotes({ weightGram: 10, fee: 1000, sellPrice: 800, unit: 'gram' });
-assert.deepEqual(gramQuotes.map(({ label }) => label), ['正價', '半工', '免工', '工費 80%', '工費 30%', '全單 95 折']);
+assert.deepEqual(gramQuotes.map(({ label }) => label), ['正價', '工費（5折）', '免工', '工費（8折）', '工費（3折）', '全單 95 折']);
 assert.deepEqual(gramQuotes.map(({ amount }) => amount), [9180, 8670, 8160, 8976, 8466, 8721]);
 
 const taelQuotes = calculateQuotes({ weightGram: GRAMS_PER_TAEL, fee: 1000, sellPrice: 30000, unit: 'tael' });
@@ -52,4 +52,5 @@ assert.match(summary, /以上數據只作參考，一切以金星系統數據為
 assert.ok(!summary.includes('MUST_NOT_APPEAR'));
 
 console.log('smart-quote tests passed');
+
 

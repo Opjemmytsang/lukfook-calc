@@ -8,10 +8,10 @@
   const OverseasQuote = typeof window !== 'undefined' ? window.LukfookOverseasQuote : null;
   const SCENARIOS = [
     { key: 'regular', label: '正價', formula: (gold, fee) => gold + fee },
-    { key: 'halfFee', label: '半工', formula: (gold, fee) => gold + fee * 0.5 },
+    { key: 'halfFee', label: '工費（5折）', formula: (gold, fee) => gold + fee * 0.5 },
     { key: 'noFee', label: '免工', formula: (gold) => gold },
-    { key: 'fee80', label: '工費 80%', formula: (gold, fee) => gold + fee * 0.8 },
-    { key: 'fee30', label: '工費 30%', formula: (gold, fee) => gold + fee * 0.3 },
+    { key: 'fee80', label: '工費（8折）', formula: (gold, fee) => gold + fee * 0.8 },
+    { key: 'fee30', label: '工費（3折）', formula: (gold, fee) => gold + fee * 0.3 },
     { key: 'full95', label: '全單 95 折', formula: (gold, fee) => (gold + fee) * 0.95 }
   ];
 
@@ -100,6 +100,18 @@
     elements.activeOfferStatus.textContent='目前優惠：'+selectedDomesticScenario().label;
   }
 
+  function currentFeeLabel() {
+    if (isOverseas()) {
+      if (elements.full95Enabled.checked) return '工費（全工費）';
+      if (elements.manualFeeOverride.checked) return '工費（手動調整）';
+      const percent = Number(elements.feeDiscount.value);
+      const discount = percent === 100 ? '全工費' : `${percent / 10}折`;
+      return `工費（${discount}${Number(elements.feeAdjustment.value) ? '，另有加減' : ''}）`;
+    }
+    const key = selectedDomesticScenario().key;
+    return '工費（' + ({fee80:'8折',halfFee:'5折',fee30:'3折',noFee:'免工'}[key] || '全工費') + '）';
+  }
+
   function createSummary({ itemNo, modelNo, weight, fee, sellPrice, unit, quotes }) {
     const unitLabel = unit === 'gram' ? '克' : '両';
     return [
@@ -111,7 +123,7 @@
       `工費／標價：${formatMoney(fee)}`,
       `使用售出價：${formatMoney(sellPrice)}／${unitLabel}`,
       '',
-      '佣金：固定 2%（已計入總額）',
+      '傭金：2%（已計入總額）',
       ...quotes.map(({ label, amount }) => `${label}：${formatMoney(amount)}`),
       '',
       DISCLAIMER
@@ -169,7 +181,7 @@
       if (quote.key === 'regular') {
         addBreakdownRow(details, '每克金價', OverseasQuote.formatMoney(quote.goldstarPrice, currency) + ' / g');
         addBreakdownRow(details, '金值', OverseasQuote.formatMoney(quote.goldAmount, currency));
-        addBreakdownRow(details, '最後實收工費', OverseasQuote.formatMoney(quote.finalFee, currency));
+        addBreakdownRow(details, currentFeeLabel(), OverseasQuote.formatMoney(quote.finalFee, currency));
         addBreakdownRow(details, '稅前金額', OverseasQuote.formatMoney(quote.preTaxAmount, currency));
       } else {
         addBreakdownRow(details, '折扣前金額', OverseasQuote.formatMoney(quote.discountBeforeAmount, currency));
@@ -271,8 +283,11 @@
         value.className = 'result-amount';
         value.textContent = formatMoney(amount);
         const commission = document.createElement('small');
-        commission.textContent = '已包括固定 2% 佣金';
-        card.append(name, value, commission);
+        commission.textContent = '已包括2% 傭金';
+        const labour = document.createElement('small');
+        const factor = {fee80:0.8,halfFee:0.5,fee30:0.3,noFee:0}[chosen.key] ?? 1;
+        labour.textContent = currentFeeLabel() + '：' + formatMoney(Number(elements.laborFee.value) * factor);
+        card.append(name, value, labour, commission);
         return card;
       }));
       updateActiveOffer();
@@ -778,7 +793,7 @@
       const fee=getFeeCalculation();
       priceInfo=[
         ['今日金價','Today Gold Price',OverseasQuote.formatMoney(finiteNumber(elements.goldstarPrice.value)||0,store.currencyCode)+' / g'],
-        ['工費','Labour Charge',OverseasQuote.formatMoney(fee.finalFee,store.currencyCode)]
+        [currentFeeLabel(),'Labour Charge',OverseasQuote.formatMoney(fee.finalFee,store.currencyCode)]
       ];
     } else {
       const price=finiteNumber(elements.sellPrice.value)||0;
@@ -786,8 +801,8 @@
       const unit=elements.priceUnit.value==='gram'?'g':'tael';
       priceInfo=[
         ['今日金價','Today Gold Price',formatMoney(price)+' / '+unit],
-        ['工費','Labour Charge',formatMoney(fee * ({fee80:0.8,halfFee:0.5,fee30:0.3,noFee:0}[selectedDomesticScenario().key] ?? 1))],
-        ['佣金（固定 2%）','Commission (Fixed 2%)',formatMoney(quotes[0].commission)]
+        [currentFeeLabel(),'Labour Charge',formatMoney(fee * ({fee80:0.8,halfFee:0.5,fee30:0.3,noFee:0}[selectedDomesticScenario().key] ?? 1))],
+        ['傭金（2%）','Commission (2%)',formatMoney(quotes[0].commission)]
       ];
     }
     priceInfo.forEach(([zh,en,val])=>{
@@ -946,6 +961,7 @@
     window.addEventListener('DOMContentLoaded', bind);
   }
 })();
+
 
 
 

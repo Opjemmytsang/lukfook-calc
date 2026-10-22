@@ -188,7 +188,7 @@
       `原工費：${formatMoney(feeCalculation.originalFee, currency)}`,
       `工費折扣：${Number(feeCalculation.discountPercent).toLocaleString('zh-HK', { maximumFractionDigits: 2 })}%`,
       `額外加減金額：${formatMoney(feeCalculation.adjustmentAmount, currency)}`,
-      `最後實收工費：${formatMoney(feeCalculation.finalFee, currency)}${finalFeeSuffix}`
+      `工費（${feeCalculation.manualOverride ? '手動調整' : Number(feeCalculation.discountPercent) === 100 ? '全工費' : Number(feeCalculation.discountPercent) / 10 + '折'}）：${formatMoney(feeCalculation.finalFee, currency)}${finalFeeSuffix}`
     ];
 
     taxLines(store).forEach(({ name, rate }) => lines.push(`${name}：${formatRate(rate)}`));
@@ -233,4 +233,5 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (typeof window !== 'undefined') window.LukfookOverseasQuote = api;
 })();
+
 

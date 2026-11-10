@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>分行貨品優惠查詢｜安全模擬版</title>
+<style>
+:root{font-family:"Microsoft JhengHei","PingFang TC",system-ui,sans-serif;color:#24212b;background:#f5f4f6;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}.shell{max-width:1160px;margin:auto;padding:22px}header{background:#fff;border-bottom:1px solid #e8e2e9}
+header .shell{display:flex;justify-content:space-between;align-items:center;gap:15px;padding-top:14px;padding-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:#702650}.mark{background:#702650;color:#fff;border-radius:12px;padding:10px}
+nav{display:flex;gap:7px}button,.link{font:inherit;cursor:pointer;border:0;border-radius:11px;padding:11px 16px;font-weight:700}
+nav button{background:transparent;color:#625968}nav button.on{background:#f0e3ea;color:#702650}
+h1{font-size:27px;margin:0 0 8px}h2{font-size:17px;margin:0 0 14px}.muted{color:#746e78}.small{font-size:12px}
+.notice{padding:11px 14px;background:#fff4dc;border:1px solid #f3e0ad;border-radius:12px;font-size:13px;line-height:1.5;margin:0 0 18px}
+.card{background:#fff;border:1px solid #e9e4e9;border-radius:18px;padding:22px;box-shadow:0 4px 14px #24132908;margin-bottom:16px}
+.mobile{max-width:460px;margin:0 auto}.formgroup{margin-bottom:15px}label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+input,select{width:100%;border:1px solid #ddd4df;background:#fff;color:#24212b;border-radius:11px;padding:14px;font:inherit;font-size:16px;outline-color:#702650}
+.primary{background:#702650;color:white}.secondary{background:#f1eaf0;color:#702650}.wide{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:7px}.chip{background:#f2e9ef;color:#722a53;border:1px solid #e5d4df;border-radius:999px;font-size:12px;padding:7px 10px;font-weight:700}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.good{color:#16784d}.none{color:#965e17}
+.result{background:#f7f5f8;border-radius:14px;padding:16px;margin-top:15px}
+.status{font-size:20px;font-weight:800;margin:5px 0 14px}.tag{display:inline-block;border-radius:8px;background:#e5f3ec;color:#16784d;padding:7px 10px;font-size:13px;font-weight:700;margin:3px 5px 3px 0}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.kpi{background:#fff;border:1px solid #eae2e7;border-radius:15px;padding:18px}
+.kpi b{display:block;font-size:28px;margin-top:6px}.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:18px}
+.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:12px 10px;text-align:left;border-bottom:1px solid #eee9ef;white-space:nowrap}th{color:#716874;background:#faf8fa;font-size:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.hidden{display:none!important}.footer{font-size:12px;color:#807982;text-align:center;margin:28px 0}
+@media(max-width:750px){.shell{padding:14px}header .shell{flex-direction:column;align-items:stretch}nav button{flex:1}.grid{grid-template-columns:1fr}.kpis{gap:7px}.kpi{padding:12px}.kpi b{font-size:23px}h1{font-size:22px}.card{padding:16px}}
+</style></head>
+<body><header><div class="shell"><div class="brand"><span class="mark">查</span><span>貨品優惠查詢系統 <span class="muted small">V1.0 DEMO</span></span></div>
+<nav><button id="tabBranch" class="on" type="button">分行手機查詢</button><button id="tabAdmin" type="button">營運部後台</button></nav></div></header>
+<main class="shell">
+<div class="notice"><strong>僅供介面及流程測試：</strong>所有貨號均為虛構模擬資料，沒有上傳任何公司名單。此靜態頁面未接入企業微信登入或內部資料庫，營運後台亦不具正式權限保護；請勿輸入真實公司貨號或優惠資料。</div>
+<section id="branch" class="mobile">
+ <div style="margin-bottom:18px"><h1>查詢貨品優惠</h1><div class="muted">選擇地區，輸入完整貨號，即時查詢已發布名單。</div></div>
+ <div class="card"><div class="formgroup"><label for="searchRegion">分行地區</label><select id="searchRegion"><option value="港澳">香港／澳門</option><option value="海外">海外</option></select></div>
+ <div class="formgroup"><label for="searchCode">貨號</label><input id="searchCode" placeholder="例如 DEMO-J-001" autocomplete="off" autocapitalize="characters" spellcheck="false"></div>
+ <button id="searchButton" type="button" class="primary wide">查詢優惠</button>
+ <div id="result" aria-live="polite"></div></div>
+ <div class="card"><h2>查詢說明</h2><div class="muted small">只顯示與單一貨號匹配的優惠，不提供完整貨號清單。正式版本會於伺服器核實企業微信員工身份及分行權限。</div><p class="small muted">示例貨號：DEMO-J-001、DEMO-J-002、DEMO-OS-001、DEMO-OS-002</p><div id="branchVersion" class="small muted"></div></div>
+</section>
+<section id="admin" class="hidden">
+ <div class="row" style="margin:4px 0 18px;align-items:flex-start"><div><h1>營運部管理後台</h1><div class="muted">優惠名單總覽 · 待審批更新 · 手動確認發布</div></div><span class="chip">本機流程模擬</span></div>
+ <div class="kpis"><div class="kpi"><span class="muted small">優惠類別</span><b id="metricTypes">5</b></div><div class="kpi"><span class="muted small">模擬貨號記錄</span><b id="metricRows">4</b></div><div class="kpi"><span class="muted small">待發布修改</span><b id="metricDrafts">0</b></div></div>
+ <div class="grid">
+ <div><div class="card"><h2>已發布優惠名單</h2><div class="tablewrap"><table><thead><tr><th>優惠名稱</th><th>地區</th><th>記錄數</th><th>狀態</th></tr></thead><tbody id="listTable"></tbody></table></div><p class="small muted" id="adminVersion"></p></div>
+ <div class="card"><h2>待審批變更</h2><div id="draftList" class="muted small">目前沒有待審批修改。</div><div class="actions" style="margin-top:14px"><button class="primary" id="publishButton" type="button">確認發布</button><button class="secondary" id="discardButton" type="button">撤銷待審批</button></div><p class="small muted">正式系統的審批、版本及操作紀錄必須寫入公司內部伺服器。</p></div></div>
+ <div><div class="card"><h2>模擬更新優惠名單</h2><div class="formgroup"><label for="adminCode">虛構貨號</label><input id="adminCode" placeholder="例如 DEMO-J-003"></div><div class="formgroup"><label for="adminCategory">優惠類別</label><select id="adminCategory"><option>港澳尊享價</option><option>海外尊享價</option><option>激賞價</option><option>港澳35周年優惠</option><option>海外35周年優惠</option></select></div>
+ <div class="formgroup"><label for="adminAction">修改方式</label><select id="adminAction"><option value="add">新增此貨號</option><option value="remove">移除此貨號</option></select></div>
+ <button class="secondary wide" type="button" id="stageButton">加入待審批</button><p class="small muted" id="stageMsg">這裏不會將任何資料傳送至伺服器；只在這個瀏覽器儲存模擬狀態。</p></div>
+ <div class="card"><h2>部署前必須完成</h2><p class="small muted">由公司 IT 接入企業微信 OAuth、HTTPS 自建查詢閘道及內部 Excel 資料庫；實施伺服器端權限、速率限制、審計紀錄、正式審批及版本回滾。GitHub 僅存放不含公司資料的程式碼。</p></div></div>
+ </div>
+</section><p class="footer">Demo 使用合成資料 · 正式優惠與成交價以公司內部授權系統為準</p>
+</main>
+<script>
+"use strict";
+const CATEGORIES=[
+ {name:"港澳尊享價",region:"港澳"},{name:"海外尊享價",region:"海外"},
+ {name:"激賞價",region:"港澳"},{name:"港澳35周年優惠",region:"港澳"},
+ {name:"海外35周年優惠",region:"海外"}];
+const INITIAL=[
+ {code:"DEMO-J-001",category:"港澳尊享價",region:"港澳"},
+ {code:"DEMO-J-001",category:"激賞價",region:"港澳"},
+ {code:"DEMO-J-002",category:"港澳35周年優惠",region:"港澳"},
+ {code:"DEMO-OS-001",category:"海外尊享價",region:"海外"},
+ {code:"DEMO-OS-002",category:"海外35周年優惠",region:"海外"}];
+const STORAGE="offer-query-demo-mock-only-v1";
+function base(){return {version:1,entries:INITIAL,drafts:[],updated:"模擬初始版本"}}
+function read(){try{const v=JSON.parse(localStorage.getItem(STORAGE));return v&&Array.isArray(v.entries)&&Array.isArray(v.drafts)?v:base()}catch{return base()}}
+let state=read();
+function save(){localStorage.setItem(STORAGE,JSON.stringify(state))}
+function $ (id){return document.getElementById(id)}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[x]))}
+function normalize(s){return String(s||"").trim().toUpperCase()}
+function show(page){$("branch").classList.toggle("hidden",page!=="branch");$("admin").classList.toggle("hidden",page!=="admin");$("tabBranch").classList.toggle("on",page==="branch");$("tabAdmin").classList.toggle("on",page==="admin");location.hash=page;render()}
+$("tabBranch").onclick=()=>show("branch");$("tabAdmin").onclick=()=>show("admin");
+function findRecord(){const code=normalize($("searchCode").value),region=$("searchRegion").value;const out=$("result");
+ if(!code){out.innerHTML='<div class="result none">請輸入完整貨號。</div>';return}
+ if(!/^DEMO-[A-Z0-9-]{1,24}$/.test(code)){out.innerHTML='<div class="result">此 Demo 只接受 DEMO- 開頭的虛構貨號，請勿輸入真實公司資料。</div>';return}
+ const matched=state.entries.filter(x=>x.code===code&&x.region===region);
+ out.innerHTML='<div class="result"><div class="small muted">查詢：'+escapeHTML(code)+'</div>'+
+ (matched.length?'<div class="status good">✓ 有優惠名單記錄</div>'+matched.map(x=>'<span class="tag">'+escapeHTML(x.category)+'</span>').join(""):'<div class="status none">未找到適用優惠記錄</div>')+
+ '<p class="small muted">查詢範圍：'+escapeHTML(region)+' · 模擬資料版本 '+state.version+'</p><p class="small muted">名單記錄不代表最終成交價。</p></div>';
+}
+$("searchButton").onclick=findRecord;$("searchCode").addEventListener("keydown",e=>{if(e.key==="Enter")findRecord()});
+function render(){
+ $("branchVersion").textContent="目前版本："+state.version+" · "+state.updated;
+ $("metricRows").textContent=state.entries.length;$("metricTypes").textContent=CATEGORIES.length;$("metricDrafts").textContent=state.drafts.length;
+ $("adminVersion").textContent="目前已發布版本："+state.version+" · "+state.updated;
+ $("listTable").innerHTML=CATEGORIES.map(c=>'<tr><td>'+escapeHTML(c.name)+'</td><td>'+c.region+'</td><td>'+state.entries.filter(x=>x.category===c.name).length+'</td><td class="good">已發布（模擬）</td></tr>').join("");
+ $("draftList").innerHTML=state.drafts.length?state.drafts.map((d,i)=>'<div style="padding:9px;border-bottom:1px solid #eee">'+(i+1)+". "+(d.action==="add"?"新增 ":"刪除 ")+escapeHTML(d.code)+" · "+escapeHTML(d.category)+'</div>').join(""):"目前沒有待審批修改。";
+ $("publishButton").disabled=!state.drafts.length;$("discardButton").disabled=!state.drafts.length;
+}
+$("stageButton").onclick=()=>{const code=normalize($("adminCode").value),category=$("adminCategory").value,action=$("adminAction").value;
+ if(!/^DEMO-[A-Z0-9-]{1,24}$/.test(code)){$("stageMsg").textContent="只允許 DEMO- 開頭的虛構貨號。";return}
+ const region=CATEGORIES.find(x=>x.name===category).region;
+ state.drafts.push({code,category,region,action});save();$("stageMsg").textContent="已暫存修改，尚未發布。";render()};
+$("discardButton").onclick=()=>{if(confirm("撤銷全部待審批修改？")){state.drafts=[];save();render()}};
+$("publishButton").onclick=()=>{if(!state.drafts.length)return;if(!confirm("確認將模擬修改正式發布至此瀏覽器？"))return;
+ for(const d of state.drafts){state.entries=state.entries.filter(x=>!(x.code===d.code&&x.category===d.category));if(d.action==="add")state.entries.push({code:d.code,category:d.category,region:d.region})}
+ state.drafts=[];state.version++;state.updated=new Date().toLocaleString("zh-HK");save();render();alert("已發布模擬版本 "+state.version+"（只影響目前瀏覽器）")};
+show(location.hash==="#admin"?"admin":"branch");
+</script></body></html>

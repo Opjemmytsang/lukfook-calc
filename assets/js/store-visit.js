@@ -33,6 +33,55 @@
   let busy = false;
   let renderVersion = 0;
   let shareData;
+  const mailSettings = get('visitAutoMailForm');
+  const mailEndpoint = get('visitMailEndpoint');
+  const mailKey = get('visitMailKey');
+  const mailStatus = get('visitAutoMailStatus');
+  const mailConfigKey = 'lukfook:store-visit:mail-config';
+  let mailConfig = null;
+
+  try {
+    mailConfig = JSON.parse(window.sessionStorage.getItem(mailConfigKey));
+  } catch {
+    // Users can still configure mail for the lifetime of the open page.
+  }
+  mailEndpoint.value = mailConfig?.endpoint ?? '';
+  mailStatus.textContent = mailConfig ? '已設定寄信服務。' : '尚未設定寄信服務。';
+
+  mailSettings.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const key = mailKey.value.trim();
+    try {
+      const url = new URL(mailEndpoint.value.trim());
+      if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash ||
+          url.pathname !== '/send' || key.length < 32) {
+        throw new Error('Invalid mail configuration');
+      }
+      mailConfig = { endpoint: url.href, key };
+    } catch {
+      mailStatus.textContent = '請輸入以 /send 結尾的 HTTPS 網址及有效存取金鑰。';
+      return;
+    }
+
+    mailKey.value = '';
+    try {
+      window.sessionStorage.setItem(mailConfigKey, JSON.stringify(mailConfig));
+      mailStatus.textContent = '已套用設定。';
+    } catch {
+      mailStatus.textContent = '已套用設定。重新載入頁面後需再輸入。';
+    }
+  });
+
+  get('visitMailClear').addEventListener('click', () => {
+    mailConfig = null;
+    mailSettings.reset();
+    try {
+      window.sessionStorage.removeItem(mailConfigKey);
+      mailStatus.textContent = '已停用自動電郵。';
+    } catch {
+      mailStatus.textContent = '已在此頁停用。未能清除分頁儲存的設定。';
+    }
+  });
 
   function setBusy(value) {
     busy = value;
@@ -129,7 +178,7 @@
     else announce(`已選取 ${draftPhotos.length} 張相片，請儲存問題。`);
   }
 
-  function openEmail(issue) {
+  function emailContent(issue) {
     const subject = `巡舖記錄｜${issue.branch}｜${issue.category}`.replace(/[\r\n]/g, ' ');
     const body = [
       `分行：${issue.branch}`,
@@ -139,7 +188,75 @@
       '',
       issue.note
     ].join('\r\n');
-    const photos = issue.photos ?? [];
+    return { subject, text: body, photos: issue.photos ?? [] };
+  }
+
+  function encodePhoto(photo) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(photo);
+    });
+  }
+
+  async function sendSavedIssue(issue) {
+    const config = mailConfig;
+    if (!config) {
+      announce('記錄已儲存。請先設定寄信服務，再按「寄送電郵」。');
+      return;
+    }
+
+    try {
+      // Keep the first attempt's content for retries, including after a later edit.
+      if (!issue.mailSnapshot) {
+        const staged = { ...issue, revision: crypto.randomUUID(), mailSnapshot: emailContent(issue) };
+        if (!await db.change(staged, issue)) {
+          await render();
+          announce('記錄已更新，請重新按「寄送電郵」。', true);
+          return;
+        }
+        issue = staged;
+      }
+      const { subject, text, photos } = issue.mailSnapshot;
+      const encoded = await Promise.all(photos.map(encodePhoto));
+      announce('記錄已儲存，正在寄送電郵…');
+      const response = await fetch(config.endpoint, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${config.key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: issue.id, subject, text, photos: encoded }),
+        redirect: 'error',
+        signal: AbortSignal.timeout(15000)
+      });
+      if (!response.ok || !(await response.json()).ok) throw new Error('Email request failed');
+
+      const sent = { ...issue, revision: crypto.randomUUID(), mailPending: false, mailSentAt: new Date().toISOString() };
+      delete sent.mailSnapshot;
+      if (!await db.change(sent, issue)) {
+        announce('寄信服務已受理，但本機未能更新寄送狀態。請先查閱信箱。', true);
+        return;
+      }
+      announce('記錄已儲存，寄信服務已受理。');
+    } catch {
+      announce('記錄已儲存，暫未確認寄送。可檢查設定或連線，再按「寄送電郵」。', true);
+    } finally {
+      updates?.postMessage('changed');
+      await render();
+    }
+  }
+
+  async function retryMail(issue) {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await sendSavedIssue(issue);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function openEmail(issue) {
+    const { subject, text: body, photos } = emailContent(issue);
     shareData = { title: subject, text: body };
     if (photos.length) {
       shareData.files = photos.map((photo, index) =>
@@ -250,6 +367,7 @@
 
     const actions = document.createElement('div');
     actions.className = 'action-row';
+    if (issue.mailPending) actions.append(actionButton('寄送電郵', () => retryMail(issue)));
     actions.append(
       actionButton('編輯／跟進', () => editIssue(issue)),
       actionButton('電郵畀自己', () => openEmail(issue)),
@@ -261,6 +379,12 @@
       gallery.className = 'visit-photos';
       renderPhotos(gallery, issue.photos);
       record.append(gallery);
+    }
+    if (issue.mailPending || issue.mailSentAt) {
+      const status = document.createElement('p');
+      status.className = 'status';
+      status.textContent = issue.mailSentAt ? '電郵：寄信服務已受理' : '電郵：待確認寄送';
+      record.append(status);
     }
     record.append(actions);
     return record;
@@ -314,6 +438,7 @@
     setBusy(true);
     try {
       const issue = {
+        ...editing,
         id: editing?.id ?? window.crypto.randomUUID(),
         revision: window.crypto.randomUUID(),
         createdAt: editing?.createdAt ?? new Date().toISOString(),
@@ -323,6 +448,7 @@
         state: state.value,
         photos: draftPhotos
       };
+      if (!editing) issue.mailPending = true;
       if (!await db.change(issue, editing)) {
         announce('記錄已在另一個分頁更改或刪除。請重新開啟最新記錄。', true);
         await render();
@@ -335,7 +461,8 @@
       updates?.postMessage('changed');
       await render();
       if (wasEditing) listTitle.focus();
-      announce(wasEditing ? '已儲存修改。' : '已新增問題。');
+      if (wasEditing) announce('已儲存修改。');
+      else await sendSavedIssue(issue);
     } catch {
       announce('未能儲存問題。請檢查瀏覽器的網站儲存設定或可用空間。', true);
     } finally {

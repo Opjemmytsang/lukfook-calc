@@ -30,6 +30,9 @@
     .visit-tag[data-state="open"] { color: #765008; background: #fff1d5; }
     .visit-tag[data-state="progress"] { color: var(--wine); background: #f5e7ee; }
     .visit-tag[data-state="done"] { color: #146340; background: #e6f3ea; }
+    .visit-mail-settings { margin-bottom: 16px; }
+    .visit-mail-settings summary { min-height: 44px; color: var(--wine); cursor: pointer; font-weight: 700; }
+    .visit-mail-settings input { font-size: 1rem; }
     .visit-photo-heading { margin: 0; color: var(--muted); font-size: .78rem; }
     .visit-photos { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
     .visit-photo { width: 104px; max-width: 100%; margin: 0; }
@@ -54,6 +57,27 @@
       </div>
       <a class="text-link" href="./index.html">← 返回首頁</a>
     </header>
+    <details class="panel visit-mail-settings">
+      <summary>自動電郵設定</summary>
+      <form id="visitAutoMailForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="visitMailEndpoint">寄信服務網址</label>
+            <input id="visitMailEndpoint" type="url" placeholder="https://…/send" maxlength="250" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="visitMailKey">寄信存取金鑰</label>
+            <input id="visitMailKey" type="password" maxlength="240" autocomplete="off">
+          </div>
+        </div>
+        <div class="action-row">
+          <button class="button button-secondary" type="submit">套用設定</button>
+          <button class="button button-secondary" id="visitMailClear" type="button">停用自動電郵</button>
+        </div>
+      </form>
+      <p class="status" id="visitAutoMailStatus" role="status"></p>
+      <p class="status">設定適用於目前分頁。新記錄儲存後會寄到預設信箱。</p>
+    </details>
     <div class="visit-layout">
       <section class="panel" aria-labelledby="visitFormTitle">
         <h2 id="visitFormTitle">新增問題</h2>

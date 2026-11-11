@@ -152,7 +152,17 @@
     <p class="status" id="visitShareStatus" role="status"></p>
     <form method="dialog" class="action-row"><button class="button button-secondary">關閉</button></form>
   </dialog>
+  <dialog id="visitPdf" class="panel visit-dialog" aria-labelledby="visitPdfTitle">
+    <h2 id="visitPdfTitle">匯出巡舖記錄</h2>
+    <p class="status" id="visitPdfStatus" role="status"></p>
+    <div class="action-row">
+      <a class="button button-primary" id="visitPdfDownload" hidden>下載 PDF</a>
+      <button class="button button-secondary" id="visitPdfShare" type="button" hidden>分享 PDF</button>
+    </div>
+    <form method="dialog" class="action-row"><button class="button button-secondary">關閉</button></form>
+  </dialog>
   <script src="./assets/js/store-visit-db.js" defer></script>
+  <script src="./assets/js/store-visit-pdf.js" defer></script>
   <script src="./assets/js/store-visit.js" defer></script>
   <script src="./assets/js/common.js" defer></script>
 </body>

@@ -27,12 +27,19 @@
   const emailOptions = get('visitEmailOptions');
   const emailPhotos = get('visitEmailPhotos');
   const shareStatus = get('visitShareStatus');
+  const pdfDialog = get('visitPdf');
+  const pdfStatus = get('visitPdfStatus');
+  const pdfDownload = get('visitPdfDownload');
+  const pdfShare = get('visitPdfShare');
   const photoInputs = [get('visitCamera'), get('visitPhotoPicker')];
   let editing = null;
   let draftPhotos = [];
   let busy = false;
   let renderVersion = 0;
   let shareData;
+  let pdfFile;
+  let pdfUrl;
+  let pdfJob = 0;
 
   function setBusy(value) {
     busy = value;
@@ -171,6 +178,54 @@
     email.showModal();
   }
 
+  async function exportIssue(issue) {
+    const job = ++pdfJob;
+    pdfDownload.hidden = true;
+    pdfShare.hidden = true;
+    pdfStatus.textContent = '正在製作 PDF…';
+    pdfDialog.showModal();
+    try {
+      const blob = await window.makeStoreVisitPdf({
+        details: {
+          '分行': issue.branch,
+          '記錄時間': dateFormat.format(new Date(issue.createdAt)),
+          '問題類別': issue.category,
+          '跟進狀態': stateLabels.get(issue.state)
+        },
+        note: issue.note,
+        photos: issue.photos
+      });
+      if (!pdfDialog.open || job !== pdfJob) return;
+      const name = issue.branch.replace(/[^\p{L}\p{N}_-]/gu, '-').slice(0, 35);
+      const date = issue.createdAt.slice(0, 10);
+      pdfFile = new File([blob], `巡舖記錄-${name}-${date}.pdf`, { type: blob.type });
+      pdfUrl = URL.createObjectURL(pdfFile);
+      pdfDownload.href = pdfUrl;
+      pdfDownload.download = pdfFile.name;
+      pdfDownload.hidden = false;
+      pdfShare.hidden = !navigator.share || !navigator.canShare?.({ files: [pdfFile] });
+      pdfStatus.textContent = 'PDF 已準備好。';
+    } catch {
+      if (pdfDialog.open && job === pdfJob) pdfStatus.textContent = '未能製作 PDF，請關閉視窗後再試。';
+    }
+  }
+
+  pdfShare.addEventListener('click', async () => {
+    try {
+      await navigator.share({ files: [pdfFile] });
+    } catch (error) {
+      if (error.name !== 'AbortError') pdfStatus.textContent = '未能開啟分享選單，請使用「下載 PDF」。';
+    }
+  });
+  pdfDialog.addEventListener('close', () => {
+    if (pdfDialog.open) return;
+    pdfJob += 1;
+    if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    pdfDownload.removeAttribute('href');
+    pdfUrl = undefined;
+    pdfFile = undefined;
+  });
+
   function resetForm(branchName = '') {
     editing = null;
     draftPhotos = [];
@@ -252,6 +307,7 @@
     actions.className = 'action-row';
     actions.append(
       actionButton('編輯／跟進', () => editIssue(issue)),
+      actionButton('匯出 PDF', () => exportIssue(issue)),
       actionButton('電郵畀自己', () => openEmail(issue)),
       actionButton('刪除', () => deleteIssue(issue), 'visit-delete')
     );

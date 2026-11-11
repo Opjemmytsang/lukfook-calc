@@ -57,7 +57,7 @@ assert.match(appCss, /\[hidden\]\{display:none!important\}/, 'hidden overseas co
 assert.match(smartHtml, /src="\.\/assets\/js\/region-config\.js"/, 'central region configuration is not loaded');
 assert.match(smartHtml, /src="\.\/assets\/js\/overseas-quote\.js"/, 'overseas quote module is not loaded');
 assert.match(smartHtml, /<option value="gram">每克<\/option><option value="tael">每両<\/option>/, 'smart quote must default to grams');
-assert.equal((indexHtml.match(/class="tool-card"/g) || []).length, 3, 'home page must show exactly three tools');
+assert.equal((indexHtml.match(/class="tool-card"/g) || []).length, 4, 'home page must show exactly four tools');
 assert.ok(!indexHtml.includes('profit-estimator-v1.html'), 'profit estimator must be hidden from the home page');
 assert.match(indexHtml, /id="installStatus"/, 'install instructions status is missing');
 assert.match(commonJs, /請按 Safari 的分享按鈕，再選擇『加入主畫面』。/, 'iOS install instructions are incorrect');

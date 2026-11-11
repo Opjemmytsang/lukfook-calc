@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#7C2855">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./assets/css/app.css">
+  <title>巡舖記錄</title>
+  <style>
+    .visit-layout { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: start; gap: 16px; }
+    .visit-fields { display: grid; min-width: 0; gap: 12px; margin: 0; padding: 0; border: 0; }
+    .visit-fields input, .visit-fields select, .visit-filters select, .visit-fields textarea { font-size: 1rem; }
+    .visit-fields textarea {
+      display: block; width: 100%; min-height: 110px; padding: 10px 12px;
+      border: 1px solid #cfc5cb; border-radius: 12px;
+      color: var(--ink); background: #fff; font: inherit; resize: vertical;
+    }
+    .visit-fields textarea:focus-visible { outline: 3px solid rgba(188,151,90,.45); outline-offset: 2px; }
+    .visit-filters { margin-bottom: 14px; }
+    .visit-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .visit-record { border: 1px solid #eadfd4; border-radius: 14px; padding: 14px; background: #fcfaf8; }
+    .visit-record-heading { display: flex; align-items: start; justify-content: space-between; gap: 8px; }
+    .visit-record h3 { margin: 0; color: var(--wine); font-size: 1rem; overflow-wrap: anywhere; }
+    .visit-record time { color: var(--muted); font-size: .82rem; }
+    .visit-record p { margin: 10px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .visit-tag { flex: none; border-radius: 999px; padding: 3px 10px; font-size: .78rem; font-weight: 700; }
+    .visit-tag[data-state="open"] { color: #765008; background: #fff1d5; }
+    .visit-tag[data-state="progress"] { color: var(--wine); background: #f5e7ee; }
+    .visit-tag[data-state="done"] { color: #146340; background: #e6f3ea; }
+    .visit-delete { color: var(--error); }
+    .visit-empty { margin: 12px 0 0; color: var(--muted); }
+    @media (max-width: 800px) { .visit-layout { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="site-shell">
+    <header class="page-header">
+      <div>
+        <h1>巡舖記錄</h1>
+        <p>記低分行問題，方便下次巡舖跟進。</p>
+      </div>
+      <a class="text-link" href="./index.html">← 返回首頁</a>
+    </header>
+    <div class="visit-layout">
+      <section class="panel" aria-labelledby="visitFormTitle">
+        <h2 id="visitFormTitle">新增問題</h2>
+        <form id="visitForm">
+          <fieldset id="visitFields" class="visit-fields" disabled>
+            <div class="field">
+              <label for="visitBranch">分行</label>
+              <input id="visitBranch" list="visitBranchOptions" maxlength="50" placeholder="輸入分行行碼或名稱" autocomplete="off" required>
+              <datalist id="visitBranchOptions"></datalist>
+            </div>
+            <div class="field">
+              <label for="visitCategory">問題類別</label>
+              <select id="visitCategory">
+                <option>陳列</option>
+                <option>存貨／補貨</option>
+                <option>店舖環境</option>
+                <option>設備／系統</option>
+                <option>服務／流程</option>
+                <option selected>其他</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="visitNote">問題描述</label>
+              <textarea id="visitNote" rows="3" maxlength="2000" placeholder="例如：入口地櫃有一盤手鈪未補齊" required></textarea>
+            </div>
+            <div class="field">
+              <label for="visitState">跟進狀態</label>
+              <select id="visitState">
+                <option value="open">待跟進</option>
+                <option value="progress">跟進中</option>
+                <option value="done">已完成</option>
+              </select>
+            </div>
+            <div class="action-grid">
+              <button class="button button-primary" id="visitSave" type="submit">儲存問題</button>
+              <button class="button button-secondary" id="visitCancel" type="button" hidden>取消編輯</button>
+            </div>
+          </fieldset>
+        </form>
+        <p class="status" id="visitFeedback" role="status"></p>
+        <noscript><p class="status is-error">請啟用 JavaScript 以使用巡舖記錄。</p></noscript>
+        <p class="status">記錄只儲存在此瀏覽器。清除網站資料會刪除記錄。</p>
+      </section>
+      <section class="panel" aria-labelledby="visitListTitle">
+        <h2 id="visitListTitle" tabindex="-1">問題記錄</h2>
+        <div class="form-grid visit-filters">
+          <div class="field">
+            <label for="visitFilterBranch">按分行篩選</label>
+            <select id="visitFilterBranch"><option value="">全部分行</option></select>
+          </div>
+          <div class="field">
+            <label for="visitFilterState">按狀態篩選</label>
+            <select id="visitFilterState">
+              <option value="">全部狀態</option>
+              <option value="open">待跟進</option>
+              <option value="progress">跟進中</option>
+              <option value="done">已完成</option>
+            </select>
+          </div>
+        </div>
+        <p class="visit-empty" id="visitEmpty" role="status" hidden></p>
+        <ul class="visit-list" id="visitList" aria-labelledby="visitListTitle"></ul>
+      </section>
+    </div>
+  </main>
+  <script src="./assets/js/store-visit.js" defer></script>
+  <script src="./assets/js/common.js" defer></script>
+</body>
+</html>

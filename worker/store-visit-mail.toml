@@ -1,0 +1,6 @@
+name = "lukfook-store-visit-mail"
+main = "store-visit-mail.mjs"
+compatibility_date = "2026-11-11"
+
+[vars]
+STORE_VISIT_ORIGIN = "https://opjemmytsang.github.io"

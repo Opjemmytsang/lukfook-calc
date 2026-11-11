@@ -30,6 +30,16 @@
     .visit-tag[data-state="open"] { color: #765008; background: #fff1d5; }
     .visit-tag[data-state="progress"] { color: var(--wine); background: #f5e7ee; }
     .visit-tag[data-state="done"] { color: #146340; background: #e6f3ea; }
+    .visit-photo-heading { margin: 0; color: var(--muted); font-size: .78rem; }
+    .visit-photos { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    .visit-photo { width: 104px; max-width: 100%; margin: 0; }
+    .visit-photo img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; background: #f4ebe4; }
+    .visit-photo .button { width: 100%; margin-top: 6px; padding-inline: 6px; }
+    .field .visit-file-picker { display: inline-flex; margin: 0; color: var(--wine); font-size: 1rem; }
+    .visit-file-picker:focus-within { outline: 3px solid rgba(188,151,90,.45); outline-offset: 2px; }
+    .visit-dialog { width: min(480px, calc(100% - 28px)); max-height: 85vh; color: var(--ink); }
+    .visit-dialog::backdrop { background: #28212699; }
+    .visit-dialog textarea { display: block; width: 100%; min-height: 8rem; padding: 10px; border: 1px solid var(--line); border-radius: 10px; font: inherit; }
     .visit-delete { color: var(--error); }
     .visit-empty { margin: 12px 0 0; color: var(--muted); }
     @media (max-width: 800px) { .visit-layout { grid-template-columns: 1fr; } }
@@ -77,6 +87,19 @@
                 <option value="done">已完成</option>
               </select>
             </div>
+            <div class="field">
+              <h3 class="visit-photo-heading" id="visitPhotoHeading">現場相片（選填）</h3>
+              <div class="action-grid" aria-labelledby="visitPhotoHeading">
+                <label class="button button-secondary visit-file-picker">影相
+                  <input class="visually-hidden" id="visitCamera" type="file" accept="image/*" capture="environment">
+                </label>
+                <label class="button button-secondary visit-file-picker">從相簿揀相
+                  <input class="visually-hidden" id="visitPhotoPicker" type="file" accept="image/*" multiple>
+                </label>
+              </div>
+              <small>每項問題最多 3 張相片。</small>
+              <div class="visit-photos" id="visitDraftPhotos"></div>
+            </div>
             <div class="action-grid">
               <button class="button button-primary" id="visitSave" type="submit">儲存問題</button>
               <button class="button button-secondary" id="visitCancel" type="button" hidden>取消編輯</button>
@@ -109,6 +132,37 @@
       </section>
     </div>
   </main>
+  <dialog id="visitEmail" class="panel visit-dialog" aria-labelledby="visitEmailTitle">
+    <h2 id="visitEmailTitle">電郵巡舖記錄</h2>
+    <p id="visitEmailHelp">選擇電郵 App，確認內容同附件齊全，填上你自己嘅電郵地址，再按傳送。</p>
+    <button class="button button-primary" id="visitShare" type="button" hidden>分享至電郵 App</button>
+    <details id="visitEmailOptions">
+      <summary>手動開啟電郵</summary>
+      <p class="status" id="visitManualHelp"></p>
+      <div class="field">
+        <label for="visitEmailBody">電郵內容</label>
+        <textarea id="visitEmailBody" readonly></textarea>
+      </div>
+      <div class="visit-photos" id="visitEmailPhotos"></div>
+      <div class="action-row">
+        <button class="button button-secondary" id="visitCopyEmail" type="button">複製電郵內容</button>
+        <a class="button button-secondary" id="visitMailto">開啟電郵草稿</a>
+      </div>
+    </details>
+    <p class="status" id="visitShareStatus" role="status"></p>
+    <form method="dialog" class="action-row"><button class="button button-secondary">關閉</button></form>
+  </dialog>
+  <dialog id="visitPdf" class="panel visit-dialog" aria-labelledby="visitPdfTitle">
+    <h2 id="visitPdfTitle">匯出巡舖記錄</h2>
+    <p class="status" id="visitPdfStatus" role="status"></p>
+    <div class="action-row">
+      <a class="button button-primary" id="visitPdfDownload" hidden>下載 PDF</a>
+      <button class="button button-secondary" id="visitPdfShare" type="button" hidden>分享 PDF</button>
+    </div>
+    <form method="dialog" class="action-row"><button class="button button-secondary">關閉</button></form>
+  </dialog>
+  <script src="./assets/js/store-visit-db.js" defer></script>
+  <script src="./assets/js/store-visit-pdf.js" defer></script>
   <script src="./assets/js/store-visit.js" defer></script>
   <script src="./assets/js/common.js" defer></script>
 </body>

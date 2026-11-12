@@ -87,6 +87,73 @@
     return new Blob(chunks, { type: 'application/pdf' });
   }
 
+  const wording = [
+    [/唔著(?=[，。；、！？\s]|$)/g, '未能亮起'],
+    [/唔夠/g, '不足'],
+    [/唔到位/g, '未到位'],
+    [/擺得唔齊/g, '擺放不整齊'],
+    [/唔齊/g, '未齊備'],
+    [/唔整齊/g, '不整齊'],
+    [/唔一致/g, '不一致'],
+    [/唔清楚/g, '不清晰'],
+    [/仲未/g, '仍未'],
+    [/仲有/g, '仍有'],
+    [/仲要/g, '仍須'],
+    [/未擺貨/g, '尚未陳列貨品'],
+    [/未補返貨/g, '尚未補貨'],
+    [/補返貨/g, '補回貨品'],
+    [/補返(?=[，。；、！？\s]|$)/g, '補回'],
+    [/執好/g, '整理妥當'],
+    [/(?:已)?放咗/g, '已放置'],
+    [/(?:已)?(?:更)?換咗/g, '已更換'],
+    [/(?:已)?影咗相/g, '已拍攝相片'],
+    [/冇貨/g, '缺貨'],
+    [/冇/g, '沒有'],
+    [/有啲亂/g, '較凌亂'],
+    [/有啲/g, '有些'],
+    [/呢個/g, '此項'],
+    [/嗰個/g, '該項'],
+    [/隔籬/g, '旁邊'],
+    [/聽日/g, '明日'],
+    [/琴日/g, '昨日'],
+    [/搞掂/g, '處理妥當']
+  ];
+  const noteLabels = new Map([
+    ['問題', '現場情況'], ['問題描述', '現場情況'], ['現場', '現場情況'], ['現場情況', '現場情況'],
+    ['影響', '影響'], ['原因', '記錄所述原因'],
+    ['建議', '建議跟進'], ['建議跟進', '建議跟進'], ['待跟進', '建議跟進'],
+    ['跟進', '跟進記錄'], ['跟進安排', '跟進記錄'],
+    ['已處理', '已處理事項'], ['處理結果', '已處理事項']
+  ]);
+  const requestStart = /^(?:麻煩|有勞|請(?=分行|同事|店長|主管|安排|檢查|確認|跟進|補貨|更換|整理|清理|通知|協助))/;
+
+  function formalSections(note) {
+    const lines = note.replace(/\r\n?/g, '\n')
+      .replace(/([。！？；;，,])(?=\s*(?:建議[：:]|跟進[：:]|已處理[：:]|麻煩|有勞|請(?:分行|同事|店長|主管|安排|檢查|確認|跟進|補貨|更換|整理|清理|通知|協助)))/g, '$1\n')
+      .split('\n');
+    const sections = [];
+    let title = '現場情況';
+    for (const raw of lines) {
+      let line = raw.trim();
+      if (!line) continue;
+      const labelled = /^([^：:]{1,10})[：:]\s*(.*)$/.exec(line);
+      if (labelled && noteLabels.has(labelled[1].trim())) {
+        title = noteLabels.get(labelled[1].trim());
+        line = labelled[2].trim();
+      } else if (requestStart.test(line)) {
+        title = '建議跟進';
+      }
+      if (!line) continue;
+      line = line.replace(/^(?:麻煩|有勞)\s*/, '請').replace(/[，,；;]+$/, '');
+      for (const [pattern, replacement] of wording) line = line.replace(pattern, replacement);
+      if (!/[。！？.!?…）)]$/.test(line)) line += '。';
+      const current = sections.at(-1);
+      if (current?.title === title) current.lines.push(line);
+      else sections.push({ title, lines: [line] });
+    }
+    return sections;
+  }
+
   async function makePdf(issues, report) {
     const pages = [];
     let page;
@@ -104,7 +171,7 @@
     function startPage() {
       page = canvasPage();
       rule(40, colors.wine, 3);
-      text(report ? '巡舖報告' : '巡舖問題記錄', margin, 56, 25, colors.wine, true);
+      text(report ? '分行巡查報告' : '分行巡查記錄', margin, 56, 25, colors.wine, true);
       rule(height - 42, colors.line);
       text(`第 ${pages.length + 1} 頁`, margin, height - 31, 10, colors.muted);
       y = 105;
@@ -136,11 +203,13 @@
         if (report && label === '分行') continue;
         await paragraph(`${label}　${value}`, 12, 19, colors.muted);
       }
-      y += 6;
-      if (y + 44 > bottom) await nextPage();
-      text('問題描述', margin, y, 14, colors.wine, true);
-      y += 23;
-      await paragraph(issue.note, 13, 20);
+      for (const section of formalSections(issue.note)) {
+        y += 6;
+        if (y + 44 > bottom) await nextPage();
+        text(section.title, margin, y, 14, colors.wine, true);
+        y += 23;
+        await paragraph(section.lines.join('\n'), 13, 20);
+      }
 
       const photos = issue.photos ?? [];
       if (photos.length) {
@@ -199,6 +268,8 @@
         if (!branches.has(label)) branches.set(label, []);
         branches.get(label).push(issue);
       }
+      text('巡查明細', margin, y, 13, colors.muted, true);
+      y += 25;
       let number = 0;
       for (const [label, entries] of [...branches].sort(([a], [b]) => a.localeCompare(b, 'zh-HK', { numeric: true }))) {
         if (y + 152 > bottom) await nextPage();

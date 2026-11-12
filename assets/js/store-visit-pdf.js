@@ -87,10 +87,11 @@
     return new Blob(chunks, { type: 'application/pdf' });
   }
 
-  async function makePdf(issue) {
+  async function makePdf(issues, report) {
     const pages = [];
     let page;
     let y;
+    let continuation = '';
     function text(value, x, top, size, color = colors.ink, bold = false) {
       page.context.font = `${bold ? 'bold ' : ''}${size}px ${fonts}`;
       page.context.fillStyle = color;
@@ -103,64 +104,117 @@
     function startPage() {
       page = canvasPage();
       rule(40, colors.wine, 3);
-      text('巡舖問題記錄', margin, 56, 25, colors.wine, true);
+      text(report ? '巡舖報告' : '巡舖問題記錄', margin, 56, 25, colors.wine, true);
       rule(height - 42, colors.line);
       text(`第 ${pages.length + 1} 頁`, margin, height - 31, 10, colors.muted);
       y = 105;
+      if (continuation) {
+        page.context.font = `11px ${fonts}`;
+        for (const line of wrap(page.context, continuation)) {
+          text(line, margin, y, 11, colors.muted);
+          y += 16;
+        }
+        y += 8;
+      }
     }
     async function nextPage() {
       pages.push(await pageJpeg(page.canvas));
       startPage();
     }
-    async function paragraph(value, size, lineHeight, color = colors.ink) {
-      page.context.font = `${size}px ${fonts}`;
+    async function paragraph(value, size, lineHeight, color = colors.ink, bold = false) {
+      page.context.font = `${bold ? 'bold ' : ''}${size}px ${fonts}`;
       for (const line of wrap(page.context, value)) {
         if (y + lineHeight > bottom) await nextPage();
-        text(line, margin, y, size, color);
+        text(line, margin, y, size, color, bold);
         y += lineHeight;
       }
     }
 
-    startPage();
-    for (const [label, value] of Object.entries(issue.details)) {
-      await paragraph(`${label}　${value}`, 12, 20, colors.muted);
-    }
-    rule(y + 3, colors.line);
-    y += 19;
-    text('問題描述', margin, y, 15, colors.wine, true);
-    y += 25;
-    await paragraph(issue.note, 13, 20);
-
-    const photos = issue.photos ?? [];
-    if (photos.length) {
-      const rowHeight = 194;
-      const gap = 16;
-      const slotWidth = (contentWidth - gap) / 2;
-      y += 14;
-      for (let index = 0; index < photos.length; index += 2) {
-        if (y + rowHeight + 24 > bottom) await nextPage();
-        if (index === 0 || y === 105) {
-          text('現場相片', margin, y, 15, colors.wine, true);
-          y += 24;
-        }
-        const row = photos.slice(index, index + 2);
-        for (const [column, photo] of row.entries()) {
-          const url = URL.createObjectURL(photo);
-          try {
-            const image = new Image();
-            image.src = url;
-            await image.decode();
-            const photoHeight = rowHeight - 24;
-            const ratio = Math.min(slotWidth / image.naturalWidth, photoHeight / image.naturalHeight);
-            const x = margin + column * (slotWidth + gap);
-            page.context.drawImage(image, x, y, image.naturalWidth * ratio, image.naturalHeight * ratio);
-            text(`相片 ${index + column + 1}`, x, y + photoHeight + 5, 11, colors.muted);
-          } finally {
-            URL.revokeObjectURL(url);
-          }
-        }
-        y += rowHeight + 6;
+    async function renderIssue(issue, number) {
+      continuation = report ? `${issue.details['分行']}　問題 ${number}（續）` : '';
+      for (const [label, value] of Object.entries(issue.details)) {
+        if (report && label === '分行') continue;
+        await paragraph(`${label}　${value}`, 12, 19, colors.muted);
       }
+      y += 6;
+      if (y + 44 > bottom) await nextPage();
+      text('問題描述', margin, y, 14, colors.wine, true);
+      y += 23;
+      await paragraph(issue.note, 13, 20);
+
+      const photos = issue.photos ?? [];
+      if (photos.length) {
+        const rowHeight = 194;
+        const gap = 16;
+        const slotWidth = (contentWidth - gap) / 2;
+        y += 14;
+        for (let index = 0; index < photos.length; index += 2) {
+          const newPage = y + rowHeight + (index === 0 ? 24 : 0) > bottom;
+          if (newPage) await nextPage();
+          if (index === 0 || newPage) {
+            text('現場相片', margin, y, 15, colors.wine, true);
+            y += 24;
+          }
+          const row = photos.slice(index, index + 2);
+          for (const [column, photo] of row.entries()) {
+            const url = URL.createObjectURL(photo);
+            try {
+              const image = new Image();
+              image.src = url;
+              await image.decode();
+              const photoHeight = rowHeight - 24;
+              const ratio = Math.min(slotWidth / image.naturalWidth, photoHeight / image.naturalHeight);
+              const x = margin + column * (slotWidth + gap);
+              page.context.drawImage(image, x, y, image.naturalWidth * ratio, image.naturalHeight * ratio);
+              text(`相片 ${index + column + 1}`, x, y + photoHeight + 5, 11, colors.muted);
+            } finally {
+              URL.revokeObjectURL(url);
+            }
+          }
+          y += rowHeight + 6;
+        }
+      }
+      continuation = '';
+    }
+
+    startPage();
+    if (report) {
+      for (const [label, value] of Object.entries(report.details)) {
+        await paragraph(`${label}　${value}`, 12, 19, colors.muted);
+      }
+      y += 8;
+      const gap = 8;
+      const cardWidth = (contentWidth - gap * (report.counts.length - 1)) / report.counts.length;
+      for (const [index, [label, count]] of report.counts.entries()) {
+        const x = margin + index * (cardWidth + gap);
+        page.context.fillStyle = '#f7efed';
+        page.context.fillRect(x, y, cardWidth, 55);
+        text(label, x + 10, y + 9, 11, colors.muted);
+        text(String(count), x + 10, y + 24, 21, colors.wine, true);
+      }
+      y += 73;
+      const branches = new Map();
+      for (const issue of issues) {
+        const label = issue.details['分行'];
+        if (!branches.has(label)) branches.set(label, []);
+        branches.get(label).push(issue);
+      }
+      let number = 0;
+      for (const [label, entries] of [...branches].sort(([a], [b]) => a.localeCompare(b, 'zh-HK', { numeric: true }))) {
+        if (y + 152 > bottom) await nextPage();
+        await paragraph(label, 17, 24, colors.wine, true);
+        for (const issue of entries) {
+          if (y + 123 > bottom) await nextPage();
+          rule(y, colors.line);
+          y += 9;
+          number += 1;
+          await paragraph(`問題 ${number}`, 13, 23, colors.ink, true);
+          await renderIssue(issue, number);
+          y += 17;
+        }
+      }
+    } else {
+      await renderIssue(issues[0], 1);
     }
     pages.push(await pageJpeg(page.canvas));
     return jpegPdf(pages);

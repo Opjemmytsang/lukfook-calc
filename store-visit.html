@@ -20,11 +20,14 @@
     }
     .visit-fields textarea:focus-visible { outline: 3px solid rgba(188,151,90,.45); outline-offset: 2px; }
     .visit-filters { margin-bottom: 14px; }
+    .visit-branch-picker { margin-top: 8px; }
+    .visit-report-action { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .visit-report-action .status { margin: 0; }
     .visit-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
     .visit-record { border: 1px solid #eadfd4; border-radius: 14px; padding: 14px; background: #fcfaf8; }
     .visit-record-heading { display: flex; align-items: start; justify-content: space-between; gap: 8px; }
     .visit-record h3 { margin: 0; color: var(--wine); font-size: 1rem; overflow-wrap: anywhere; }
-    .visit-record time { color: var(--muted); font-size: .82rem; }
+    .visit-record time, .visit-record .visit-district { color: var(--muted); font-size: .82rem; }
     .visit-record p { margin: 10px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
     .visit-tag { flex: none; border-radius: 999px; padding: 3px 10px; font-size: .78rem; font-weight: 700; }
     .visit-tag[data-state="open"] { color: #765008; background: #fff1d5; }
@@ -60,9 +63,18 @@
         <form id="visitForm">
           <fieldset id="visitFields" class="visit-fields" disabled>
             <div class="field">
-              <label for="visitBranch">分行</label>
-              <input id="visitBranch" list="visitBranchOptions" maxlength="50" placeholder="輸入分行行碼或名稱" autocomplete="off" required>
-              <datalist id="visitBranchOptions"></datalist>
+              <label for="visitBranch">分行位置</label>
+              <input id="visitBranch" maxlength="50" placeholder="輸入分行行碼或名稱" autocomplete="off" required>
+              <select id="visitBranchOptions" class="visit-branch-picker" aria-label="選擇分行位置" disabled>
+                <option value="">選擇分行</option>
+              </select>
+              <small id="visitDistrict" role="status"></small>
+              <details class="visit-branch-picker">
+                <summary>匯入分行名單</summary>
+                <label for="visitBranchFile">分行名單檔案</label>
+                <input id="visitBranchFile" type="file" accept=".json,application/json">
+                <small id="visitBranchFileStatus" role="status">選擇 JSON 名單，匯入後會儲存在此瀏覽器。</small>
+              </details>
             </div>
             <div class="field">
               <label for="visitCategory">問題類別</label>
@@ -126,6 +138,10 @@
               <option value="done">已完成</option>
             </select>
           </div>
+        </div>
+        <div class="visit-report-action">
+          <button class="button button-secondary" id="visitReport" type="button" disabled>匯出巡舖報告 PDF</button>
+          <span class="status" id="visitReportCount" aria-live="polite"></span>
         </div>
         <p class="visit-empty" id="visitEmpty" role="status" hidden></p>
         <ul class="visit-list" id="visitList" aria-labelledby="visitListTitle"></ul>

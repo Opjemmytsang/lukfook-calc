@@ -13,6 +13,7 @@
   const branchFileStatus = get('visitBranchFileStatus');
   const district = get('visitDistrict');
   const branchStorageKey = 'lukfook:store-visit:branch-directory';
+  const builtInBranches = window.storeVisitBranches ?? [];
   const category = get('visitCategory');
   const note = get('visitNote');
   const state = get('visitState');
@@ -74,40 +75,56 @@
     });
   }
 
-  function indexDirectory(rows) {
-    branchDirectory = rows;
+  function indexDirectory(rows = []) {
     branchesByCode = new Map();
     branchesByName = new Map();
-    for (const item of rows) {
-      branchesByCode.set(branchKey(item.code), item);
-      const name = branchKey(item.name);
-      branchesByName.set(name, branchesByName.has(name) ? null : item);
+    for (const item of [...builtInBranches, ...rows]) {
+      const key = branchKey(item.code);
+      const existing = branchesByCode.get(key);
+      branchesByCode.set(key, {
+        ...item,
+        aliases: [...(existing?.aliases ?? []), ...(item.aliases ?? [])]
+      });
+    }
+    branchDirectory = [...branchesByCode.values()];
+    for (const item of branchDirectory) {
+      const names = new Set([item.name, ...(item.aliases ?? [])].map(branchKey));
+      for (const name of names) {
+        branchesByName.set(name, branchesByName.has(name) ? null : item);
+      }
     }
   }
 
   function loadDirectory() {
+    let rows = [];
     try {
       const raw = localStorage.getItem(branchStorageKey);
-      indexDirectory(raw ? parseDirectory(JSON.parse(raw)) : []);
+      if (raw) rows = parseDirectory(JSON.parse(raw));
     } catch {
-      indexDirectory([]);
+      // The built-in branch list is available without local storage.
     }
-    branchFileStatus.textContent = branchDirectory.length
-      ? `已匯入 ${branchDirectory.length} 間分行。`
-      : '選擇 JSON 名單，匯入後會儲存在此瀏覽器。';
+    indexDirectory(rows);
+    branchFileStatus.textContent = rows.length
+      ? `已套用更新名單，共 ${branchDirectory.length} 間分行。`
+      : `已內置 ${branchDirectory.length} 間分行。`;
   }
 
   function branchInfo(value, savedDistrict = '') {
     const key = branchKey(value);
     const item = branchesByCode.get(key) ?? branchesByName.get(key);
     return item
-      ? { code: item.code, label: `${item.code} · ${item.name}`, district: item.district }
+      ? { code: item.code, name: item.name, label: `${item.code} · ${item.name}`, district: item.district }
       : { code: value, label: value, district: savedDistrict };
   }
 
-  function updateDistrict() {
+  function updateDistrict(applyCode = false) {
     const info = branchInfo(branch.value, editing?.branch === branch.value ? editing.district : '');
-    district.textContent = !branch.value.trim() ? '' : `分區：${info.district || '未有分區資料'}`;
+    if (applyCode && info.name) branch.value = info.code;
+    branchPicker.value = info.code;
+    if (branchPicker.selectedIndex === -1) branchPicker.value = '';
+    district.textContent = !branch.value.trim() ? '' : info.name
+      ? `${info.name}｜分區：${info.district}`
+      : `分區：${info.district || '未有分區資料'}`;
   }
 
   function renderBranchPicker(branches) {
@@ -297,9 +314,9 @@
 
     const report = {
       details: {
-        '記錄日期': firstDay === lastDay ? firstDay : `${firstDay} 至 ${lastDay}`,
-        '分行篩選': filterBranch.selectedOptions[0]?.text || '全部分行',
-        '狀態篩選': stateLabels.get(filterState.value) || '全部狀態'
+        '記錄期間': firstDay === lastDay ? firstDay : `${firstDay} 至 ${lastDay}`,
+        '涵蓋分行': filterBranch.selectedOptions[0]?.text || '全部分行',
+        '涵蓋狀態': stateLabels.get(filterState.value) || '全部狀態'
       },
       counts: [
         ['問題總數', visibleIssues.length],
@@ -543,11 +560,11 @@
     listTitle.focus();
     announce('');
   });
-  branch.addEventListener('input', updateDistrict);
+  branch.addEventListener('input', () => updateDistrict());
+  branch.addEventListener('change', () => updateDistrict(true));
   branchPicker.addEventListener('change', () => {
     if (branchPicker.value) branch.value = branchPicker.value;
-    branchPicker.value = '';
-    updateDistrict();
+    updateDistrict(true);
   });
   branchFile.addEventListener('change', async () => {
     const file = branchFile.files[0];
@@ -559,7 +576,7 @@
       const rows = parseDirectory(JSON.parse(await file.text()));
       localStorage.setItem(branchStorageKey, JSON.stringify(rows));
       indexDirectory(rows);
-      branchFileStatus.textContent = `已匯入 ${rows.length} 間分行。`;
+      branchFileStatus.textContent = `已套用更新名單，共 ${branchDirectory.length} 間分行。`;
       await render();
     } catch {
       branchFileStatus.textContent = '未能匯入分行名單。請檢查 JSON 檔案及瀏覽器儲存設定。';

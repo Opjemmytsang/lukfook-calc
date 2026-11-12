@@ -64,16 +64,16 @@
           <fieldset id="visitFields" class="visit-fields" disabled>
             <div class="field">
               <label for="visitBranch">分行位置</label>
-              <input id="visitBranch" maxlength="50" placeholder="輸入分行行碼或名稱" autocomplete="off" required>
+              <input id="visitBranch" maxlength="50" placeholder="輸入行碼或分行名稱" autocomplete="off" required>
               <select id="visitBranchOptions" class="visit-branch-picker" aria-label="選擇分行位置" disabled>
                 <option value="">選擇分行</option>
               </select>
               <small id="visitDistrict" role="status"></small>
               <details class="visit-branch-picker">
-                <summary>匯入分行名單</summary>
+                <summary>更新分行名單</summary>
                 <label for="visitBranchFile">分行名單檔案</label>
                 <input id="visitBranchFile" type="file" accept=".json,application/json">
-                <small id="visitBranchFileStatus" role="status">選擇 JSON 名單，匯入後會儲存在此瀏覽器。</small>
+                <small id="visitBranchFileStatus" role="status">如有更新名單，可匯入 JSON 檔案。</small>
               </details>
             </div>
             <div class="field">
@@ -179,6 +179,7 @@
   </dialog>
   <script src="./assets/js/store-visit-db.js" defer></script>
   <script src="./assets/js/store-visit-pdf.js" defer></script>
+  <script src="./assets/js/store-visit-branches.js" defer></script>
   <script src="./assets/js/store-visit.js" defer></script>
   <script src="./assets/js/common.js" defer></script>
 </body>
